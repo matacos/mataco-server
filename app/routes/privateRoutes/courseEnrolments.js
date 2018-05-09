@@ -74,12 +74,29 @@ function mountRoutes(app,db,schemaValidation){
         and c.semester like $4
         ${gradedFilter}
         ;`
-        const result=await db.query(query,[
+        let queryParams=[
             req.query["estudiante"] || "%",
             req.query["aceptadas"] || "%",
             req.query["curso"] || "%",
             semester
-        ])
+        ]
+        const result=await db.query(query,queryParams)
+
+        console.log("==============3========")
+        console.log("==============3========")
+        console.log("==============3========")
+        console.log("==============3========")
+        console.log("ESTOY RESPONDIENDO LA QUERY DE /COURSE_ENROLMENTSSSS")
+        console.log("ESTA ES LA QUERY:")
+        console.log(query)
+        console.log("ESTOS SON LOS PARÁMETROS:")
+        console.log(queryParams)
+        console.log("ESTE ES EL RESULTADO")
+        console.log(result.rows)
+        console.log("==============3========")
+        console.log("==============3========")
+        console.log("==============3========")
+        console.log("==============3========")
         res.json({"courseInscriptions":result.rows})
         next()
     })
@@ -130,7 +147,7 @@ function mountRoutes(app,db,schemaValidation){
         await db.query(query,[
             req.body.course,
             req.body.student,
-            (new Date()).toISOString(),
+            req.now,
             regular
         ])
 
@@ -183,6 +200,9 @@ function mountRoutes(app,db,schemaValidation){
     app.put(["/inscripciones_cursos/:id","/cursadas/:id"], schemaValidation({body:updateBodySchema}),async function(req,res,next){
         console.log("Hola Santi 1")
         console.log(req.body)
+        if(req.body.grade && !req.body.grade_date){
+            req.body.grade_date=req.now;
+        }
         let parts = req.params.id.split("-")
         let course=parts[0]
         let student=parts[1]

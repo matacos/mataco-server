@@ -111,7 +111,7 @@ function mountRoutes(app,db,schemaValidation){
             (course,student) not in (
                 select course,student from polls
             ) 
-            and grade_date < $2 
+            and grade_date <= $2 
             and grade >= 4
             and student = $1
         )
