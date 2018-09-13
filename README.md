@@ -48,16 +48,67 @@ Elimina ese usuario.
 Permisos: Sólo lo corre el administrador
 
 
-## /cursada
-```TIENEN QUE SER DIFERENTES EL POST EL PUT Y EL GET
+## /cursadas
+### GET /cursadas
+```
+Cursada
 {
     "estudiante":<username>,
     "curso":<id-curso>,
     "id":<id cursada>,
-    "fecha-alta":<fecha del alta de cursada>,
+    "fecha-alta":<fecha UTC del alta de cursada>,
     "aceptada":true/false,
     "nota":<-1 indica que no fue rendida, 3 o menos indica desaprobada, 4 o más indica aprobada>,
     "fecha_nota":<fecha UTC en que se colocó la nota de cursada>,
-    "cuatrimestre":<código del cuatrimestre al que corresponde esta cursada>
 }
 ```
+Querys soportadas:
+```
+/cursadas?estudiante=97452
+/cursadas?aceptada=true
+/cursadas?con_nota=true
+/users?skip=n [default 0]
+/users?first=n [default 10]
+```
+
+Devuelve:
+```
+{
+    cursadas:[
+        array de CursadaCompleta
+    ],
+    "total":<cantidad de usuarios totales para ese filtro>,
+    "token":<próximo token>
+}
+```
+Permisos: 
+ - Puede llamarlo el estudiante, lo cual filtra, permitiendole acceder solamente a sus cursadas. 
+ - Puede llamarlo el profesor, siempre que haya sido asignado a un curso que lo tenga a él.
+
+### POST /cursadas
+Recibe:
+```
+{
+    "estudiante":<username>,
+    "curso":<id-curso>,
+}
+```
+Permisos: 
+ - Puede llamarlo el estudiante, permitiendo hacer alta sólo para sí mismo. 
+ - Puede llamarlo el profesor, siempre que haya sido asignado a un curso que lo tenga a él.
+
+### PUT /cursadas/<id cursada>
+```
+{
+    "aceptada":true/false, (campo opcional)
+    "nota":<-1 indica que no fue rendida, 3 o menos indica desaprobada, 4 o más indica aprobada>, (campo opcional)
+    "fecha_nota":<fecha UTC en que se colocó la nota de cursada>,(campo opcional)
+}
+```
+
+Sólo se permite colocar notas en cursadas que fueron aceptadas.
+Permisos: Sólo puede llamarlo un profesor asignado a un curso vinculado a esta cursada
+
+### DELETE /cursadas/<id cursada>
+
+Permisos: Sólo puede llamarlo un alumno (se desinscribe)
