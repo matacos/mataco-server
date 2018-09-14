@@ -1,7 +1,8 @@
 # Implementación
 Se usará passport para manejar login, bearer
-
 https://github.com/passport/express-4.x-http-bearer-example/tree/master/db
+Se usará ajv para validar el json del cuerpo del request
+https://github.com/epoberezkin/ajv
 
 # API
 
@@ -94,7 +95,7 @@ Recibe:
 }
 ```
 Permisos: 
- - Puede llamarlo el estudiante, permitiendo hacer alta sólo para sí mismo. 
+ - Puede llamarlo el estudiante, permitiendo hacer alta sólo para sí mismo.
  - Puede llamarlo el profesor, siempre que haya sido asignado a un curso que lo tenga a él.
 
 ### PUT /cursadas/<id cursada>
@@ -112,3 +113,61 @@ Permisos: Sólo puede llamarlo un profesor asignado a un curso vinculado a esta 
 ### DELETE /cursadas/<id cursada>
 
 Permisos: Sólo puede llamarlo un alumno (se desinscribe)
+
+## /materias
+### GET /materias
+permisos: público
+```
+{
+    "materias":[
+        {
+            "id":"id de la materia",
+            "nombre":"nombre de materia",
+            "codigo":"código de la materia",(código dentro de depto)
+            "departamento":<código de depto>,
+            "carreras":[
+                <código de carrera>
+            ]
+            "correlativas":[
+                <id de las correlativas>
+            ]
+        },
+        ...
+    ],
+    "token":<próximo token>
+}
+```
+Filtros soportados:
+```
+/materias?carrera=1 [sólo las que corresponden al menos para esa carrera] (lo usa el estudiante)
+/materias?skip=n [default 0]
+/materias?first=n [default 10]
+```
+
+## /cursos
+Curso:
+```
+{
+    "vacantes":<cantidad de vacantes>,
+    "jefe_tp":{
+    },
+    "jefe_catedra":{
+
+    },
+    "ayudantes":[{
+
+    }, ... ],
+    "cuatri":{
+        "id":<id del cuatri>,
+        "fecha_inicio": timestamp UTC,
+        "fecha_fin": timestamp UTC,
+    }
+    "horarios":[{
+        "dia":"mie",
+        "inicio":"18:45",
+        "fin":"22:30",
+        "descripcion":"texto libre"
+    }]
+}
+```
+### GET /cursos
