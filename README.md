@@ -12,13 +12,13 @@ https://github.com/epoberezkin/ajv
     "username":"97452",
     "password":"esoj",
     "email":"jose.sbru@....",
-    "role":"estudiante"
+    "rol":"estudiante"
 }
 ```
 Representa un usuario del sistema. Este endpoint se usa para ver el tema de roles y permisos, y para editar datos de 
 ### PUT /users/<username>
 Editar los datos de un usuario.
-Permisos: Sólo puede correrlo <username>, a menos que el usuario sea administrador.
+Permisos: Sólo puede correrlo <username>, a menos que el usuario sea administrador. Se ignora el campo username. Se ignora el campo "rol", excepto para el administrador.
 Envío: Un User (token en header)
 Vuelve: Ese User y un token
 ### POST /users
@@ -54,8 +54,8 @@ Permisos: Sólo lo corre el administrador
 ```
 Cursada
 {
-    "estudiante":<username>,
-    "curso":<id-curso>,
+    "estudiante":<Estudiante>,
+    "curso":<Curso>,
     "id":<id cursada>,
     "fecha-alta":<fecha UTC del alta de cursada>,
     "aceptada":true/false,
@@ -76,7 +76,7 @@ Devuelve:
 ```
 {
     cursadas:[
-        array de CursadaCompleta
+        array de Cursada
     ],
     "total":<cantidad de usuarios totales para ese filtro>,
     "token":<próximo token>
@@ -148,15 +148,15 @@ Filtros soportados:
 Curso:
 ```
 {
-    "vacantes":<cantidad de vacantes>,
-    "jefe_tp":{
-    },
-    "jefe_catedra":{
-
-    },
-    "ayudantes":[{
-
-    }, ... ],
+    "id":<id del curso>
+    "materia":<id de materia>
+    "vacantes_totales":<cantidad de vacantes>,
+    "vacantes_restantes":<cantidad de vacantes>,
+    "jefe_tp":<Profesor>,
+    "jefe_catedra":<Profesor>,
+    "ayudantes":[
+        <Profesor>
+    ],
     "cuatri":{
         "id":<id del cuatri>,
         "fecha_inicio": timestamp UTC,
@@ -170,4 +170,54 @@ Curso:
     }]
 }
 ```
-### GET /cursos
+### GET /cursos, GET /cursos/<id de curso>
+Devuelve la lista de cursos. 
+Permisos: es público
+Filtros permitidos:
+```
+/cursos?materia=<materia> [devuelve los cursos de esa materia]
+/cursos?dado_por=<id de profesor> [devuelve los cursos de ese profesor]
+/cursos?skip=n [default 0]
+/cursos?first=n [default 10]
+```
+
+### POST /cursos
+Agregar un curso.
+Recibe:
+```
+{
+    "materia":<id de la materia>,
+    "vacantes_totales":<int>,
+    "jefe_tp":<id de profesor>,
+    "jefe_catedra":<id del profesor>,
+    "ayudantes":[
+        <id de ayudante>
+    ],
+    "cuatri":<id de cuatrimestre>,
+    "horarios":[{
+        "dia":"mie",
+        "inicio":"18:45",
+        "fin":"22:30",
+        "descripcion":"texto libre"
+    }]
+}
+```
+Devuelve: El Curso construído, como si viniera de un GET.
+Permisos: Sólo el departamento, puede crear cursos asociados a materias de ese departamento. 
+
+### PUT /cursos/<id de curso>
+Modificar un curso.
+Recibe: el mismo Json que POST.
+Devuelve: el mismo Json que si viniera de un GET.
+Permisos: Sólo el departamento, puede modificar cursos asociados a materias de ese departamento.
+
+### DELETE /cursos/<id de curso>
+Elimina un curso
+
+
+
+
+
+# pendientes
+Estudiante = User, por ahora
+Profesor = User, por ahora
