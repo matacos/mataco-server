@@ -4,6 +4,12 @@ https://github.com/passport/express-4.x-http-bearer-example/tree/master/db
 Se usará ajv para validar el json del cuerpo del request
 https://github.com/epoberezkin/ajv
 
+# Diagrama entidad relación
+
+![bdd.png](Diagrama de la base de datos)
+
+Para editarlo: https://www.draw.io/#Hmatacos%2Fmataco-server%2Fmaster%2Fbdd.png
+
 # API
 
 ## /users
