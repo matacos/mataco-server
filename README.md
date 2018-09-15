@@ -6,7 +6,7 @@ https://github.com/epoberezkin/ajv
 
 # Diagrama entidad relación
 
-![https://github.com/matacos/mataco-server/raw/master/bdd.png](Diagrama de la base de datos)
+![Diagrama de la base de datos](https://github.com/matacos/mataco-server/raw/master/bdd.png)
 
 Para editarlo: https://www.draw.io/#Hmatacos%2Fmataco-server%2Fmaster%2Fbdd.png
 
