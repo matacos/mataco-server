@@ -1,0 +1,14 @@
+{
+  "name": "mataco-server",
+  "scripts": {
+    "start":"node index.js"
+  },
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "http://github.com/matacos/mataco-server",
+  "author": "jisbruzzi <jose.sbru@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.16.3"
+  }
+}
