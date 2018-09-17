@@ -14,7 +14,7 @@ var app = express();
 
 app.get('/', function (req, res) {
     pool.connect().then((c)=>{
-        c.query("select texto from tabla_prueba;").then((resultado)=>{
+        c.query("select texto from tabla_prueba2;").then((resultado)=>{
             res.send(resultado.rows)
         })
     })  
