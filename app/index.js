@@ -12,6 +12,10 @@ const pool = Pool({
 // cómo estructurar bien el proyecto https://node-postgres.com/guides/async-express
 var app = express();
 
+/*
+ESTE ENDPOINT ES NECESARIO PARA QUE EL FRAMEWORK DE TEST SEPA QUE EL SERVER EXISTE Y ESTÁ DESPIERTO
+*/
+
 app.get('/', function (req, res) {
     pool.connect().then((c)=>{
         c.query("select texto from tabla_prueba2;").then((resultado)=>{

@@ -5,8 +5,9 @@ const expect=chai.expect
 
 
 function url(str){
-    return "http://localhost:3000"+str
+    return "http://app:3000"+str
 }
+
 describe("Test that the contents of the sql file are returned",()=>{
     it("'Hola desde setup.sql' is returned", async()=>{
         const response=JSON.parse(await request(url("/")))
