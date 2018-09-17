@@ -1,7 +1,7 @@
 {
   "name": "mataco-server",
   "scripts": {
-    "start":"node index.js"
+    "start": "node index.js"
   },
   "version": "1.0.0",
   "main": "index.js",
@@ -9,6 +9,7 @@
   "author": "jisbruzzi <jose.sbru@gmail.com>",
   "license": "MIT",
   "dependencies": {
-    "express": "^4.16.3"
+    "express": "^4.16.3",
+    "pg": "^7.4.3"
   }
 }
