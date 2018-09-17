@@ -2,8 +2,9 @@ var express = require('express');
 const Pool = require("pg").Pool;
 
 const pool = Pool({
-    host:"127.0.0.1",
-    port:5444,
+    //host:"127.0.0.1",
+    host:"db",
+    port:5432,
     user:"postgres",
     database:"postgres"
     //connectionString:"postgresql://pg-user:pg-user@localhost:5432/pg-prueba"
@@ -14,7 +15,7 @@ var app = express();
 app.get('/', function (req, res) {
     pool.connect().then((c)=>{
         c.query("select texto from tabla_prueba;").then((resultado)=>{
-            res.send(resultado.rows[0])
+            res.send(resultado.rows)
         })
     })  
 });
