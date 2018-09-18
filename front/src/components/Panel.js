@@ -39,6 +39,15 @@ class Panel extends Component {
         return date.getFullYear() + "/" + (date.getMonth() + 1) + "/" + date.getDate();
     }
 
+    isDateInExamsPeriod(examDate){
+        let leftLimit = new Date(Assistant.getField("classes_ending_date"));
+        let rightLimit = new Date(Assistant.getField("exams_ending_date"));
+        console.log("leftLimit: " + leftLimit);
+        console.log("rightLimit: " + rightLimit);
+        console.log("examDate: " + examDate);
+        return examDate >= leftLimit && examDate <= rightLimit;
+    }
+
     setExams() {
         let department_code = this.state.currentCourse.department_code;
         let subject_code = this.state.currentCourse.subject_code;
@@ -170,6 +179,8 @@ class Panel extends Component {
     validDate(inputDate) {
         let date = new Date(inputDate);
         let currentDate = new Date();
+        if (!this.isDateInExamsPeriod(date))
+            return [false, "No es posible crear un examen fuera del período de exámenes"];
         if (date.getDay() == 0)
             return [false, "No es posible seleccionar un domingo"];
         if (date.getFullYear() < currentDate.getFullYear())

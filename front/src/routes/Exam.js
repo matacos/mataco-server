@@ -207,8 +207,10 @@ class Exam extends Component {
 
     validDate() {
         let date = new Date(this.state.examData.date);
-        console.log(date.getDate())
+        console.log(date.getDate());
         let currentDate = new Date();
+        if (!this.isDateInExamsPeriod(date))
+            return [false, "No es posible crear un examen fuera del período de exámenes"];
         if (date.getDay() == 0)
             return [false, "No es posible crear un examen para un domingo"];
         if (date.getFullYear() < currentDate.getFullYear())
@@ -273,6 +275,15 @@ class Exam extends Component {
         }
         else 
             return false;  
+    }
+
+    isDateInExamsPeriod(examDate){
+        let leftLimit = new Date(Assistant.getField("classes_ending_date"));
+        let rightLimit = new Date(Assistant.getField("exams_ending_date"));
+        console.log("leftLimit: " + leftLimit);
+        console.log("rightLimit: " + rightLimit);
+        console.log("examDate: " + examDate);
+        return examDate >= leftLimit && examDate <= rightLimit;
     }
 
     render() {
