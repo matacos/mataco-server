@@ -5,7 +5,7 @@ const Readable = require('stream').Readable;
 
 function arreglarArchivoDescargado(text){
     let lines=text.split("\n").slice(1)
-    let cleanLines=lines.map((l)=>{
+    let cleanLines=lines.filter((s)=>s.length>0).map((l)=>{
         let fields = l.replace(/"/g,'').split(",")
         return fields[0]+","+fields[5]
     })
@@ -203,7 +203,15 @@ function mountRoutes(app,db,schemaValidation){
             }
 
 
-            let goodFileText=fileText.split("\n").map((l)=>l.replace(",-",",-1")).join("\n")
+            let goodFileText=fileText.split("\n").filter((s)=>s.length>0).map((l)=>l.replace(",-",",-1")).join("\n")
+            console.log("===========================================")
+            console.log("===========================================")
+            console.log("===========================================")
+            console.log("EL ARCHIVO DE TEXTO QUE SUBO DICE:")
+            console.log(goodFileText)
+            console.log("===========================================")
+            console.log("===========================================")
+            console.log("===========================================")
 
             const csvStream = new Readable();
             csvStream.push(goodFileText)

@@ -129,7 +129,10 @@ insert into professors_roles(professor,course,role) values
     ('39111222',1,'Jefe de Cátedra'),
     ('12345678',2,'Jefe de Cátedra'),
     ('98765432',1,'JTP'),
-    ('98765432',2,'Ayudante de cátedra');
+    ('98765432',2,'Ayudante de cátedra'),
+    ('39111222',3,'Jefe de Cátedra'),
+    ('12345678',4,'Jefe de Cátedra'),
+    ('12345678',5,'Jefe de Cátedra');
 
 create table days_of_week(
     day varchar(10),
@@ -162,7 +165,13 @@ insert into classroom_uses
     (1,'400','Paseo Colón','19:00','22:00','lun','Teórico-Práctica Obligatoria'),
     (1,'400','Paseo Colón','19:00','22:00','jue','Teórico-Práctica Obligatoria'),
     (2,'200','Paseo Colón','16:00','19:00','lun','Teórica Obligatoria'),
-    (2,'200','Las Heras','16:30','19:30','vie','Práctica Obligatoria');
+    (2,'200','Las Heras','16:30','19:30','vie','Práctica Obligatoria'),
+    (3,'203','Paseo Colón','16:00','19:00','lun','Teórica Obligatoria'),
+    (3,'203','Las Heras','16:30','19:30','vie','Práctica Obligatoria'),
+    (4,'202','Paseo Colón','16:00','19:00','lun','Teórica Obligatoria'),
+    (4,'202','Las Heras','16:30','19:30','vie','Práctica Obligatoria'),
+    (5,'201','Paseo Colón','16:00','19:00','lun','Teórica Obligatoria'),
+    (5,'201','Las Heras','16:30','19:30','vie','Práctica Obligatoria');
 
 /***************************************************
 INSCRIPCIONES A CURSOS
