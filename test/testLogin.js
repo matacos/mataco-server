@@ -80,9 +80,17 @@ describe("Permissions",()=>{
                 "Authorization":"bearer "+token
             },
             simple:false,
-            resolveWithFullResponse:true
+            resolveWithFullResponse:true,
+            json:true
         })
         expect(response.statusCode).to.equal(200)
+        expect(response.body).to.be.jsonSchema({
+            type:"object",
+            properties:{
+                token:{type:"string"}
+            },
+            required:["token"]
+        })
 
     })
     it("bad token",async()=>{

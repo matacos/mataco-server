@@ -72,19 +72,8 @@ promiseRouter.get('/',async function (req, res) {
     res.send(resultado.rows)
 });
 
-
-let usersDb={
-    "jose":{
-        password:"jojo",
-        token:"sese"
-    },
-    "flor":{
-        password:"floflo",
-        token:"rrrrrr"
-    },
-}
-
 passport.use(new Strategy(async function(token, cb) {
+    //TODO: GENERAR TOKENS NUEVOS
     try{
         const c=await connection()
         const tokenedUsers=await c.query("select * from users where token=$1;",[token])
@@ -97,6 +86,14 @@ passport.use(new Strategy(async function(token, cb) {
         return cb(e)
     }
 }));
+
+//const mung = require('express-mung');
+app.use(mung.json(function (body,req,res){
+    if(req.user){
+        body.token=req.user.token
+    }
+
+}))
 
 
 
@@ -135,7 +132,7 @@ promiseRouter.post("/login",checkSchemas({body:loginSchema}),async function(req,
 })
 
 promiseRouter.get("/materias",passport.authenticate('bearer', { session: false }),function(req,res){
-    res.send({
+    res.json({
         "vamos":"todavia"
     })
 })
