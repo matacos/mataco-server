@@ -14,7 +14,7 @@ describe("Test that the contents of the sql file are returned",()=>{
         
         expect(response).to.be.jsonSchema({
             const:[{ 
-                texto: 'Hola peron setup.sql' 
+                texto: 'Hola desde setup.sql' 
             }]
         })
 
