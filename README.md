@@ -35,7 +35,7 @@ Vuelve: Ese User y un token
 ### GET /users
 Devuelve todos los usuarios. Filtros permitidos:
 ```
-/users?roles=estudiante,profesor
+/users?roles=estudiante,docente
 /users?skip=n [default 0]
 /users?first=n [default 10]
 ```
@@ -56,7 +56,13 @@ Permisos: Sólo lo corre el administrador
 
 
 ## /cursadas
-### GET /cursadas
+### GET /cursadas y GET /cursadas/<id>
+**También conocido como:** `GET /cursadas/inscripcion/<id>`
+**También conocido como:** `GET /cursadas/<id materia>/inscriptos<id>`
+```
+Estudiante=User + carreras
+```
+
 ```
 Cursada
 {
@@ -78,7 +84,7 @@ Querys soportadas:
 /users?first=n [default 10]
 ```
 
-Devuelve:
+/cursadas devuelve:
 ```
 {
     cursadas:[
@@ -87,12 +93,14 @@ Devuelve:
     "total":<cantidad de usuarios totales para ese filtro>,
     "token":<próximo token>
 }
+/cursadas devuelve una Cursada y un token.
 ```
 Permisos: 
  - Puede llamarlo el estudiante, lo cual filtra, permitiendole acceder solamente a sus cursadas. 
- - Puede llamarlo el profesor, siempre que haya sido asignado a un curso que lo tenga a él.
+ - Puede llamarlo el docente, siempre que haya sido asignado a un curso que lo tenga a él.
 
 ### POST /cursadas
+**También conocido como:** POST /cursadas/inscripcion
 Recibe:
 ```
 {
@@ -102,7 +110,7 @@ Recibe:
 ```
 Permisos: 
  - Puede llamarlo el estudiante, permitiendo hacer alta sólo para sí mismo.
- - Puede llamarlo el profesor, siempre que haya sido asignado a un curso que lo tenga a él.
+ - Puede llamarlo el docente, siempre que haya sido asignado a un curso que lo tenga a él.
 
 ### PUT /cursadas/<id cursada>
 ```
@@ -114,9 +122,10 @@ Permisos:
 ```
 
 Sólo se permite colocar notas en cursadas que fueron aceptadas.
-Permisos: Sólo puede llamarlo un profesor asignado a un curso vinculado a esta cursada
+Permisos: Sólo puede llamarlo un docente asignado a un curso vinculado a esta cursada
 
 ### DELETE /cursadas/<id cursada>
+**También conocido como:** DELETE `/cursadas/inscripcion/<id cursada>`
 
 Permisos: Sólo puede llamarlo un alumno (se desinscribe)
 
@@ -151,6 +160,7 @@ Filtros soportados:
 ```
 
 ## /cursos
+Docente= User
 Curso:
 ```
 {
@@ -158,10 +168,10 @@ Curso:
     "materia":<id de materia>
     "vacantes_totales":<cantidad de vacantes>,
     "vacantes_restantes":<cantidad de vacantes>,
-    "jefe_tp":<Profesor>,
-    "jefe_catedra":<Profesor>,
+    "jefe_tp":<Docente>,
+    "jefe_catedra":<Docente>,
     "ayudantes":[
-        <Profesor>
+        <Docente>
     ],
     "cuatri":{
         "id":<id del cuatri>,
@@ -182,7 +192,7 @@ Permisos: es público
 Filtros permitidos:
 ```
 /cursos?materia=<materia> [devuelve los cursos de esa materia]
-/cursos?dado_por=<id de profesor> [devuelve los cursos de ese profesor]
+/cursos?dado_por=<id de docente> [devuelve los cursos de ese docente]
 /cursos?skip=n [default 0]
 /cursos?first=n [default 10]
 ```
@@ -194,8 +204,8 @@ Recibe:
 {
     "materia":<id de la materia>,
     "vacantes_totales":<int>,
-    "jefe_tp":<id de profesor>,
-    "jefe_catedra":<id del profesor>,
+    "jefe_tp":<id de docente>,
+    "jefe_catedra":<id del docente>,
     "ayudantes":[
         <id de ayudante>
     ],
@@ -219,11 +229,3 @@ Permisos: Sólo el departamento, puede modificar cursos asociados a materias de 
 
 ### DELETE /cursos/<id de curso>
 Elimina un curso
-
-
-
-
-
-# pendientes
-Estudiante = User, por ahora
-Profesor = User, por ahora
