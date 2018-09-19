@@ -1,14 +1,25 @@
 var express = require('express');
 const Pool = require("pg").Pool;
 
-const pool = Pool({
-    //host:"127.0.0.1",
-    host:"db",
-    port:5432,
-    user:"postgres",
-    database:"postgres",
-    connectionTimeoutMillis:20000 //sin esto, puede ser que el server levante antes que postgres y rompa todo
-})
+
+let pgConfig=null
+if(process.env.DATABASE_URL){
+    pgConfig={
+        connectionString:process.env.DATABASE_URL 
+    }
+}else{
+    pgConfig={
+        //host:"127.0.0.1",
+        host:"db",
+        port:5432,
+        user:"postgres",
+        database:"postgres",
+        connectionTimeoutMillis:20000 //sin esto, puede ser que el server levante antes que postgres y rompa todo
+    }
+}
+
+
+const pool = Pool(pgConfig)
 // cómo estructurar bien el proyecto https://node-postgres.com/guides/async-express
 var app = express();
 
@@ -25,6 +36,11 @@ app.get('/', function (req, res) {
     })
 });
 
-app.listen(3000, function () {
-  console.log('Example app listening on port 3000!');
+let port = process.env.PORT || 3000
+console.log("------------------------")
+console.log("pgConfig es:")
+console.log(pgConfig)
+console.log("$PORT es " + process.env.PORT)
+app.listen(port, function () {
+  console.log('Example app listening on port '+port);
 });
