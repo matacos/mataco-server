@@ -11,6 +11,7 @@ function url(str){
 describe("Test that the contents of the sql file are returned",()=>{
     it("'Hola desde setup.sql' is returned", async()=>{
         const response=JSON.parse(await request(url("/")))
+        console.log(response)
         
         expect(response).to.be.jsonSchema({
             const:[{ 

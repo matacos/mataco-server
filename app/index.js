@@ -5,6 +5,7 @@ var Strategy = require('passport-http-bearer').Strategy;
 let Validator=require('express-json-validator-middleware').Validator
 let validate = new Validator({allErrors:true}).validate;
 const mung = require('express-mung');
+const Router = require('express-promise-router')
 
 function checkSchemas(schemas){
     responseAdditionMiddleware=mung.json(function(body,req,res){
@@ -43,7 +44,15 @@ if(process.env.DATABASE_URL){
     }
 }
 const pool = Pool(pgConfig)
+//let connection=await pool.connect()
 
+let poolConnection=null;
+async function connection(){
+    if(poolConnection==null){
+        poolConnection=await pool.connect()    
+    }
+    return poolConnection
+}
 
 
 // cómo estructurar bien el proyecto https://node-postgres.com/guides/async-express
@@ -56,14 +65,11 @@ app.use(require('body-parser').json());
 /*
 ESTE ENDPOINT ES NECESARIO PARA QUE EL FRAMEWORK DE TEST SEPA QUE EL SERVER EXISTE Y ESTÁ DESPIERTO, Y QUE SE HABLA CON LA BASE DE DATOS. Espera esta respuesta antes de arrancar con los test.
 */
-app.get('/',function (req, res) {
-    pool.connect().then((c)=>{
-        return c.query("select texto from tabla_prueba2;").then((resultado)=>{
-            res.send(resultado.rows)
-        })
-    }).catch((e)=>{
-        console.log(e)
-    })
+let promiseRouter=Router()
+promiseRouter.get('/',async function (req, res) {
+    const c = await connection()
+    const resultado = await c.query("select texto from tabla_prueba2;")
+    res.send(resultado.rows)
 });
 
 
@@ -78,29 +84,18 @@ let usersDb={
     },
 }
 
-passport.use(new Strategy(function(token, cb) {
-    for(u of Object.keys(usersDb)){
-        if(usersDb[u].token==token){
-            return cb(null,usersDb[u])
-
+passport.use(new Strategy(async function(token, cb) {
+    try{
+        const c=await connection()
+        const tokenedUsers=await c.query("select * from users where token=$1;",[token])
+        if(tokenedUsers.length>0){
+            return cb(null,false)
+        }else{
+            return cb(null,tokenedUsers.rows[0])
         }
+    }catch(e){
+        return cb(e)
     }
-    return cb(null,false)
-    /*
-    if(token=="yes"){
-        return cb(null,{
-            name:"Jose",
-            dni:"39000000"
-        })
-    }else{
-        return cb(null,false)
-    }
-    */
-    /*
-        if (err) { return cb(err); }
-        if (!user) { return cb(null, false); }
-        return cb(null, user);
-    */
 }));
 
 
@@ -116,27 +111,36 @@ let loginSchema={
 }
 
 
-app.post("/login",checkSchemas({body:loginSchema}),function(req,res,next){
+promiseRouter.post("/login",checkSchemas({body:loginSchema}),async function(req,res,next){
     let username=req.body.username;
     let password=req.body.password;
-    if(usersDb[username].password==password){
-        usersDb[username].token=Math.random()*100+""
+    let c=await connection()
+    let combinations=await c.query("select * from users where username=$1 and password=$2",[username,password])
+    if(combinations.rows.length==0){
+        res.sendStatus(401)
+    }else{
+        let newToken=Math.random()*100+"";
+        await c.query("update users set token=$1, token_expiration = now() + '5 minutes' where username=$2",[newToken,username])
         res.json({
-            token:usersDb[username].token,
-            user:usersDb[username]
+            token:newToken,
+            user:{
+                username,
+                email:combinations.rows[0].email,
+                //TODO: ROLES AQUÍ!!!
+            }
         })
         next()
-    }else{
-        res.sendStatus(401)
     }
+
 })
 
-app.get("/materias",passport.authenticate('bearer', { session: false }),function(req,res){
+promiseRouter.get("/materias",passport.authenticate('bearer', { session: false }),function(req,res){
     res.send({
         "vamos":"todavia"
     })
 })
 
+app.use(promiseRouter)
 
 app.use(function(err, req, res, next) {
     var responseData;
