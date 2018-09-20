@@ -42,8 +42,11 @@ create table professors(
 insert into users (username,password,email,token,token_expiration) values
     ('jose','jojo','jose.jose@gmail.com','78',now()+'5 minutes');
 insert into users (username,password,email,token,token_expiration) values
+    ('97452','jojo','jose.jose@gmail.com','79',now()+'5 minutes');
+insert into users (username,password,email,token,token_expiration) values
     ('gryn','777','sebas@fi.uba.ar','18',now()+'5 minutes');
 
 insert into students (username,degree) values ('jose','1');
+insert into students (username,degree) values ('97452','1');
 insert into professors (username) values ('gryn');
 insert into department_administrators (username) values ('gryn');
