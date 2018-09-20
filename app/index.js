@@ -58,10 +58,20 @@ async function connection(){
 // cómo estructurar bien el proyecto https://node-postgres.com/guides/async-express
 var app = express();
 app.use(require('morgan')('combined'));
-
-
-
 app.use(require('body-parser').json());
+
+
+async function areThey(username,role){
+    const c=await connection()
+    const result=await c.query("select * from "+ role +" where username=$1;",[username])
+    return result.rows.length>0
+}
+async function getRolesOf(username){
+    const roles=["students","administrators","department_administrators","professors"]
+    const pass = await Promise.all(roles.map((r)=>areThey(username,r)))
+
+    return roles.filter((v,i)=>pass[i])
+}
 /*
 ESTE ENDPOINT ES NECESARIO PARA QUE EL FRAMEWORK DE TEST SEPA QUE EL SERVER EXISTE Y ESTÁ DESPIERTO, Y QUE SE HABLA CON LA BASE DE DATOS. Espera esta respuesta antes de arrancar con los test.
 */
@@ -77,10 +87,13 @@ passport.use(new Strategy(async function(token, cb) {
     try{
         const c=await connection()
         const tokenedUsers=await c.query("select * from users where token=$1;",[token])
-        if(tokenedUsers.length>0){
+        if(tokenedUsers.rows.length==0){
             return cb(null,false)
         }else{
-            return cb(null,tokenedUsers.rows[0])
+            const roles = await getRolesOf(tokenedUsers.rows[0].username)
+            let user=tokenedUsers.rows[0]
+            user.roles=roles
+            return cb(null,user)
         }
     }catch(e){
         return cb(e)
@@ -118,12 +131,13 @@ promiseRouter.post("/login",checkSchemas({body:loginSchema}),async function(req,
     }else{
         let newToken=Math.random()*100+"";
         await c.query("update users set token=$1, token_expiration = now() + '5 minutes' where username=$2",[newToken,username])
+        const roles = await getRolesOf(username)
         res.json({
             token:newToken,
             user:{
+                roles,
                 username,
                 email:combinations.rows[0].email,
-                //TODO: ROLES AQUÍ!!!
             }
         })
         next()

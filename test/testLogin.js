@@ -8,10 +8,10 @@ function url(str){
 }
 
 
-async function login(){
+async function login(username,password){
     const body={
-        username:"jose",
-        password:"jojo"
+        username,
+        password
     }
     const response=await request({
         uri:url("/login"),
@@ -24,13 +24,50 @@ async function login(){
 
 describe("Test login",()=>{
     it("Happy path", async()=>{
-        const response=await login()
+        const response=await login("jose","jojo")
         expect(response).to.be.jsonSchema({
             type:"object",
             required:["token","user"],
             properties:{
                 "token":{type:"string"},
-                "user":{type:"object"}
+                "user":{
+                    type:"object",
+                    properties:{
+                        username:{type:"string"},
+                        email:{type:"string"},
+                        roles:{
+                            const:["students"]
+                        }
+                    },
+                    required:["username","email","roles"]
+                },
+            }
+        })
+    })
+    it("Happy path hybrid", async()=>{
+        const response=await login("gryn","777")
+        console.log(response)
+        expect(response).to.be.jsonSchema({
+            type:"object",
+            required:["token","user"],
+            properties:{
+                "token":{type:"string"},
+                "user":{
+                    type:"object",
+                    properties:{
+                        username:{type:"string"},
+                        email:{type:"string"},
+                        roles:{
+                            allOf:[
+                                {contains:{const:'department_administrators'}},
+                                {contains:{const:'professors'}},
+                                {uniqueItems:true},
+                                {maxItems:2}
+                            ]
+                        }
+                    },
+                    required:["username","email","roles"]
+                },
             }
         })
     })
@@ -70,8 +107,10 @@ describe("Test login",()=>{
     })
 })
 describe("Permissions",()=>{
-    it("happy path",async()=>{
-        const loginResponse=await login()
+    it("happy path Jose",async()=>{
+        const loginResponse=await login("jose","jojo")
+        console.log(loginResponse)
+        
         const token=loginResponse.token
         const response=await request({
             uri:url("/materias"),
@@ -84,17 +123,11 @@ describe("Permissions",()=>{
             json:true
         })
         expect(response.statusCode).to.equal(200)
-        expect(response.body).to.be.jsonSchema({
-            type:"object",
-            properties:{
-                token:{type:"string"}
-            },
-            required:["token"]
-        })
+        console.log(response.body)
 
     })
     it("bad token",async()=>{
-        const loginResponse=await login()
+        const loginResponse=await login("jose","jojo")
         const token=loginResponse.token
         const response=await request({
             uri:url("/materias"),
@@ -108,9 +141,9 @@ describe("Permissions",()=>{
         expect(response.statusCode).to.equal(401)
     })
     it("Token changes",async()=>{
-        const loginResponse=await login()
+        const loginResponse=await login("jose","jojo")
         const token=loginResponse.token
-        const loginResponse2=await login()
+        const loginResponse2=await login("jose","jojo")
         const response=await request({
             uri:url("/materias"),
             method:"GET",

@@ -14,5 +14,35 @@ create table users (
     unique (token)
 );
 
+create table students(
+    username varchar(10),
+    primary key (username),
+    foreign key (username) references users(username)
+);
+
+create table administrators(
+    username varchar(10),
+    primary key (username),
+    foreign key (username) references users(username)
+);
+
+create table department_administrators(
+    username varchar(10),
+    primary key (username),
+    foreign key (username) references users(username)
+);
+
+create table professors(
+    username varchar(10),
+    primary key (username),
+    foreign key (username) references users(username)
+);
+
 insert into users (username,password,email,token,token_expiration) values
     ('jose','jojo','jose.jose@gmail.com','78',now()+'5 minutes');
+insert into users (username,password,email,token,token_expiration) values
+    ('gryn','777','sebas@fi.uba.ar','18',now()+'5 minutes');
+
+insert into students (username) values ('jose');
+insert into professors (username) values ('gryn');
+insert into department_administrators (username) values ('gryn');
