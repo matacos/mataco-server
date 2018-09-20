@@ -1,3 +1,13 @@
+# Desarrollando front-end
+
+1. Correr `bash run-local-server.sh` en la carpeta raíz del repo.
+2. `cd front`.
+3. Correr `npm start` desde la carpeta `front`.
+4. Desarrollar, al guardar los archivos, la página en el port `3030` se actualiza sola. El js, "sin querer" le habla al backend de `localhost:3000`, que es donde está corriendo el servidor real.
+5. Correr `npm build`, lo cual actualiza la versión del frontend que el servidor de `localhost:3000` tiene.
+6. La carpeta "build" es creada y eliminada en el proceso de build.
+
+
 # Deploy, setup y tests
 El archivo `setup.sql` tiene toda la información de esquemas y todo el llenado inicial de la base de datos.
 

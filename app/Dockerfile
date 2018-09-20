@@ -5,4 +5,5 @@ COPY package.json package.json
 RUN npm install
 COPY *.js ./
 COPY routes ./routes
+COPY static ./static
 CMD ["npm", "start"]

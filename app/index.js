@@ -11,7 +11,11 @@ var app = express();
 app.use(require('morgan')('combined'));
 app.use(require('body-parser').json());
 
-mountRoutes(app,db)
+app.use(express.static(__dirname+"/static"))
+const apiRouter=express.Router()
+mountRoutes(apiRouter,db)
+app.use("/api",apiRouter)
+
 
 
 let port = process.env.PORT || 3000

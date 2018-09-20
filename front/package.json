@@ -1,0 +1,17 @@
+{
+  "name": "front",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "react": "^16.5.2",
+    "react-dom": "^16.5.2",
+    "react-scripts": "1.1.5"
+  },
+  "scripts": {
+    "start": "PORT=3030 react-scripts start",
+    "build": "rm -rf build && react-scripts build && rm -rf ../app/static && cp -r build ../app/static && rm -rf build",
+    "test": "react-scripts test --env=jsdom",
+    "eject": "react-scripts eject"
+  },
+  "proxy": "http://localhost:3000/"
+}

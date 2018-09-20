@@ -4,7 +4,7 @@ chai.use(require("chai-json-schema-ajv"))
 const expect=chai.expect
 
 function url(str){
-    return "http://app:3000"+str
+    return "http://app:3000/api"+str
 }
 
 

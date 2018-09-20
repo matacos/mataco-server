@@ -2,5 +2,5 @@ sleep 5
 echo "Hola??????????????????"
 ls *.js
 echo "ESOS SON LOS .JS!!"
-curl --connect-timeout 30 http://app:3000/
+curl --connect-timeout 30 http://app:3000/hello
 npm test
