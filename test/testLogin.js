@@ -25,6 +25,12 @@ async function login(username,password){
 describe("Test login",()=>{
     it("Happy path", async()=>{
         const response=await login("jose","jojo")
+        console.log("$")
+        console.log("$")
+        console.log("$")
+        console.log("$")
+        console.log("$")
+        console.log(response.user)
         expect(response).to.be.jsonSchema({
             type:"object",
             required:["token","user"],
@@ -37,6 +43,18 @@ describe("Test login",()=>{
                         email:{type:"string"},
                         roles:{
                             const:["students"]
+                        },
+                        rolesDescriptions:{
+                            type:"object",
+                            properties:{
+                                "students":{
+                                    const:{
+                                        "username":"jose",
+                                        "degree":"1"
+                                    }
+                                },
+                            },
+                            required:["students"]
                         }
                     },
                     required:["username","email","roles"]
@@ -46,6 +64,7 @@ describe("Test login",()=>{
     })
     it("Happy path hybrid", async()=>{
         const response=await login("gryn","777")
+        console.log(response)
         console.log(response)
         expect(response).to.be.jsonSchema({
             type:"object",
@@ -64,6 +83,14 @@ describe("Test login",()=>{
                                 {uniqueItems:true},
                                 {maxItems:2}
                             ]
+                        },
+                        rolesDescriptions:{
+                            type:"object",
+                            properties:{
+                                "department_administrators":{type:"object"},
+                                "professors":{type:"object"},
+                            },
+                            required:["department_administrators","professors"]
                         }
                     },
                     required:["username","email","roles"]

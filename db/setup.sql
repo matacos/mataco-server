@@ -16,6 +16,7 @@ create table users (
 
 create table students(
     username varchar(10),
+    degree varchar(10),
     primary key (username),
     foreign key (username) references users(username)
 );
@@ -43,6 +44,6 @@ insert into users (username,password,email,token,token_expiration) values
 insert into users (username,password,email,token,token_expiration) values
     ('gryn','777','sebas@fi.uba.ar','18',now()+'5 minutes');
 
-insert into students (username) values ('jose');
+insert into students (username,degree) values ('jose','1');
 insert into professors (username) values ('gryn');
 insert into department_administrators (username) values ('gryn');

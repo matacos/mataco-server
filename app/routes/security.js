@@ -6,6 +6,11 @@ var Strategy = require('passport-http-bearer').Strategy;
 function mountRoutes(app,db,checkSchemas){
     let asyncRouter=Router()
 
+    async function describeRole(username,role){
+        const result=await db.query("select * from "+ role +" where username=$1;",[username])
+        return result.rows[0];
+    }
+
     //obtiene roles
     async function areThey(username,role){
         const result=await db.query("select * from "+ role +" where username=$1;",[username])
@@ -68,12 +73,21 @@ function mountRoutes(app,db,checkSchemas){
             let newToken=Math.random()*100+"";
             await db.query("update users set token=$1, token_expiration = now() + '5 minutes' where username=$2",[newToken,username])
             const roles = await getRolesOf(username)
+            const rolesDescriptions=await Promise.all(roles.map((r)=>describeRole(username,r)))
+            let singleRoleDescriptions = roles.map((r,i)=>{
+                let o={}
+                o[r]=rolesDescriptions[i]
+                return o
+            })
+            let rolesDescriptionsDict=Object.assign(...singleRoleDescriptions)
+
             res.json({
                 token:newToken,
                 user:{
                     roles,
                     username,
                     email:combinations.rows[0].email,
+                    rolesDescriptions:rolesDescriptionsDict
                 }
             })
             next()

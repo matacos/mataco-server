@@ -4,35 +4,14 @@ const db=require("./db.js")
 
 var express = require('express');
 
-console.log("ANTES DE IMPORTAR")
 const mountRoutes=require("./routes").mountRoutes
-console.log("LUEGO DE IMPORTAR")
 // cómo estructurar bien el proyecto https://node-postgres.com/guides/async-express
 
-console.log("hola")
-console.log("hola")
 var app = express();
 app.use(require('morgan')('combined'));
 app.use(require('body-parser').json());
 
-console.log("hola2")
-
-
 mountRoutes(app,db)
-
-console.log("hola3")
-
-/*
-app.use(function(err,req,res,next){
-  if(err){
-    console.log("Error:")
-    console.log(err)
-    res.send(err)
-  }
-    
-})
-*/
-console.log("hola4")
 
 
 let port = process.env.PORT || 3000
