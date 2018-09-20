@@ -22,13 +22,16 @@ mountRoutes(app,db)
 
 console.log("hola3")
 
-
+/*
 app.use(function(err,req,res,next){
+  if(err){
     console.log("Error:")
     console.log(err)
     res.send(err)
+  }
+    
 })
-
+*/
 console.log("hola4")
 
 
