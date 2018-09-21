@@ -1,3 +1,6 @@
+select 'drop table if exists "' || tablename || '" cascade;' from pg_tables;
+
+
 create table tabla_prueba2 (
  texto text 
 );
@@ -52,13 +55,13 @@ create table professors(
     foreign key (username) references users(username)
 );
 
-insert into students (username) values ('jose'),('97452');
+insert into students (username) values ('jose'),('97452'),('99999');
 insert into professors (username) values ('gryn');
 insert into department_administrators (username) values ('gryn');
 
 
 /*********************************************
-MATERIAS Y CURSOS
+MATERIAS
 **********************************************/
 create table degrees(
     id varchar(10),
@@ -82,7 +85,7 @@ create table degree_enrollments (
     degree varchar(10),
     student varchar(10),
     foreign key (degree) references degrees(id),
-    foreign key (student) references students(username),
+    foreign key (student) references students(username)
 );
 insert into degree_enrollments( degree, student) values 
     ('1','97452'),
@@ -94,41 +97,46 @@ insert into degree_enrollments( degree, student) values
 create table departments(
     code varchar(10),
     name text,
-    primary key (code),
+    primary key (code)
 );
 
 create table subjects(
     name text,
     code varchar(10),
-    department varchar(10),
-    primary key (code, department),
-    foreign key (department) references departments(code)
+    department_code varchar(10),
+    primary key (code, department_code),
+    foreign key (department_code) references departments(code)
 );
 
 create table credits(
     subject_code varchar(10),
     department_code varchar(10),
 
-    degree varchar(10)
+    degree varchar(10),
     amount int,
     primary key (degree,subject_code,department_code),
-    foreign key (subject_code,department_code) references subjects(code,department)
+    foreign key (subject_code,department_code) references subjects(code,department_code)
 );
 
 create table requires_credits(
     department_code varchar(10),
     subject_code varchar(10),
     amount int,
-    primary key (department_code,subject_code),
-    foreign key (department_code,subject_code) references subjects(code,department)
-)
+    degree varchar(10),
+    primary key (department_code,subject_code,degree),
+    foreign key (department_code,subject_code) references subjects(department_code,code),
+    foreign key (degree) references degrees(id)
+
+);
 
 create table requires (
     department_code varchar(10),
     subject_code varchar(10),
     dept_required varchar(10),
     code_required varchar(10),
-    primary key (department_code, subject_code, dept_required, code_required),
-    foreign key (department_code, subject_code) references subjects(code,department),
-    foreign key (department_code, subject_code) references subjects(code_required,dept_required),
-)
+    degree varchar(10),
+    primary key (department_code, subject_code, dept_required, code_required, degree),
+    foreign key (department_code, subject_code) references subjects(department_code,code),
+    foreign key (dept_required,code_required) references subjects(department_code,code),
+    foreign key (degree) references degrees(id)
+);
