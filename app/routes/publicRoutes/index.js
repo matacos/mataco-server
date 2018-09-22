@@ -11,6 +11,9 @@ function mountRoutes(app,db,schemaValidation){
         res.json(resultado.rows)
         next()
     });
+    
+    
+    
    app.use(promiseRouter)
 }
 

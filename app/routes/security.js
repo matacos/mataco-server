@@ -7,8 +7,29 @@ function mountRoutes(app,db,checkSchemas){
     let asyncRouter=Router()
 
     async function describeRole(username,role){
-        const result=await db.query("select * from "+ role +" where username=$1;",[username])
-        return result.rows[0];
+        const result=[]
+        if(role=="students"){
+            const dbResult = await db.query(
+                `select e.student,json_agg(d.data) as enrollments
+                from 
+                    degree_enrollments as e,
+                    (
+                        select d.id, row_to_json(d) as data 
+                        from degrees as d
+                    ) as d
+                where
+                    e.degree=d.id
+                group by e.student
+                having e.student=$1;`,
+                [username]
+            )
+            console.log(dbResult.rows[0].enrollments)
+            return dbResult.rows[0];
+        }else{
+            const dbResult = await db.query("select * from "+ role +" where username=$1;",[username])
+            return dbResult.rows[0];
+        }
+        
     }
 
     //obtiene roles

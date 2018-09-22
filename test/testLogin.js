@@ -44,18 +44,23 @@ describe("Test login",()=>{
                         roles:{
                             const:["students"]
                         },
+                        
                         rolesDescriptions:{
                             type:"object",
                             properties:{
                                 "students":{
+                                    type:"object"
+                                    /*
                                     const:{
                                         "username":"jose",
                                         "degree":"1"
                                     }
+                                    */
                                 },
                             },
                             required:["students"]
                         }
+                        
                     },
                     required:["username","email","roles"]
                 },
@@ -140,7 +145,7 @@ describe("Permissions",()=>{
         
         const token=loginResponse.token
         const response=await request({
-            uri:url("/materias"),
+            uri:url("/materias?carrera=2"),
             method:"GET",
             headers:{
                 "Authorization":"bearer "+token
@@ -157,7 +162,7 @@ describe("Permissions",()=>{
         const loginResponse=await login("jose","jojo")
         const token=loginResponse.token
         const response=await request({
-            uri:url("/materias"),
+            uri:url("/materias?carrera=11"),
             method:"GET",
             headers:{
                 "Authorization":"bearer "+"1"
@@ -172,7 +177,7 @@ describe("Permissions",()=>{
         const token=loginResponse.token
         const loginResponse2=await login("jose","jojo")
         const response=await request({
-            uri:url("/materias"),
+            uri:url("/materias?carrera=25"),
             method:"GET",
             headers:{
                 "Authorization":"bearer "+token
