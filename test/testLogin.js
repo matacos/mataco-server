@@ -165,7 +165,7 @@ describe("Permissions",()=>{
             uri:url("/materias?carrera=11"),
             method:"GET",
             headers:{
-                "Authorization":"bearer "+"1"
+                "Authorization":"bearer "+"ouch"
             },
             simple:false,
             resolveWithFullResponse:true
