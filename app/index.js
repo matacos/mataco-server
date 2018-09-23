@@ -3,11 +3,13 @@ console.log("PRIMERA LINEA DEL PROGRAMA")
 const db=require("./db.js")
 
 var express = require('express');
+var cors = require('cors')
 
 const mountRoutes=require("./routes").mountRoutes
 // cómo estructurar bien el proyecto https://node-postgres.com/guides/async-express
 
 var app = express();
+app.use(cors());
 app.use(require('morgan')('combined'));
 app.use(require('body-parser').json());
 
