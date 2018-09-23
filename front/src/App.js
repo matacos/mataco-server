@@ -1,20 +1,27 @@
 import React, { Component } from 'react';
-import logo from './logo.svg';
+import { BrowserRouter, Route, Switch, Redirect, ha } from 'react-router-dom';
 import './App.css';
+import Login from "./routes/Login";
+import Home from "./routes/Home";
+import SubjectStudents from "./routes/SubjectStudents";
+import SubjectCourses from "./routes/SubjectCourses";
+import Error from "./routes/Error";
 
 class App extends Component {
   render() {
     return (
-      <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <h1 className="App-title">Welcome to React</h1>
-        </header>
-        <p className="App-intro">
-          Change me
-        
-        </p>
-      </div>
+      <BrowserRouter>
+        <div>
+          <Switch>
+            <Route path="/login" component={Login} />
+            <Route path="/home" component={Home} />
+            <Route path="/cursos" component={SubjectStudents} />
+            <Route path="/materias" component={SubjectCourses} />
+            <Redirect from="/" to="/login" exact/>
+            <Route component={Error} />
+          </Switch>
+        </div>
+      </BrowserRouter>
     );
   }
 }
