@@ -30,14 +30,12 @@ class SubjectStudents extends Component {
     }
 
     handleSelectedCourses() {
-        if (this.state.selectedCourses) {
-            this.state.coursesText = "> Mis Cursos"
-            this.setState({selectedCourses: false})
-        }
-        else {
-            this.state.coursesText = "v Mis Cursos"
-            this.setState({selectedCourses: true})
-        }
+        if (this.state.selectedCourses) 
+            this.setState({selectedCourses: false, coursesText: "> Mis Cursos"})
+        
+        else 
+            this.setState({selectedCourses: true, coursesText: "v Mis Cursos"})
+        
     }
 
     acceptConditional() {
@@ -46,7 +44,7 @@ class SubjectStudents extends Component {
 
     handleHide() {
         this.setState({ conditional: false });
-      }
+    }
 
     render() {
         return (
@@ -54,7 +52,7 @@ class SubjectStudents extends Component {
             <div className="row">
             <div className="panel panel-default col-md-3" style={{margin: "0", padding: "0"}}>
             <div className="panel-heading" style={{width: "auto"}}>
-                <img className="img-responsive center-block" src={logoFIUBA} height="50%" width="50%" style={{marginLeft: "auto", marginRight: "auto", width: "50%", paddingTop: "1em"}}/>
+                <img className="img-responsive center-block" alt="logo" src={logoFIUBA} height="50%" width="50%" style={{marginLeft: "auto", marginRight: "auto", width: "50%", paddingTop: "1em"}}/>
                 <h3 className="panel-title text-center" style={{padding: "1em"}}>Carlos Fontela</h3>
             </div>
 
@@ -77,24 +75,23 @@ class SubjectStudents extends Component {
                 <th>Apellido</th>
                 <th>Nombre</th>
                 <th>Estado</th>
+                <th></th>
                 </tr>
             </thead>
             <tbody>
-                <tr>
-                <td>1</td>
-                <td>Column content</td>
-                <td>Column content</td>
-                <td>Column content</td>
-                <td>Column content</td>
-                </tr>
-                <tr>
-                <td>2</td>
-                <td>Column content</td>
-                <td>Column content</td>
-                <td>Column content</td>
-                <td>Column content</td>
-                <a href="#" className="btn btn-primary" onClick={this.acceptConditional.bind(this)}>Aceptar</a>
-                </tr>
+                {this.state.students.map(function(student, idx){
+                    return (
+                        <tr key={student.id}>
+                            <td>{idx + 1}</td>
+                            <td>{student.id}</td>
+                            <td>{student.apellido}</td>
+                            <td>{student.nombre}</td>
+                            <td>{student.estado}</td>
+                            {(student.estado == "Condicional") && <td><a href="#" className="btn btn-primary" onClick={this.acceptConditional.bind(this)}>Aceptar</a></td>}
+                            {(student.estado != "Condicional") && <td></td>}
+                        </tr>
+                    )
+                }, this)}
                 
             </tbody>
             </table>
