@@ -1,3 +1,5 @@
+docker build -t mataco-app-env -f app/env.Dockerfile app
+docker build -t mataco-test-env -f test/env.Dockerfile test
 cd db
 python generate_destroyer.py
 cd ..
