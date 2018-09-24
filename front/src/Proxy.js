@@ -1,11 +1,11 @@
 class Proxy  {
     constructor() {
-        this.url = "http://mataco.herokuapp.com"
+        this.url = "http://mataco.herokuapp.com/api"
         this.local = "http://localhost:3000/api"
     }
 
     login(dni, password) {
-        return fetch(this.local + "/login", {
+        return fetch(this.url + "/login", {
                 method: 'POST',
                 headers: {
                   //'Accept': 'application/json',
