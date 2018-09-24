@@ -14,6 +14,8 @@ create table users (
     username varchar(10),
     password varchar(30),
     email varchar(30),
+    name text,
+    surname text,
     token varchar(30),
     token_expiration timestamp,
 
@@ -21,11 +23,11 @@ create table users (
     unique (token)
 );
 
-insert into users (username,password,email,token,token_expiration) values
-    ('jose','jojo','jose.jose@gmail.com','78',now()+'5 minutes'),
-    ('97452','jojo','jose.jose@gmail.com','79',now()+'5 minutes'),
-    ('99999','9','nina.niner@gmail.com','99',now()+'5 minutes'),
-    ('gryn','777','sebas@fi.uba.ar','18',now()+'5 minutes');
+insert into users (name,surname,username,password,email,token,token_expiration) values
+    ('José Ignacio','Sbruzzi','jose','jojo','jose.jose@gmail.com','78',now()+'5 minutes'),
+    ('José Ignacio','Sbruzzi','97452','jojo','jose.jose@gmail.com','79',now()+'5 minutes'),
+    ('Andorid No. 9','Cell','99999','9','nina.niner@gmail.com','99',now()+'5 minutes'),
+    ('Sebastian','Grynberg','gryn','777','sebas@fi.uba.ar','18',now()+'5 minutes');
 
 
 /******************************************

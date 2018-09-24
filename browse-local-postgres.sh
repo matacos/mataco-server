@@ -1,0 +1,1 @@
+sudo su - postgres -c 'psql -h 127.0.0.1 -p 5444  -d postgres'

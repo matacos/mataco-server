@@ -50,10 +50,11 @@ create table professors_roles(
     role text,
     primary key (professor,course)
 );
-insert into users (username,password,email,token,token_expiration) values
-    ('39111222','arar','largerich@gmail.com','2',now()+'5 minutes'),
-    ('12345678','font','fontela@gmail.com','1',now()+'5 minutes'),
-    ('98765432','ayu','ayudante@gmail.com','3',now()+'5 minutes');
+insert into users (name,surname,username,password,email,token,token_expiration) values
+    ('Luis','Argerich','39111222','arar','largerich@gmail.com','2',now()+'5 minutes'),
+    ('Carlos','Fontela','12345678','font','fontela@gmail.com','1',now()+'5 minutes'),
+    ('Santiago','Gandolfo','98765432','ayu','ayudante@gmail.com','3',now()+'5 minutes');
+
 insert into professors(username) values
     ('39111222'),
     ('12345678'),
