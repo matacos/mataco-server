@@ -4,14 +4,14 @@ CURSOS
 *************************************/
 create table classrooms(
     code varchar(100),
-    campus varchar(10),
+    campus varchar(100),
     primary key (code,campus)
 );
 insert into classrooms(code,campus) values
-    ('200','PC'),
-    ('200','LH'),
-    ('400','PC'),
-    ('L4','PC');
+    ('200','Paseo Colón'),
+    ('200','Las Heras'),
+    ('400','Paseo Colón'),
+    ('L4','Paseo Cólón');
 
 create table semesters(
     code varchar(10),
@@ -78,7 +78,7 @@ create table classroom_uses(
     foreign key (course) references courses(id),
 
     classroom_code varchar(100),
-    classroom_campus varchar(10),
+    classroom_campus varchar(100),
     foreign key (classroom_code,classroom_campus) references classrooms(code,campus),
 
     beginning time,
@@ -92,7 +92,7 @@ create table classroom_uses(
 
 insert into classroom_uses
 (course,classroom_code,classroom_campus,beginning,ending,day_of_week,description) values
-    (1,'400','PC','19:00','22:00','lun','teórico-práctica obligatoria'),
-    (1,'400','PC','19:00','22:00','jue','teórico-práctica obligatoria'),
-    (2,'200','PC','16:00','19:00','lun','teórica obligatoria'),
-    (2,'200','LH','16:30','19:30','vie','práctica obligatoria');
+    (1,'400','Paseo Colón','19:00','22:00','lun','Teórico-Práctica Obligatoria'),
+    (1,'400','Paseo Colón','19:00','22:00','jue','Teórico-Práctica Obligatoria'),
+    (2,'200','Paseo Colón','16:00','19:00','lun','Teórica Obligatoria'),
+    (2,'200','Las Heras','16:30','19:30','vie','Práctica Obligatoria');
