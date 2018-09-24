@@ -1,3 +1,11 @@
+create or replace view subjects_with_data(
+    name,
+    code,
+    department_code,
+    department,
+    credits,
+    required_credits,
+    required_subjects) as
 with 
 department_data as (
     select d.code, row_to_json(d) as data
@@ -8,7 +16,6 @@ credits_data as (
         department_code,
         json_agg(json_build_object('amount',amount,'degree',degree)) as data
     from credits
-    where degree = $1
     group by subject_code,department_code
 ),
 common_data as (
@@ -33,7 +40,6 @@ credits_required_data as (
         department_code,
         json_agg(json_build_object('amount',amount,'degree',degree)) as data
     from requires_credits
-    where degree= $1
     group by subject_code,department_code
 ),
 
@@ -60,7 +66,6 @@ subjects_requirements_data as (
     where
         cd.department_code=r.dept_required
     and cd.code=r.code_required
-    and r.degree= $1
     group by r.subject_code, r.department_code
 
 )

@@ -1,5 +1,13 @@
 
-
+create or replace view courses_with_data(
+    department_code,
+    subject_code,
+    course,
+    name,
+    total_slots,
+    professors,
+    time_slots
+) as
 with
 professors_full as (
     select course, role, username, email, name, surname
@@ -42,6 +50,4 @@ from courses as c,
     classroom_data as cd
 where
     c.id=pd.course
-and c.id=cd.course
-and c.department_code=$1
-and c.subject_code=$2;
+and c.id=cd.course;
