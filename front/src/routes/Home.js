@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import '../App.css';
 import Assistant from '../Assistant';
-import logoFIUBA from '../images/logo.png';
+//import logoFIUBA from '../images/logo.png';
 import Panel from '../components/Panel';
 
 class Home extends Component {
@@ -15,23 +15,23 @@ class Home extends Component {
             courses:[],
             subjects: [],
             professorMode: Assistant.isProfessor(),
-            coursesText: "> Mis Cursos"
+            coursesText: Assistant.isProfessor() ? "> Mis Cursos" : "> Mis Materias"
         };
     }
 
     componentDidMount() {
         // TODO para docente: Llamada a proxy: GET /cursos?dado_por=<id de docente>
         // Luego con id de materia hago GET /materias y saco el nombre, codigo y depto
-        this.setState({courses: [{departamento: "75", codigo: "07", nombre: "Algoritmos y Programación III"},
-                                    {departamento: "75", codigo: "44", nombre: "Admin. y Control de Desarrollo de Proy. Informáticos II"},
-                                    {departamento: "75", codigo: "47", nombre: "Taller de Desarrollo de Proyectos II"}]})
+        this.setState({courses: [{department_code: "75", code: "07", name: "Algoritmos y Programación III"},
+                                    {department_code: "75", code: "44", name: "Admin. y Control de Desarrollo de Proy. Informáticos II"},
+                                    {department_code: "75", code: "47", name: "Taller de Desarrollo de Proyectos II"}]})
         
         // DEPTO
-        this.setState({subjects: [{departamento: "75", codigo: "07", nombre: "Algoritmos y Programación III"},
-                                {departamento: "75", codigo: "44", nombre: "Admin. y Control de Desarrollo de Proy. Informáticos II"},
-                                {departamento: "75", codigo: "47", nombre: "Taller de Desarrollo de Proyectos II"},
-                                {departamento: "75", codigo: "40", nombre: "Algoritmos y Programación I"},
-                                {departamento: "75", codigo: "41", nombre: "Algoritmos y Programación II"}]})
+        this.setState({subjects: [{department_code: "75", code: "07", name: "Algoritmos y Programación III"},
+                                {department_code: "75", code: "44", name: "Admin. y Control de Desarrollo de Proy. Informáticos II"},
+                                {department_code: "75", code: "47", name: "Taller de Desarrollo de Proyectos II"},
+                                {department_code: "75", code: "40", name: "Algoritmos y Programación I"},
+                                {department_code: "75", code: "41", name: "Algoritmos y Programación II"}]})
     }
 
     obtainMode() {
@@ -65,11 +65,20 @@ class Home extends Component {
         
     }
 
+    goToCourse(courseId) {
+        this.props.history.push('/cursos/' + courseId);
+    }
+
+    goToSubject(subjectId) {
+        this.props.history.push('/materias/' + subjectId);
+    }
+
     render() {
         if (this.state.professorMode)
-            var listItems = this.state.courses.map((d) => <p key={d.departamento + d.codigo} className="text-primary" style={{paddingLeft: "2em"}}>{d.nombre}</p>);
+            //var listItems = this.state.courses.map((d) => <p key={d.department_code + d.code} className="text-primary" style={{paddingLeft: "2em"}}>{d.name}</p>);
+            var listItems = this.state.courses.map((d) => <button className="text-primary text-left" key={d.department_code + d.code} style={{background: "none", border: "none", paddingLeft: "2em"}} onClick={this.goToCourse.bind(this, d.department_code + d.code)}>{d.name}</button>);
         else
-            var listItems = this.state.subjects.map((d) => <p key={d.departamento + d.codigo} className="text-primary" style={{paddingLeft: "2em"}}>{d.nombre}</p>);
+            var listItems = this.state.subjects.map((d) => <button className="text-primary text-left" key={d.department_code + d.code} style={{background: "none", border: "none", paddingLeft: "2em"}} onClick={this.goToSubject.bind(this, d.department_code + d.code)}>{d.name}</button>);
         return (
         <div>
             <div className="row">

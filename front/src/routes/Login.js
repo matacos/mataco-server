@@ -62,7 +62,7 @@ class Login extends Component {
         <div>
             <div className="row">
             <div className="col-md-3">
-            <img className="col-md-offset-1" src={logoFIUBA} height="150" width="150"/>
+            <img className="col-md-offset-1" src={logoFIUBA} alt="logo" height="150" width="150"/>
             </div>
             <div className="col-md-6">
             <h1 className="App">

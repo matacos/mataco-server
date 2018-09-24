@@ -16,14 +16,12 @@ class SubjectCourses extends Component {
     }
 
     handleSelectedCourses() {
-        if (this.state.selectedCourses) {
-            this.state.coursesText = "> Mis Cursos"
-            this.setState({selectedCourses: false})
-        }
-        else {
-            this.state.coursesText = "v Mis Cursos"
-            this.setState({selectedCourses: true})
-        }
+        if (this.state.selectedCourses) 
+            this.setState({selectedCourses: false, coursesText: "> Mis Cursos"})
+        
+        else 
+            this.setState({selectedCourses: true, coursesText: "v Mis Cursos"})
+        
     }
 
     acceptConditional() {
@@ -40,7 +38,7 @@ class SubjectCourses extends Component {
             <div className="row">
             <div className="panel panel-default col-md-3" style={{margin: "0", padding: "0"}}>
             <div className="panel-heading" style={{width: "auto"}}>
-                <img className="img-responsive center-block" src={logoFIUBA} height="50%" width="50%" style={{marginLeft: "auto", marginRight: "auto", width: "50%", paddingTop: "1em"}}/>
+                <img className="img-responsive center-block" alt="logo" src={logoFIUBA} height="50%" width="50%" style={{marginLeft: "auto", marginRight: "auto", width: "50%", paddingTop: "1em"}}/>
                 <h3 className="panel-title text-center" style={{padding: "1em"}}>Carlos Fontela</h3>
             </div>
 
@@ -79,7 +77,7 @@ class SubjectCourses extends Component {
                 <td>Column content</td>
                 <td>Column content</td>
                 <td>Column content</td>
-                <a href="#" className="btn btn-primary" onClick={this.acceptConditional.bind(this)}>Aceptar</a>
+                <td><a href="#" className="btn btn-primary" onClick={this.acceptConditional.bind(this)}>Aceptar</a></td>
                 </tr>
                 
             </tbody>
@@ -99,8 +97,8 @@ class SubjectCourses extends Component {
             <Modal.Body>
             <form className="form-horizontal">
             <fieldset>
-                <div class="form-group">
-                <label for="select" className="col-lg-2 control-label">Sede</label>
+                <div className="form-group">
+                <label htmlFor="select" className="col-lg-2 control-label">Sede</label>
                 <div className="col-lg-10">
                     <select className="form-control" id="sede">
                     <option>Paseo Colón</option>
@@ -111,7 +109,7 @@ class SubjectCourses extends Component {
                 </div>
 
                 <div className="form-group">
-                <label for="inputAula" className="col-lg-2 control-label">Aula</label>
+                <label htmlFor="inputAula" className="col-lg-2 control-label">Aula</label>
                 <div className="col-lg-10">
                     <input type="text" className="form-control" id="inputAula"/>
                 </div>
@@ -119,7 +117,7 @@ class SubjectCourses extends Component {
             
                 
                 <div className="form-group">
-                <label for="select" className="col-lg-2 control-label">Día</label>
+                <label htmlFor="select" className="col-lg-2 control-label">Día</label>
                 <div className="col-lg-10">
                     <select className="form-control" id="dia">
                     <option>Lunes</option>
@@ -133,21 +131,21 @@ class SubjectCourses extends Component {
                 </div>
 
                 <div className="form-group">
-                <label for="inputInicio" className="col-lg-2 control-label">Horario de inicio</label>
+                <label htmlFor="inputInicio" className="col-lg-2 control-label">Horario de inicio</label>
                 <div className="col-lg-10">
                     <input type="text" className="form-control" id="inputInicio"/>
                 </div>
                 </div>
 
                 <div className="form-group">
-                <label for="inputFin" className="col-lg-2 control-label">Horario de fin</label>
+                <label htmlfor="inputFin" className="col-lg-2 control-label">Horario de fin</label>
                 <div className="col-lg-10">
                     <input type="text" className="form-control" id="inputFin"/>
                 </div>
                 </div>
 
                 <div className="form-group">
-                <label for="tipo" className="col-lg-2 control-label">Tipo</label>
+                <label htmlFor="tipo" className="col-lg-2 control-label">Tipo</label>
                 <div className="col-lg-10">
                     <select className="form-control" id="tipo">
                     <option>Teórica Obligatoria</option>

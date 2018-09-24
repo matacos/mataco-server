@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { BrowserRouter, Route, Switch, Redirect, ha } from 'react-router-dom';
+import { BrowserRouter, Route, Switch, Redirect } from 'react-router-dom';
 import './App.css';
 import Login from "./routes/Login";
 import Home from "./routes/Home";
@@ -15,8 +15,8 @@ class App extends Component {
           <Switch>
             <Route path="/login" component={Login} />
             <Route path="/home" component={Home} />
-            <Route path="/cursos" component={SubjectStudents} />
-            <Route path="/materias" component={SubjectCourses} />
+            <Route path="/cursos/:idCurso" component={SubjectStudents} />
+            <Route path="/materias/:idMateria" component={SubjectCourses} />
             <Redirect from="/" to="/login" exact/>
             <Route component={Error} />
           </Switch>

@@ -1,17 +1,13 @@
 import React, { Component } from 'react';
-import logoFIUBA from '../images/logo.png'
+import logoFIUBA from '../images/logo.png';
 
 class Panel extends Component {
-    constructor(props) {
-        super(props);
-
-    }
 
     render() {
         return (
         <div className="panel panel-default col-md-3" style={{margin: "0", padding: "0"}}>
             <div className="panel-heading" style={{width: "auto"}}>
-                <img className="img-responsive center-block" src={logoFIUBA} height="50%" width="50%" style={{marginLeft: "auto", marginRight: "auto", width: "50%", paddingTop: "1em"}}/>
+                <img className="img-responsive center-block" alt="logo" src={logoFIUBA} height="50%" width="50%" style={{marginLeft: "auto", marginRight: "auto", width: "50%", paddingTop: "1em"}}/>
                 <h3 className="panel-title text-center" style={{padding: "1em"}}>Carlos Fontela</h3>
             </div>
 
