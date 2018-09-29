@@ -96,6 +96,15 @@ describe("Test /inscripciones_cursos",()=>{
             expect(inscription.student.username).to.be.equal("99999")
         }
     })
+    it("test GET filtering by course",async ()=>{
+        const response = await requestWithAuth("jose","jojo","GET","/inscripciones_cursos?curso=1")
+        console.log(response.body)
+        expect(response.statusCode).to.equal(200)
+        expect(response.body).to.be.jsonSchema(correctRequestJsonschema)
+        for(let inscription of response.body.courseInscriptions){
+            expect(inscription.course.course).to.be.equal(1)
+        }
+    })
 
 
 })

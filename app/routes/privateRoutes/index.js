@@ -126,6 +126,8 @@ function mountRoutes(app,db,schemaValidation){
     const inscripcionesCursosQuery={anyOf:[{
         required:["estudiante"]
     },{
+        required:["curso"]
+    },{
         const:{"aceptadas":"true"}
     },{
         const:{"aceptadas":"false"}
@@ -161,11 +163,13 @@ function mountRoutes(app,db,schemaValidation){
         and e.student=s.username
         and e.student like $1
         and cast(e.accepted as text) like $2
+        and cast(c.course as text) like $3
         ${gradedFilter}
         ;`
         const result=await db.query(query,[
             req.query["estudiante"] || "%",
             req.query["aceptadas"] || "%",
+            req.query["curso"] || "%",
         ])
         res.json({"courseInscriptions":result.rows})
         next()
