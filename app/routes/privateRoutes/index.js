@@ -2,6 +2,7 @@ const PromiseRouter = require('express-promise-router')
 const fs=require("fs")
 const subjectsView=fs.readFileSync(__dirname+"/subjectsWithData.sql").toString()
 const coursesView=fs.readFileSync(__dirname+"/coursesWithData.sql").toString()
+const studentsWithDegreesView=fs.readFileSync(__dirname+"/studentsWithDegrees.sql").toString()
 
 function mountRoutes(app,db,schemaValidation){
     
@@ -119,6 +120,31 @@ function mountRoutes(app,db,schemaValidation){
             req.query.profesor || '%'
         ])
         res.json({"courses":result.rows})
+        next()
+    })
+
+    promiseRouter.get("/inscripciones_cursos", async function(req,res,next){
+        await db.query(subjectsView)
+        await db.query(coursesView)
+        await db.query(studentsWithDegreesView)
+        const query=`
+        select 
+            e.creation, 
+            e.accepted, 
+            e.grade, 
+            e.grade_date,
+            row_to_json(c) as course,
+            row_to_json(s) as student
+        from 
+            course_enrollments as e, 
+            courses_with_data as c,
+            students_with_degrees as s
+        where
+            c.course=e.course
+        and e.student=s.username
+        ;`
+        const result=await db.query(query)
+        res.json({"course_inscriptions":result.rows})
         next()
     })
 

@@ -96,3 +96,25 @@ insert into classroom_uses
     (1,'400','Paseo Colón','19:00','22:00','jue','Teórico-Práctica Obligatoria'),
     (2,'200','Paseo Colón','16:00','19:00','lun','Teórica Obligatoria'),
     (2,'200','Las Heras','16:30','19:30','vie','Práctica Obligatoria');
+
+/***************************************************
+INSCRIPCIONES A CURSOS
+****************************************************/
+create table course_enrollments(
+    course serial,
+    foreign key (course) references courses(id),
+
+    student varchar(10),
+    foreign key (student) references students(username),
+
+    creation timestamp,
+    accepted boolean,
+    grade decimal,
+    grade_date date,
+
+    primary key (course,student)
+);
+insert into course_enrollments(course,student,creation,accepted,grade,grade_date) values
+    (1,'99999','2017-06-8','true',9,'2018-01-05'),
+    (2,'99999',now(),'true',-1,'2018-01-05'),
+    (1,'97452',now(),'false',-1,'2018-01-05');
