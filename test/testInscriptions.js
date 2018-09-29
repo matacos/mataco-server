@@ -22,8 +22,8 @@ async function login(username,password){
     return response
 }
 const correctRequestJsonschema={
-    required:["course_inscriptions"],
-    properties:{"course_inscriptions":{items:{
+    required:["courseInscriptions"],
+    properties:{"courseInscriptions":{items:{
         properties:{
             "course":{required:[
                 "department_code",
@@ -46,22 +46,56 @@ const correctRequestJsonschema={
         
     }}}
 }
-describe.only("Test /inscripciones_cursos",()=>{
-    it("test GET",async ()=>{
-        const loginResponse=await login("jose","jojo")
-        const token=loginResponse.token
-        const response=await request({
-            uri:url("/inscripciones_cursos"),
-            method:"GET",
-            headers:{
-                "Authorization":"bearer "+token
-            },
-            simple:false,
-            resolveWithFullResponse:true,
-            json:true
-        })
-        console.log(response.body["course_inscriptions"][0])
-        expect(response.body).to.be.jsonSchema(correctRequestJsonschema)
-        expect(response.statusCode).to.equal(200)
+async function requestWithAuth(username,password,verb,uriPart){
+    const loginResponse=await login(username,password)
+    const token=loginResponse.token
+    const response=await request({
+        uri:url(uriPart),
+        method:verb,
+        headers:{
+            "Authorization":"bearer "+token
+        },
+        simple:false,
+        resolveWithFullResponse:true,
+        json:true
     })
+    return response
+
+}
+describe("Test /inscripciones_cursos",()=>{
+    it("test GET without filter query",async ()=>{
+        const response = await requestWithAuth("jose","jojo","GET","/inscripciones_cursos")
+        expect(response.statusCode).to.equal(400)
+        //expect(response.body).to.be.jsonSchema(correctRequestJsonschema)
+    })
+    it("test GET filtering by con_nota",async ()=>{
+        const response = await requestWithAuth("jose","jojo","GET","/inscripciones_cursos?con_nota=true")
+        console.log(response.body)
+        expect(response.statusCode).to.equal(200)
+        expect(response.body).to.be.jsonSchema(correctRequestJsonschema)
+        for(let inscription of response.body.courseInscriptions){
+            expect(parseFloat(inscription.grade)).to.be.above(0)
+        }
+    })
+    it("test GET filtering by aceptadas",async ()=>{
+        const response = await requestWithAuth("jose","jojo","GET","/inscripciones_cursos?aceptadas=true")
+        console.log(response.body)
+        expect(response.statusCode).to.equal(200)
+        expect(response.body).to.be.jsonSchema(correctRequestJsonschema)
+        
+        for(let inscription of response.body.courseInscriptions){
+            expect(inscription.accepted).to.be.true
+        }
+    })
+    it("test GET filtering by student",async ()=>{
+        const response = await requestWithAuth("jose","jojo","GET","/inscripciones_cursos?estudiante=99999")
+        console.log(response.body)
+        expect(response.statusCode).to.equal(200)
+        expect(response.body).to.be.jsonSchema(correctRequestJsonschema)
+        for(let inscription of response.body.courseInscriptions){
+            expect(inscription.student.username).to.be.equal("99999")
+        }
+    })
+
+
 })

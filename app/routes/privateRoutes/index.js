@@ -123,10 +123,27 @@ function mountRoutes(app,db,schemaValidation){
         next()
     })
 
-    promiseRouter.get("/inscripciones_cursos", async function(req,res,next){
+    const inscripcionesCursosQuery={anyOf:[{
+        required:["estudiante"]
+    },{
+        const:{"aceptadas":"true"}
+    },{
+        const:{"aceptadas":"false"}
+    },{
+        const:{"con_nota":"true"}
+    },{
+        const:{"con_nota":"false"}
+    }]}
+    promiseRouter.get("/inscripciones_cursos", schemaValidation({query:inscripcionesCursosQuery}),async function(req,res,next){
         await db.query(subjectsView)
         await db.query(coursesView)
         await db.query(studentsWithDegreesView)
+        let gradedFilter=""
+        if("con_nota" in req.query){
+            gradedFilter="and e.grade > 0"
+        }else{
+            gradedFilter="and e.grade <= 0"
+        }
         const query=`
         select 
             e.creation, 
@@ -142,9 +159,15 @@ function mountRoutes(app,db,schemaValidation){
         where
             c.course=e.course
         and e.student=s.username
+        and e.student like $1
+        and cast(e.accepted as text) like $2
+        ${gradedFilter}
         ;`
-        const result=await db.query(query)
-        res.json({"course_inscriptions":result.rows})
+        const result=await db.query(query,[
+            req.query["estudiante"] || "%",
+            req.query["aceptadas"] || "%",
+        ])
+        res.json({"courseInscriptions":result.rows})
         next()
     })
 
