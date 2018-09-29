@@ -136,7 +136,7 @@ function mountRoutes(app,db,schemaValidation){
     },{
         const:{"con_nota":"false"}
     }]}
-    promiseRouter.get("/inscripciones_cursos", schemaValidation({query:inscripcionesCursosQuery}),async function(req,res,next){
+    promiseRouter.get(["/inscripciones_cursos","/cursadas"], schemaValidation({query:inscripcionesCursosQuery}),async function(req,res,next){
         await db.query(subjectsView)
         await db.query(coursesView)
         await db.query(studentsWithDegreesView)
