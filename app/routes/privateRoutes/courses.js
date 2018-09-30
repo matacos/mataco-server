@@ -17,6 +17,8 @@ function mountRoutes(app,db,schemaValidation){
         required:["profesor"]
     }]}
     app.get("/cursos",schemaValidation({query:cursosQuery}), async function (req,res,next) {
+        
+
         const viewCreation = await db.query(coursesView)
         const query=`
         with
@@ -58,7 +60,8 @@ function mountRoutes(app,db,schemaValidation){
             cd.name,
             cd.total_slots,
             cd.professors,
-            cd.time_slots
+            cd.time_slots,
+            sc.enroled
         from 
             courses_with_data as cd,
             selected_courses as sc
@@ -67,7 +70,7 @@ function mountRoutes(app,db,schemaValidation){
         ;
         `
         let student = "%"
-        if("students" in req.user.roles){
+        if(req.user.roles.includes("students")){
             student = req.user["username"]
         }
         const department_code = req.query["cod_departamento"]

@@ -105,6 +105,61 @@ describe("Test /cursos",()=>{
         expect(response.body).to.be.jsonSchema(correctCoursesSchema)
         expect(response.statusCode).to.equal(200)
     })
+
+    it.only("97452 is enroled in course 1, and not in course 2",async ()=>{
+        const loginResponse=await login("97452","jojo")
+        const token=loginResponse.token
+        const response=await request({
+            uri:url("/cursos?profesor=39111222"),
+            method:"GET",
+            headers:{
+                "Authorization":"bearer "+token
+            },
+            simple:false,
+            resolveWithFullResponse:true,
+            json:true
+        })
+        expect(response.body).to.be.jsonSchema(correctCoursesSchema)
+        expect(response.body.courses[0].enroled).to.be.true
+        expect(response.statusCode).to.equal(200)
+
+        console.log("$$$")
+        console.log("$$$")
+        console.log("$$$")
+        console.log("$$$")
+        console.log(response.body)
+        console.log("$$$")
+        console.log("$$$")
+        console.log("$$$")
+        console.log("$$$")
+
+
+        
+        const response2=await request({
+            uri:url("/cursos?profesor=12345678"),
+            method:"GET",
+            headers:{
+                "Authorization":"bearer "+token
+            },
+            simple:false,
+            resolveWithFullResponse:true,
+            json:true
+        })
+        console.log("$$$")
+        console.log("$$$")
+        console.log("$$$")
+        console.log("$$$")
+        console.log(response2.body)
+        console.log("$$$")
+        console.log("$$$")
+        console.log("$$$")
+        console.log("$$$")
+        
+        expect(response2.body).to.be.jsonSchema(correctCoursesSchema)
+        expect(response2.body.courses[0].enroled).to.be.false
+        expect(response2.statusCode).to.equal(200)
+        
+    })
     
     it("/cursos only works if you query for a subject",async ()=>{
         const loginResponse=await login("99999","9")
