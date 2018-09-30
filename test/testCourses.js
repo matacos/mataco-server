@@ -105,45 +105,18 @@ const correctCoursesSchema={
 
 describe("Test /cursos",()=>{
     it("happy path (query courses of subject)",async ()=>{
-        const loginResponse=await login("99999","9")
-        const token=loginResponse.token
-        const response=await request({
-            uri:url("/cursos?cod_departamento=75&cod_materia=07"),
-            method:"GET",
-            headers:{
-                "Authorization":"bearer "+token
-            },
-            simple:false,
-            resolveWithFullResponse:true,
-            json:true
-        })
+        const response = await requestWithAuth("99999","9","GET","/cursos?cod_departamento=75&cod_materia=07")
+
+        console.log(response.body)
 
         expect(response.body).to.be.jsonSchema(correctCoursesSchema)
         expect(response.statusCode).to.equal(200)
     })
+
     it("happy path (query courses of professor)",async ()=>{
-        const loginResponse=await login("99999","9")
-        const token=loginResponse.token
-        const response=await request({
-            uri:url("/cursos?profesor=39111222"),
-            method:"GET",
-            headers:{
-                "Authorization":"bearer "+token
-            },
-            simple:false,
-            resolveWithFullResponse:true,
-            json:true
-        })
-        console.log("#")
-        console.log("#")
-        console.log("#")
-        console.log("#")
+        const response = await requestWithAuth("99999","9","GET","/cursos?profesor=39111222")
 
         console.log(response.body)
-        console.log("#")
-        console.log("#")
-
-        console.log("#")
 
         expect(response.body).to.be.jsonSchema(correctCoursesSchema)
         expect(response.statusCode).to.equal(200)
@@ -166,18 +139,8 @@ describe("Test /cursos",()=>{
         expect(response.body.courses[0].enroled).to.be.true
         expect(response.statusCode).to.equal(200)
 
-        console.log("$$$")
-        console.log("$$$")
-        console.log("$$$")
-        console.log("$$$")
         console.log(response.body)
-        console.log("$$$")
-        console.log("$$$")
-        console.log("$$$")
-        console.log("$$$")
 
-
-        
         const response2=await request({
             uri:url("/cursos?profesor=12345678"),
             method:"GET",
@@ -188,15 +151,8 @@ describe("Test /cursos",()=>{
             resolveWithFullResponse:true,
             json:true
         })
-        console.log("$$$")
-        console.log("$$$")
-        console.log("$$$")
-        console.log("$$$")
+
         console.log(response2.body)
-        console.log("$$$")
-        console.log("$$$")
-        console.log("$$$")
-        console.log("$$$")
         
         expect(response2.body).to.be.jsonSchema(correctCoursesSchema)
         expect(response2.body.courses[0].enroled).to.be.false
@@ -205,54 +161,40 @@ describe("Test /cursos",()=>{
     })
     
     it("/cursos only works if you query for a subject",async ()=>{
-        const loginResponse=await login("99999","9")
-        const token=loginResponse.token
-        const response=await request({
-            uri:url("/cursos"),
-            method:"GET",
-            headers:{
-                "Authorization":"bearer "+token
-            },
-            simple:false,
-            resolveWithFullResponse:true,
-            json:true
-        })
+        const response = await requestWithAuth("99999","9","GET","/cursos")
+
         expect(response.statusCode).to.equal(400)
     })
 
-    it("happy path query add courses",async ()=>{
-        const response = await requestWithAuth("39111222","arar","POST","/cursos",{
+    it("happy path query post y delete course",async ()=>{
+        const response1 = await requestWithAuth("99999","9","POST","/cursos",{
             "cod_departamento":"75",
             "cod_materia":"05",
             "nombre":"Seminario I",
             "vacantes_totales":20
         })
-        console.log(response.body)
-        expect(response.statusCode).to.equal(201)
-
-    })
-
-    it("happy path query delete course",async ()=>{
-        const response1 = await requestWithAuth("39111222","arar","POST","/cursos",{
-            "cod_departamento":"75",
-            "cod_materia":"05",
-            "nombre":"Seminario I",
-            "vacantes_totales":20
-        })
+        
         console.log(response1.body)
+
         expect(response1.statusCode).to.equal(201)
 
         const response2 = await requestWithAuth("39111222","arar","GET","/cursos?cod_departamento=75&cod_materia=05")
+
         console.log(response2.body)
+
         expect(response2.statusCode).to.equal(200)
-        expect(response2.body.courses).to.have.lengthOf(0)
+        expect(response2.body.courses).to.have.lengthOf(1)
 
         const response3 = await requestWithAuth("39111222","arar","DELETE","/cursos/3")
+
         console.log(response3.body)
+
         expect(response3.statusCode).to.equal(204)
 
         const response4 = await requestWithAuth("39111222","arar","GET","/cursos?cod_departamento=75&cod_materia=05")
+
         console.log(response4.body)
+
         expect(response4.statusCode).to.equal(200)
         expect(response4.body.courses).to.have.lengthOf(0)
     })

@@ -100,6 +100,7 @@ function mountRoutes(app,db,schemaValidation){
 
     app.post("/cursos",schemaValidation({body:cursosQueryPost}), async function (req,res,next) {
         const viewCreation = await db.query(coursesView)
+
         const cod_departamento = req.body.cod_departamento
         const cod_materia = req.body.cod_materia
         const nombre = req.body.nombre
@@ -109,14 +110,51 @@ function mountRoutes(app,db,schemaValidation){
         insert into courses(department_code,subject_code,semester,name,total_slots) values
         ($1,$2,'1c2018',$3,$4);
         `
-        await db.query(query,  [cod_departamento, cod_materia, nombre,vacantes_totales])
+        await db.query(query,[cod_departamento,cod_materia,nombre,vacantes_totales])
 
         res.status(201).json({"insert":"OK"})
         next()
     })
 
+    const cursosQueryPut={
+        requires:["cod_departamento","cod_materia","name","vacantes_totales"],
+        properties:{
+            "cod_departamento":{type:"string"},
+            "cod_materia":{type:"string"},
+            "nombre":{type:"string"},
+            "vacantes_totales":{type:"number"},
+        }
+    }
+
+    app.put(["/cursos/:id"], schemaValidation({body:cursosQueryPut}),async function(req,res,next){
+        const viewCreation = await db.query(coursesView)
+
+        const cod_departamento = req.body.cod_departamento
+        const cod_materia = req.body.cod_materia
+        const nombre = req.body.nombre
+        const vacantes_totales = req.body.vacantes_totales
+
+        let parts = req.params.id.split("-")
+        let course=parts[0]
+
+        const query=`
+        update courses
+        set cod_departamento = $1
+            cod_materia = $2
+            nombre = $3
+            vacantes_totales = $4
+        where
+            course = $5;
+        `
+        await db.query(query,[
+            cod_departamento,cod_materia,nombre,vacantes_totales,course
+        ].concat(updates_values))
+        res.sendStatus(204)
+    })
+
     app.delete(["/cursos/:id"], async function(req,res,next){
         const viewCreation = await db.query(coursesView)
+
         let parts = req.params.id.split("-")
         let course=parts[0]
         const query=`
