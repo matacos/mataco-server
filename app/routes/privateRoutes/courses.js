@@ -20,20 +20,37 @@ function mountRoutes(app,db,schemaValidation){
         const viewCreation = await db.query(coursesView)
         const query=`
         with
-        selected_courses as (
-            select distinct
-                c.department_code, 
-                c.subject_code,
-                c.id
-            from 
-                courses as c,
-                professors_roles as pr
-            where
-                c.department_code like $1
-            and c.subject_code like $2
-            and c.id=pr.course
-            and pr.professor::text like $3
-        )
+            my_enrolments as (
+                select course from course_enrollments where student like $4
+            ),
+            course_ids as (
+                select id from courses
+            ),
+            enroled as (
+                select id, coalesce(course,0) > 0 as enroled
+                from
+                    course_ids as cids
+                        left outer join my_enrolments as me on (
+                            cids.id = me.course
+                        )
+            ),
+            selected_courses as (
+                select distinct
+                    c.department_code, 
+                    c.subject_code,
+                    c.id,
+                    er.enroled as enroled
+                from 
+                    courses as c,
+                    professors_roles as pr,
+                    enroled as er
+                where
+                    c.department_code like $1
+                and c.subject_code like $2
+                and c.id=pr.course
+                and pr.professor::text like $3
+                and er.id=c.id
+            )
         select
             cd.department_code,
             cd.subject_code,
@@ -49,12 +66,17 @@ function mountRoutes(app,db,schemaValidation){
             cd.course = sc.id
         ;
         `
+        let student = "%"
+        if("students" in req.user.roles){
+            student = req.user["username"]
+        }
         const department_code = req.query["cod_departamento"]
         const subject_code = req.query["cod_materia"]
         const result=await db.query(query,[
             department_code || '%',
             subject_code || '%',
-            req.query.profesor || '%'
+            req.query.profesor || '%',
+            student
         ])
         res.json({"courses":result.rows})
         next()

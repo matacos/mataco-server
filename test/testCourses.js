@@ -62,10 +62,10 @@ const correctCoursesSchema={
 }
 describe("Test /cursos",()=>{
     it("happy path (query courses of subject)",async ()=>{
-        const loginResponse=await login("jose","jojo")
+        const loginResponse=await login("99999","9")
         const token=loginResponse.token
         const response=await request({
-            uri:url("/cursos?cod_departamento=75&cod_materia=06"),
+            uri:url("/cursos?cod_departamento=75&cod_materia=07"),
             method:"GET",
             headers:{
                 "Authorization":"bearer "+token
@@ -74,22 +74,12 @@ describe("Test /cursos",()=>{
             resolveWithFullResponse:true,
             json:true
         })
-        console.log("#")
-        console.log("#")
-        console.log("#")
-        console.log("#")
-
-        console.log(response.body)
-        console.log("#")
-        console.log("#")
-
-        console.log("#")
 
         expect(response.body).to.be.jsonSchema(correctCoursesSchema)
         expect(response.statusCode).to.equal(200)
     })
     it("happy path (query courses of professor)",async ()=>{
-        const loginResponse=await login("jose","jojo")
+        const loginResponse=await login("99999","9")
         const token=loginResponse.token
         const response=await request({
             uri:url("/cursos?profesor=39111222"),
@@ -117,7 +107,7 @@ describe("Test /cursos",()=>{
     })
     
     it("/cursos only works if you query for a subject",async ()=>{
-        const loginResponse=await login("jose","jojo")
+        const loginResponse=await login("99999","9")
         const token=loginResponse.token
         const response=await request({
             uri:url("/cursos"),
