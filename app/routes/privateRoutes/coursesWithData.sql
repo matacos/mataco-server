@@ -6,7 +6,8 @@ create or replace view courses_with_data(
     name,
     total_slots,
     professors,
-    time_slots
+    time_slots,
+    semester
 ) as
 with
 professors_full as (
@@ -36,6 +37,11 @@ classroom_data as (
     )) as data
     from classroom_uses 
     group by course
+),
+slots_data as (
+    select course, count(distinct student) as occupied_slots 
+    from course_enrollments 
+    group by course
 )
 select 
     c.department_code as department_code,
@@ -44,10 +50,16 @@ select
     c.name as name,
     c.total_slots as total_slots,
     pd.data as professors,
-    cd.data as time_slots
+    cd.data as time_slots,
+    c.semester as semester,
+    sd.occupied_slots as occupied_slots,
+    c.total_slots - sd.occupied_slots as free_slots
 from courses as c,
     professors_data as pd,
-    classroom_data as cd
+    classroom_data as cd,
+    slots_data as sd
 where
     c.id=pd.course
-and c.id=cd.course;
+and c.id=cd.course
+and c.id=sd.course
+;
