@@ -227,18 +227,35 @@ describe("Test /cursos",()=>{
             "nombre":"Seminario I",
             "vacantes_totales":20
         })
-        console.log("#")
-        console.log("#")
-        console.log("#")
-        console.log("#")
-
         console.log(response.body)
-        console.log("#")
-        console.log("#")
-        console.log("#")
-        console.log("#")
+        expect(response.statusCode).to.equal(201)
 
-        expect(response.statusCode).to.equal(200)
+    })
+
+    it("happy path query delete course",async ()=>{
+        const response1 = await requestWithAuth("39111222","arar","POST","/cursos",{
+            "cod_departamento":"75",
+            "cod_materia":"05",
+            "nombre":"Seminario I",
+            "vacantes_totales":20
+        })
+        console.log(response1.body)
+        expect(response1.statusCode).to.equal(201)
+
+        const response2 = await requestWithAuth("39111222","arar","GET","//cursos?cod_departamento=75&cod_materia=05")
+        console.log(response2.body)
+        expect(response2.statusCode).to.equal(200)
+        expect(response2.body.courses).to.have.lengthOf(0)
+
+        const response3 = await requestWithAuth("39111222","arar","DELETE","/cursos/3")
+        console.log(response3.body)
+        expect(response3.statusCode).to.equal(204)
+
+        const response4 = await requestWithAuth("39111222","arar","GET","//cursos?cod_departamento=75&cod_materia=05")
+        console.log(response4.body)
+        expect(response4.statusCode).to.equal(200)
+        expect(response4.body.courses).to.have.lengthOf(0)
+        courses
     })
 
 })

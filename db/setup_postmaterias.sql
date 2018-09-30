@@ -75,7 +75,7 @@ insert into days_of_week(day) values
 
 create table classroom_uses(
     course serial,
-    foreign key (course) references courses(id),
+    foreign key (course) references courses(id) on delete cascade,
 
     classroom_code varchar(100),
     classroom_campus varchar(100),
@@ -102,7 +102,7 @@ INSCRIPCIONES A CURSOS
 ****************************************************/
 create table course_enrollments(
     course serial,
-    foreign key (course) references courses(id),
+    foreign key (course) references courses(id) on delete cascade,
 
     student varchar(10),
     foreign key (student) references students(username),

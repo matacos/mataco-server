@@ -109,10 +109,25 @@ function mountRoutes(app,db,schemaValidation){
         insert into courses(department_code,subject_code,semester,name,total_slots) values
         ($1,$2,'1c2018',$3,$4);
         `
-        const result = await db.query(query,  [cod_departamento, cod_materia, nombre,vacantes_totales])
-        res.json({"insert":"OK", "name":nombre})
+        await db.query(query,  [cod_departamento, cod_materia, nombre,vacantes_totales])
+
+        res.status(201).json({"insert":"OK"})
         next()
     })
+
+    app.delete(["/cursos/:id"], async function(req,res,next){
+        let parts = req.params.id.split("-")
+        let course=parts[0]
+        const query=`
+        delete from courses c where
+            c.id = $1;
+        `
+        await db.query(query,[
+            course
+        ])
+        res.sendStatus(204)
+    })
+
 }
 
 
