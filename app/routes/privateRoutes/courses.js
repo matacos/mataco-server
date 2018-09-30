@@ -99,7 +99,7 @@ function mountRoutes(app,db,schemaValidation){
     }
 
     app.post("/cursos",schemaValidation({body:cursosQueryPost}), async function (req,res,next) {
-
+        const viewCreation = await db.query(coursesView)
         const cod_departamento = req.body.cod_departamento
         const cod_materia = req.body.cod_materia
         const nombre = req.body.nombre
@@ -116,6 +116,7 @@ function mountRoutes(app,db,schemaValidation){
     })
 
     app.delete(["/cursos/:id"], async function(req,res,next){
+        const viewCreation = await db.query(coursesView)
         let parts = req.params.id.split("-")
         let course=parts[0]
         const query=`
