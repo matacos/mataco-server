@@ -25,10 +25,13 @@ function mountRoutes(app,db,schemaValidation){
         await db.query(studentsWithDegreesView)
         let gradedFilter=""
         if("con_nota" in req.query){
-            gradedFilter="and e.grade > 0"
-        }else{
-            gradedFilter="and e.grade <= 0"
+            if(req.query["con_nota"]){
+                gradedFilter="and e.grade > 0"
+            }else{
+                gradedFilter="and e.grade <= 0"
+            }   
         }
+        
         const query=`
         select 
             e.creation, 
@@ -126,6 +129,46 @@ function mountRoutes(app,db,schemaValidation){
         await db.query(query,[
             course,student
         ])
+        res.sendStatus(204)
+    })
+
+    let updateBodySchema={anyOf:[
+        {required:["accepted"]},
+        {required:["grade"]},
+        {required:["grade_date"]},
+    ]}
+    app.put(["/inscripciones_cursos/:id","/cursadas/:id"], schemaValidation({body:updateBodySchema}),async function(req,res,next){
+        let parts = req.params.id.split("-")
+        let course=parts[0]
+        let student=parts[1]
+        
+        let updates_texts=[]
+        let updates_values=[]
+        for(let key in req.body){
+            updates_texts.push(
+                " "+key+" = $"+(updates_texts.length+3)+" "
+            )
+            updates_values.push(req.body[key])
+        }
+        
+        let updates_text=updates_texts.join(",")
+        const query=`
+        update course_enrollments set
+            ${updates_text}
+        where
+            course = $1
+        and student= $2;
+        `
+        console.log("&&&&&&&")
+        console.log("&&&&&&&")
+        console.log("&&&&&&&")
+        console.log(query)
+        console.log("&&&&&&&")
+        console.log("&&&&&&&")
+        console.log("&&&&&&&")
+        await db.query(query,[
+            course,student
+        ].concat(updates_values))
         res.sendStatus(204)
     })
 }
