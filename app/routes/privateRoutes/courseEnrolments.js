@@ -68,6 +68,25 @@ function mountRoutes(app,db,schemaValidation){
         }
     }
     app.post(endpoints,schemaValidation({body:courseEnrolmentBody}),async function(req,res,next){
+        const occupied_slots=(await db.query(`
+        select count(distinct student) as occupied
+        from course_enrollments
+        where course=$1
+        group by course;
+        `,[
+            req.body.course
+        ])).rows[0].occupied
+        const total_slots=(await db.query(`
+        select total_slots from courses where id=$1
+        `,[
+            req.body.course
+        ])).rows[0].total_slots
+
+        const regular = (occupied_slots<total_slots)
+
+
+
+
         const query=`
         insert into course_enrollments(
             course,
@@ -80,7 +99,7 @@ function mountRoutes(app,db,schemaValidation){
             $1,
             $2,
             cast( $3 as timestamp),
-            'f',
+            $4,
             -1,
             cast( $3 as date)
         );
@@ -89,6 +108,7 @@ function mountRoutes(app,db,schemaValidation){
             req.body.course,
             req.body.student,
             (new Date()).toISOString(),
+            regular
         ])
 
         const retQuery=`
@@ -159,13 +179,6 @@ function mountRoutes(app,db,schemaValidation){
             course = $1
         and student= $2;
         `
-        console.log("&&&&&&&")
-        console.log("&&&&&&&")
-        console.log("&&&&&&&")
-        console.log(query)
-        console.log("&&&&&&&")
-        console.log("&&&&&&&")
-        console.log("&&&&&&&")
         await db.query(query,[
             course,student
         ].concat(updates_values))
