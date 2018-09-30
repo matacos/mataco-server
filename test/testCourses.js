@@ -106,7 +106,7 @@ describe("Test /cursos",()=>{
         expect(response.statusCode).to.equal(200)
     })
 
-    it.only("97452 is enroled in course 1, and not in course 2",async ()=>{
+    it("97452 is enroled in course 1, and not in course 2",async ()=>{
         const loginResponse=await login("97452","jojo")
         const token=loginResponse.token
         const response=await request({

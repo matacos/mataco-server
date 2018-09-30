@@ -6,7 +6,8 @@ create or replace view courses_with_data(
     name,
     total_slots,
     professors,
-    time_slots
+    time_slots,
+    semester
 ) as
 with
 professors_full as (
@@ -44,7 +45,8 @@ select
     c.name as name,
     c.total_slots as total_slots,
     pd.data as professors,
-    cd.data as time_slots
+    cd.data as time_slots,
+    c.semester as semester
 from courses as c,
     professors_data as pd,
     classroom_data as cd

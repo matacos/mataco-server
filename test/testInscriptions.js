@@ -32,7 +32,8 @@ const correctRequestJsonschema={
                 "name",
                 "total_slots",
                 "professors",
-                "time_slots"
+                "time_slots",
+                "semester"
             ]},
             "student":{required:[
                 "username",
