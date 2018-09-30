@@ -59,7 +59,34 @@ function mountRoutes(app,db,schemaValidation){
         res.json({"courses":result.rows})
         next()
     })
+
+    const cursosQueryPost={
+        requires:["cod_departamento","cod_materia","name","vacantes_totales"],
+        properties:{
+            "cod_departamento":{type:"string"},
+            "cod_materia":{type:"string"},
+            "nombre":{type:"string"},
+            "vacantes_totales":{type:"number"},
+        }
+    }
+
+    app.post("/cursos",schemaValidation({body:cursosQueryPost}), async function (req,res,next) {
+
+        const cod_departamento = req.body.cod_departamento
+        const cod_materia = req.body.cod_materia
+        const nombre = req.body.nombre
+        const vacantes_totales = req.body.vacantes_totales
+
+        const query=`
+        insert into courses(department_code,subject_code,semester,name,total_slots) values
+        ($1,$2,'1c2018',$3,$4);
+        `
+        const result = await db.query(query,  [cod_departamento, cod_materia, nombre,vacantes_totales])
+        res.json({"insert":"OK", "name":nombre})
+        next()
+    })
 }
+
 
 module.exports={
     mountRoutes:mountRoutes

@@ -37,9 +37,9 @@ create table courses(
     total_slots int,
     id serial primary key
 );
-insert into courses(id,department_code,subject_code,semester,name,total_slots) values
-    (1,'75','07','1c2018','Datos Argerich',200),
-    (2,'75','06','1c2018','Algoritmos 3 Fontela',120);
+insert into courses(department_code,subject_code,semester,name,total_slots) values
+    ('75','07','1c2018','Datos Argerich',200),
+    ('75','06','1c2018','Algoritmos 3 Fontela',120);
 create table professors_roles(
     professor varchar(10),
     foreign key (professor) references professors(username) on delete cascade,

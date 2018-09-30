@@ -21,6 +21,45 @@ async function login(username,password){
     })
     return response
 }
+
+async function postCourse(cod_departamento,cod_materia,nombre,vacantes_totales,token){
+    const body={
+        cod_departamento,
+        cod_materia,
+        nombre,
+        vacantes_totales
+    }
+    const response=await request({
+        uri:url("/cursos"),
+        body,
+        method:"POST",
+        headers:{
+            "Authorization":"bearer "+token
+        },
+        simple:false,
+        resolveWithFullResponse:true,
+        json:true
+    })
+    return response
+}
+
+async function requestWithAuth(username,password,verb,uriPart,body){
+    const loginResponse=await login(username,password)
+    const token=loginResponse.token
+    const response=await request({
+        uri:url(uriPart),
+        method:verb,
+        headers:{
+            "Authorization":"bearer "+token
+        },
+        body:body,
+        simple:false,
+        resolveWithFullResponse:true,
+        json:true
+    })
+    return response
+}
+
 const correctCoursesSchema={
     properties:{
         "courses":{
@@ -60,6 +99,7 @@ const correctCoursesSchema={
     },
     required:["courses"]
 }
+
 describe("Test /cursos",()=>{
     it("happy path (query courses of subject)",async ()=>{
         const loginResponse=await login("jose","jojo")
@@ -130,6 +170,27 @@ describe("Test /cursos",()=>{
             json:true
         })
         expect(response.statusCode).to.equal(400)
+    })
+
+    it("happy path query add courses",async ()=>{
+        const response = await requestWithAuth("39111222","arar","POST","/cursos",{
+            "cod_departamento":"75",
+            "cod_materia":"05",
+            "nombre":"Seminario I",
+            "vacantes_totales":20
+        })
+        console.log("#")
+        console.log("#")
+        console.log("#")
+        console.log("#")
+
+        console.log(response.body)
+        console.log("#")
+        console.log("#")
+        console.log("#")
+        console.log("#")
+
+        expect(response.statusCode).to.equal(200)
     })
 
 })
