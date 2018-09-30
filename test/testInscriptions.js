@@ -47,7 +47,7 @@ const correctRequestJsonschema={
         
     }}}
 }
-async function requestWithAuth(username,password,verb,uriPart){
+async function requestWithAuth(username,password,verb,uriPart,body){
     const loginResponse=await login(username,password)
     const token=loginResponse.token
     const response=await request({
@@ -56,6 +56,7 @@ async function requestWithAuth(username,password,verb,uriPart){
         headers:{
             "Authorization":"bearer "+token
         },
+        body:body,
         simple:false,
         resolveWithFullResponse:true,
         json:true
@@ -105,6 +106,23 @@ describe("Test /inscripciones_cursos",()=>{
         for(let inscription of response.body.courseInscriptions){
             expect(inscription.course.course).to.be.equal(1)
         }
+    })
+    it("add 97452 to course 2 (he is enrolled in course 1 already), and then remove him from course 1",async ()=>{
+        let response = await requestWithAuth("97452","jojo","POST","/cursadas/",{
+            "student":"97452",
+            "course":"2"
+        })
+        expect(response.statusCode).to.equal(201)
+        response = await requestWithAuth("97452","jojo","GET","/inscripciones_cursos?estudiante=97452")
+        expect(response.body.courseInscriptions).to.have.lengthOf(2)
+
+
+        response = await requestWithAuth("97452","jojo","DELETE","/cursadas/2-97452")
+        console.log(response.body)
+        expect(response.statusCode).to.equal(204)
+        response = await requestWithAuth("97452","jojo","GET","/inscripciones_cursos?estudiante=97452")
+        console.log(response.body)
+        expect(response.body.courseInscriptions).to.have.lengthOf(1)
     })
 
 
