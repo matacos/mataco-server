@@ -29,7 +29,10 @@ const correctCoursesSchema={
                 type:"object",
                 required:[
                     "department_code",
-                    "subject_code"
+                    "subject_code",
+                    "free_slots",
+                    "occupied_slots",
+                    "total_slots"
                 ],
                 properties:{
                     "name":{type:"string"},

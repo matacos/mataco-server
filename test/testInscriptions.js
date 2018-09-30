@@ -107,7 +107,7 @@ describe("Test /inscripciones_cursos",()=>{
             expect(inscription.course.course).to.be.equal(1)
         }
     })
-    it.only("add 97452 to course 2 (he is enrolled in course 1 already), and then remove him from course 1",async ()=>{
+    it("add 97452 to course 2 (he is enrolled in course 1 already), and then remove him from course 1",async ()=>{
         let response = await requestWithAuth("97452","jojo","POST","/cursadas/",{
             "student":"97452",
             "course":"2"

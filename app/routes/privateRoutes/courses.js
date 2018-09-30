@@ -62,7 +62,9 @@ function mountRoutes(app,db,schemaValidation){
             cd.professors,
             cd.time_slots,
             cd.semester,
-            sc.enroled
+            sc.enroled,
+            cd.occupied_slots,
+            cd.free_slots
         from 
             courses_with_data as cd,
             selected_courses as sc
