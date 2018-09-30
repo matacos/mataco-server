@@ -78,7 +78,7 @@ function mountRoutes(app,db,schemaValidation){
         }
         const department_code = req.query["cod_departamento"]
         const subject_code = req.query["cod_materia"]
-        const result=await db.query(query,[
+        const result = await db.query(query,[
             department_code || '%',
             subject_code || '%',
             req.query.profesor || '%',
@@ -107,12 +107,12 @@ function mountRoutes(app,db,schemaValidation){
         const vacantes_totales = req.body.vacantes_totales
 
         const query=`
-        insert into courses(department_code,subject_code,semester,name,total_slots) values
+        insert into courses values
         ($1,$2,'1c2018',$3,$4);
         `
-        await db.query(query,[cod_departamento,cod_materia,nombre,vacantes_totales])
+        const result = await db.query(query,[cod_departamento,cod_materia,nombre,vacantes_totales])
 
-        res.status(201).json({"insert":"OK"})
+        res.status(201).json({"insert":"OK", "result":result.rows})
         next()
     })
 
@@ -148,7 +148,7 @@ function mountRoutes(app,db,schemaValidation){
         `
         await db.query(query,[
             cod_departamento,cod_materia,nombre,vacantes_totales,course
-        ].concat(updates_values))
+        ])
         res.sendStatus(204)
     })
 
@@ -161,9 +161,7 @@ function mountRoutes(app,db,schemaValidation){
         delete from courses c where
             c.id = $1;
         `
-        await db.query(query,[
-            course
-        ])
+        await db.query(query,[course])
         res.sendStatus(204)
     })
 

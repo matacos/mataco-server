@@ -169,31 +169,39 @@ describe("Test /cursos",()=>{
     it("happy path query post y delete course",async ()=>{
         const response1 = await requestWithAuth("99999","9","POST","/cursos",{
             "cod_departamento":"75",
-            "cod_materia":"05",
+            "cod_materia":"06",
             "nombre":"Seminario I",
             "vacantes_totales":20
         })
-        
+
+        console.log("Here 1 \n")
         console.log(response1.body)
+        console.log("Here 2 \n")
 
         expect(response1.statusCode).to.equal(201)
 
-        const response2 = await requestWithAuth("39111222","arar","GET","/cursos?cod_departamento=75&cod_materia=05")
+        const response2 = await requestWithAuth("99999","9","GET","/cursos?cod_departamento=75&cod_materia=06")
 
+        console.log("Here 3 \n")
         console.log(response2.body)
+        console.log("Here 4 \n")
 
         expect(response2.statusCode).to.equal(200)
-        expect(response2.body.courses).to.have.lengthOf(1)
+        expect(response2.body.courses).to.have.lengthOf(2)
 
-        const response3 = await requestWithAuth("39111222","arar","DELETE","/cursos/3")
+         const response3 = await requestWithAuth("99999","9","DELETE","/cursos/2")
 
-        console.log(response3.body)
+         console.log("Here 5 \n")
+         console.log(response3.body)
+         console.log("Here 6 \n")
 
         expect(response3.statusCode).to.equal(204)
 
-        const response4 = await requestWithAuth("39111222","arar","GET","/cursos?cod_departamento=75&cod_materia=05")
+        const response4 = await requestWithAuth("99999","9","GET","/cursos?cod_departamento=75&cod_materia=06")
 
+        console.log("Here 7 \n")
         console.log(response4.body)
+        console.log("Here 8 \n")
 
         expect(response4.statusCode).to.equal(200)
         expect(response4.body.courses).to.have.lengthOf(0)
