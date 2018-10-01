@@ -45,11 +45,6 @@ create table administrators(
     foreign key (username) references users(username)
 );
 
-create table department_administrators(
-    username varchar(10),
-    primary key (username),
-    foreign key (username) references users(username)
-);
 
 create table professors(
     username varchar(10),
@@ -59,8 +54,6 @@ create table professors(
 
 insert into students (username) values ('jose'),('97452'),('99999');
 insert into professors (username) values ('gryn'), ('39287287');
-insert into department_administrators (username) values ('gryn'), ('39287287');
-
 
 /*********************************************
 MATERIAS

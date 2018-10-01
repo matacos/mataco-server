@@ -120,3 +120,21 @@ insert into course_enrollments(course,student,creation,accepted,grade,grade_date
     (1,'99999','2017-06-8','true',9,'2018-01-05'),
     (2,'99999',now(),'true',-1,'2018-01-05'),
     (1,'97452',now(),'false',-1,'2018-01-05');
+
+
+
+
+
+/***************************************
+ADMINISTRADORES DE DEPARTAMENTO
+*********************************************/
+
+
+create table department_administrators(
+    department_name text,
+
+    username varchar(10),
+    primary key (username),
+    foreign key (username) references users(username)
+);
+insert into department_administrators (username,department_name) values ('gryn','Matemática'), ('39287287','Matemática'),('12345678','Computación');
