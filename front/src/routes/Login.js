@@ -2,7 +2,8 @@ import React, { Component } from 'react';
 import '../App.css';
 import Proxy from '../Proxy';
 import Assistant from '../Assistant';
-import logoFIUBA from '../images/logo.png'
+import logoFIUBA from '../images/logo.png';
+import {Redirect} from 'react-router-dom';
 
 class Login extends Component {
     constructor(props) {
@@ -27,6 +28,7 @@ class Login extends Component {
         Assistant.setField("username", result.user.username);
         Assistant.setField("email", result.user.email);
         Assistant.setField("roles", result.user.roles.join(","));
+        Assistant.isProfessor() ? Assistant.setField("mode", "professor") : Assistant.setField("mode", "department_admin");
     }
 
     processInput() {
@@ -43,9 +45,10 @@ class Login extends Component {
             Proxy.login("gryn", "777") // CAMBIAR POR DNI Y PASSWORD
             .then(
                 (result) => {
-                    console.log(result)
-                    this.saveData(result)
-                    this.props.history.push('/home')
+                    console.log(result);
+                    this.saveData(result);
+                    //this.props.history.push('/home');
+                    window.location.reload()
                 },
                 (error) => {
                     console.log(error)
@@ -81,7 +84,7 @@ class Login extends Component {
                         </div> </div>}
                     <div className="form-group col-md-4 col-md-offset-4">
                     <label className="text-primary col-md-2 control-label" style={{paddingTop: "1em"}}>DNI</label>
-                    <input type="text" className="form-control"  value={this.state.dni} onChange={ e => this.setState({ dni : e.target.value }) }/>
+                    <input type="text" className="form-control" value={this.state.dni} placeholder="Ejemplo: 12654773" onChange={ e => this.setState({ dni : e.target.value }) }/>
                     {this.state.dniError && 
                         <div className="alert alert-dismissible alert-danger " >
                             <button type="button" className="close" data-dismiss="alert" onClick={ e => this.setState({ dniError : false }) }>&times;</button>
@@ -99,7 +102,7 @@ class Login extends Component {
                     </div>
                     <div className="form-group">
                     <div className="col-md-4 col-md-offset-4" style={{paddingTop: "1em"}}>
-                        <button type="button" className="btn btn-primary" onClick={this.processInput.bind(this)}>Ingresar</button>
+                        <button type="button" className="btn btn-primary center-block" onClick={this.processInput.bind(this)}>Ingresar</button>
                     </div>
                     </div>
                     
