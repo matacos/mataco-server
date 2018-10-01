@@ -300,12 +300,70 @@ describe("Test /cursos",()=>{
             "rol":"Ayudante de cátedra"
             })
     
-            console.log("Here 17 \n")
-            console.log(response1.body)
-            console.log("Here 18 \n")
+        console.log("Here 17 \n")
+        console.log(response1.body)
+        console.log("Here 18 \n")
         
-            expect(response1.statusCode).to.equal(201)
+        expect(response1.statusCode).to.equal(201)
         
+        const response2 = await requestWithAuth("99999","9","GET","/cursos?profesor=12345678")
+
+        console.log(response2.body)
+    
+        expect(response2.body).to.be.jsonSchema(correctCoursesSchema)
+        expect(response2.body.courses).to.have.lengthOf(2)
+        expect(response2.statusCode).to.equal(200)
+
+        })
+
+    it("happy path query delete de profesor a curso",async ()=>{
+
+        const responseInit = await requestWithAuth("99999","9","GET","/docentes")
+
+        console.log("Here 15 \n")
+        console.log(responseInit.body)
+        console.log("Here 16 \n")
+    
+        expect(responseInit.body.professors).to.have.lengthOf(4)
+        expect(responseInit.statusCode).to.equal(200)
+
+
+        const response1 = await requestWithAuth("99999","9","POST","/cursos/id/docentes",{
+            "username":"39111222",
+            "id":2,
+            "rol":"Ayudante de cátedra"
+            })
+    
+        console.log("Here 17 \n")
+        console.log(response1.body)
+        console.log("Here 18 \n")
+        
+        expect(response1.statusCode).to.equal(201)
+        
+        const response2 = await requestWithAuth("99999","9","GET","/cursos?profesor=39111222")
+
+        console.log(response2.body)
+    
+        expect(response2.body).to.be.jsonSchema(correctCoursesSchema)
+        expect(response2.body.courses).to.have.lengthOf(2)
+        expect(response2.statusCode).to.equal(200)
+                
+            const response3 = await requestWithAuth("99999","9","DELETE","/cursos/id/docentes/2-39111222")
+
+            console.log("Here 5 \n")
+            console.log(response3.body)
+            console.log("Here 6 \n")
+   
+           expect(response3.statusCode).to.equal(204)
+   
+           const response4 = await requestWithAuth("99999","9","GET","/cursos?profesor=39111222")
+    
+           console.log(response4.body)
+       
+           expect(response4.body).to.be.jsonSchema(correctCoursesSchema)
+           expect(response4.body.courses).to.have.lengthOf(1)
+           expect(response4.statusCode).to.equal(200)
+            
         })
 
 })

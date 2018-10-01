@@ -283,6 +283,21 @@ function mountRoutes(app,db,schemaValidation){
     })
 
 
+    app.delete(["/cursos/id/docentes/:id"], async function(req,res,next){
+        let parts = req.params.id.split("-")
+        let course=parts[0]
+        let professor=parts[1]
+        const query=`
+        delete from professors_roles where
+            course = $1
+        and professor= $2;
+        `
+        await db.query(query,[
+            course,professor
+        ])
+        res.sendStatus(204)
+    })
+
 }
 
 module.exports={
