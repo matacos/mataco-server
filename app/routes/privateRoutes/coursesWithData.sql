@@ -2,6 +2,7 @@
 create or replace view courses_with_data(
     department_code,
     subject_code,
+    subject_name,
     course,
     name,
     total_slots,
@@ -65,6 +66,7 @@ slots_data as (
 select 
     c.department_code as department_code,
     c.subject_code as subject_code,
+    s.name as subject_name,
     c.id as course,
     c.name as name,
     c.total_slots as total_slots,
@@ -76,9 +78,12 @@ select
 from courses as c,
     professors_data as pd,
     classroom_data as cd,
-    slots_data as sd
+    slots_data as sd,
+    subjects as s
 where
     c.id=pd.course
 and c.id=cd.course
 and c.id=sd.course
+and s.subject_code = c.subject_code
+and s.department_code = c.department_code
 ;

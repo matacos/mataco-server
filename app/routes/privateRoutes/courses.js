@@ -58,6 +58,7 @@ function mountRoutes(app,db,schemaValidation){
         select
             cd.department_code,
             cd.subject_code,
+            cd.subject_name,
             cd.course,
             cd.name,
             cd.total_slots,
