@@ -90,7 +90,7 @@ create table degree_enrollments (
     foreign key (student) references students(username)
 );
 insert into degree_enrollments( degree, student) values 
-    ('1','jose'),
+    ('10','jose'),
     ('1','97452'),
     ('1','99999'),
     ('2','99999'),
