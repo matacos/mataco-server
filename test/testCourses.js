@@ -60,6 +60,21 @@ async function requestWithAuth(username,password,verb,uriPart,body){
     return response
 }
 
+const correctProfessorSchema={
+    properties:{
+        "professor":{
+            type:"object",
+            required:["username", "name", "surname"],
+            properties:{
+                "username":{type:"string"},
+                "name":{type:"string"},
+                "surname":{type:"string"}
+            }
+        }
+    },
+    required:["professor"]
+}
+
 const correctCoursesSchema={
     properties:{
         "courses":{
@@ -240,4 +255,32 @@ describe("Test /cursos",()=>{
         expect(response4.body.courses).to.have.lengthOf(0)
     })
     */ 
+
+   it("happy path get docente",async ()=>{
+
+    const responseInit = await requestWithAuth("99999","9","GET","/docente?username=12345678")
+
+    console.log("Here 13 \n")
+    console.log(responseInit.body)
+    console.log("Here 14 \n")
+
+    expect(responseInit.body).to.be.jsonSchema(correctProfessorSchema)
+    expect(responseInit.statusCode).to.equal(200)
+
+})
+
+it("happy path get docentes",async ()=>{
+
+    const responseInit = await requestWithAuth("99999","9","GET","/docentes")
+
+    console.log("Here 13 \n")
+    console.log(responseInit.body)
+    console.log("Here 14 \n")
+
+    expect(responseInit.body.professors).to.have.lengthOf(4)
+    expect(responseInit.statusCode).to.equal(200)
+
+})
+
+
 })

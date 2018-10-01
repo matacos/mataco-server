@@ -194,8 +194,46 @@ function mountRoutes(app,db,schemaValidation){
         res.sendStatus(204)
     })
 
-}
 
+    const docenteQueryGet={
+        properties:{
+            "username":{type:"string"}
+        },
+        required:["username"]
+    }
+    app.get("/docente",schemaValidation({query:docenteQueryGet}), async function (req,res,next) {
+        
+        const query=`
+        select u.username, u.name, u.surname
+        from professors as p, users as u
+        where p.username = u.username
+        and p.username = $1
+        ;
+        `
+        const result = await db.query(query,[req.query["username"]])
+        res.json({"professor":result.rows[0]})
+        next()
+    })
+
+    const docentesQueryGet={
+        properties:{
+        },
+        required:[]
+    }
+    app.get("/docentes",schemaValidation({query:docentesQueryGet}), async function (req,res,next) {
+            
+        const query=`
+        select u.username, u.name, u.surname
+        from professors as p, users as u
+        where p.username = u.username
+        ;
+        `
+        const result = await db.query(query)
+        res.json({"professors":result.rows})
+        next()
+    })
+
+}
 
 module.exports={
     mountRoutes:mountRoutes
