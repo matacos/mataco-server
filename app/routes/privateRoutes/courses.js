@@ -117,27 +117,6 @@ function mountRoutes(app,db,schemaValidation){
         `
         const result = await db.query(query,[cod_departamento,cod_materia,nombre,vacantes_totales])
         const result_waiter=await db.query("select * from courses;")
-
-        console.log("$$$$$")
-        console.log("$$$$$")
-        console.log("$$$$$")
-        console.log("$$$$$")
-        console.log(result)
-        console.log("$$$$$")
-        console.log("$$$$$")
-        console.log("$$$$$")
-        console.log("$$$$$")
-        console.log(result_waiter)
-        console.log("$$$$$")
-        console.log("$$$$$")
-        console.log("$$$$$")
-        console.log("$$$$$")
-        console.log("$$$$$")
-        console.log("$$$$$")
-        console.log(await db.query("commit;"))
-        console.log("$$$$$")
-        console.log("$$$$$")
-        console.log("$$$$$")
         
 
         res.status(201).json({"insert":"OK", "result":result.rows})
@@ -230,6 +209,74 @@ function mountRoutes(app,db,schemaValidation){
         `
         const result = await db.query(query)
         res.json({"professors":result.rows})
+        next()
+    })
+
+    const hourBodySchema={
+        required:[
+            "classroomCode",
+            "classroomCampus",
+            "beginningHour",
+            "beginningMinutes",
+            "endingHour",
+            "endingMinutes",
+            "dayOfWeek"
+        ],
+        properties:{
+            "beginningHour":{type:"number"},
+            "beginningMinutes":{type:"number"},
+            "endingHour":{type:"number"},
+            "endingMinutes":{type:"number"},
+            "dayOfWeek":{enum:["lun","mar","mie","jue","vie","sab"]}
+        }
+    }
+
+    app.post("/cursos/:id/horarios",schemaValidation({body:hourBodySchema}),async function (req,res,next){
+        const query=`
+        insert into classroom_uses(
+            course,
+
+            classroom_code,
+            classroom_campus,
+
+            beginning,
+            ending,
+
+            day_of_week
+        ) values (
+            $1,
+
+            $2,
+            $3,
+
+            $4,
+            $5,
+
+            $6
+        );
+        `
+        let {
+            classroomCode,
+            classroomCampus,
+            beginningHour,
+            beginningMinutes,
+            endingHour,
+            endingMinutes,
+            dayOfWeek
+        } = req.body
+        data =[
+            req.params.id,
+
+            classroomCode,
+            classroomCampus,
+
+            `${beginningHour}:${beginningMinutes}`,
+            `${endingHour}:${endingMinutes}`,
+
+            dayOfWeek
+        ]
+        await db.query(query,data)
+        res.sendStatus(200)
         next()
     })
 
