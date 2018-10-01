@@ -18,12 +18,13 @@ function mountRoutes(app,db,schemaValidation){
     }]}
     app.get("/cursos",schemaValidation({query:cursosQuery}), async function (req,res,next) {
         
+        let filterProfessors= ("profesor" in req.query)
 
         const viewCreation = await db.query(coursesView)
         const query=`
         with
             my_enrolments as (
-                select course from course_enrollments where student like $4
+                select course from course_enrollments where student like $3
             ),
             course_ids as (
                 select id from courses
@@ -44,13 +45,14 @@ function mountRoutes(app,db,schemaValidation){
                     er.enroled as enroled
                 from 
                     courses as c,
-                    professors_roles as pr,
+                    ${filterProfessors?"professors_roles as pr,":""}
+                    
                     enroled as er
                 where
                     c.department_code like $1
                 and c.subject_code like $2
-                and c.id=pr.course
-                and pr.professor::text like $3
+                ${filterProfessors?"and c.id=pr.course":""}
+                ${filterProfessors?"and pr.professor::text like $4":""}
                 and er.id=c.id
             )
         select
@@ -78,12 +80,15 @@ function mountRoutes(app,db,schemaValidation){
         }
         const department_code = req.query["cod_departamento"]
         const subject_code = req.query["cod_materia"]
-        const result = await db.query(query,[
+        const queryValues=[
             department_code || '%',
             subject_code || '%',
-            req.query.profesor || '%',
-            student
-        ])
+            student,
+        ]
+        if(filterProfessors){
+            queryValues.push(req.query.profesor || '%')
+        }
+        const result = await db.query(query,queryValues)
         res.json({"courses":result.rows})
         next()
     })
@@ -111,6 +116,29 @@ function mountRoutes(app,db,schemaValidation){
         ($1,$2,'1c2018',$3,$4);
         `
         const result = await db.query(query,[cod_departamento,cod_materia,nombre,vacantes_totales])
+        const result_waiter=await db.query("select * from courses;")
+
+        console.log("$$$$$")
+        console.log("$$$$$")
+        console.log("$$$$$")
+        console.log("$$$$$")
+        console.log(result)
+        console.log("$$$$$")
+        console.log("$$$$$")
+        console.log("$$$$$")
+        console.log("$$$$$")
+        console.log(result_waiter)
+        console.log("$$$$$")
+        console.log("$$$$$")
+        console.log("$$$$$")
+        console.log("$$$$$")
+        console.log("$$$$$")
+        console.log("$$$$$")
+        console.log(await db.query("commit;"))
+        console.log("$$$$$")
+        console.log("$$$$$")
+        console.log("$$$$$")
+        
 
         res.status(201).json({"insert":"OK", "result":result.rows})
         next()
@@ -149,6 +177,7 @@ function mountRoutes(app,db,schemaValidation){
         const result = await db.query(query,[
             cod_departamento,cod_materia,nombre,vacantes_totales,course
         ])
+        const result_waiter=await db.query("select * from courses;")
         res.sendStatus(204)
     })
 
@@ -161,6 +190,7 @@ function mountRoutes(app,db,schemaValidation){
             c.id = $1;
         `
         const result = await db.query(query,[course])
+        const result_waiter=await db.query("select * from courses;")
         res.sendStatus(204)
     })
 

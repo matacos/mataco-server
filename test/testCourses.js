@@ -166,8 +166,19 @@ describe("Test /cursos",()=>{
         expect(response.statusCode).to.equal(400)
     })
 
-    /*
+    
     it("happy path query post y delete course",async ()=>{
+
+        const responseInit = await requestWithAuth("99999","9","GET","/cursos?cod_departamento=75&cod_materia=06")
+
+        console.log("Here -1 \n")
+        console.log(responseInit.body)
+        console.log("Here 0 \n")
+
+        expect(responseInit.statusCode).to.equal(200)
+        expect(responseInit.body.courses).to.have.lengthOf(1)
+
+
         const response1 = await requestWithAuth("99999","9","POST","/cursos",{
             "cod_departamento":"75",
             "cod_materia":"06",
@@ -189,7 +200,6 @@ describe("Test /cursos",()=>{
 
         expect(response2.statusCode).to.equal(200)
         expect(response2.body.courses).to.have.lengthOf(2)
-
         
          const response3 = await requestWithAuth("99999","9","DELETE","/cursos/3")
 
@@ -206,11 +216,10 @@ describe("Test /cursos",()=>{
         console.log("Here 8 \n")
 
         expect(response4.statusCode).to.equal(200)
-        expect(response4.body.courses).to.have.lengthOf(1)
-        
+        expect(response4.body.courses).to.have.lengthOf(1)     
     })
      
-
+/*
     it("happy path delete",async ()=>{
         
          const response3 = await requestWithAuth("99999","9","DELETE","/cursos/2")
