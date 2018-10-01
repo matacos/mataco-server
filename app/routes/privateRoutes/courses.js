@@ -299,19 +299,14 @@ function mountRoutes(app,db,schemaValidation){
     })
 
     const cursosAddProfessorQueryPost={
-        requires:["cod_departamento","cod_materia","name","vacantes_totales"],
-        properties:{
-            "username":{type:"string"},
-            "id":{type:"number"},
-            "rol":{type:"string"},
-        }
+        requires:["username","rol"]
     }
 
-    app.post("/cursos/id/docentes",schemaValidation({body:cursosAddProfessorQueryPost}), async function (req,res,next) {
+    app.post("/cursos/:id/docentes",schemaValidation({body:cursosAddProfessorQueryPost}), async function (req,res,next) {
         const viewCreation = await db.query(coursesView)
 
         const username = req.body.username
-        const id = req.body.id
+        const id = req.params.id
         const rol = req.body.rol
 
         const query=`
@@ -320,27 +315,6 @@ function mountRoutes(app,db,schemaValidation){
         `
         const result = await db.query(query,[username,id,rol])
         const result_waiter=await db.query("select * from professors_roles;")
-
-        console.log("$$$$$")
-        console.log("$$$$$")
-        console.log("$$$$$")
-        console.log("$$$$$")
-        console.log(result)
-        console.log("$$$$$")
-        console.log("$$$$$")
-        console.log("$$$$$")
-        console.log("$$$$$")
-        console.log(result_waiter)
-        console.log("$$$$$")
-        console.log("$$$$$")
-        console.log("$$$$$")
-        console.log("$$$$$")
-        console.log("$$$$$")
-        console.log("$$$$$")
-        console.log(await db.query("commit;"))
-        console.log("$$$$$")
-        console.log("$$$$$")
-        console.log("$$$$$")
         
 
         res.status(201).json({"insert":"OK", "result":result.rows})
@@ -348,10 +322,9 @@ function mountRoutes(app,db,schemaValidation){
     })
 
 
-    app.delete(["/cursos/id/docentes/:id"], async function(req,res,next){
-        let parts = req.params.id.split("-")
-        let course=parts[0]
-        let professor=parts[1]
+    app.delete(["/cursos/:id_course/docentes/:id_docente"], async function(req,res,next){
+        let course=req.params.id_course
+        let professor=req.params.id_docente
         const query=`
         delete from professors_roles where
             course = $1

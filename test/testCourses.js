@@ -337,9 +337,8 @@ describe("Test /cursos",()=>{
         expect(responseInit.statusCode).to.equal(200)
 
 
-        const response1 = await requestWithAuth("99999","9","POST","/cursos/id/docentes",{
+        const response1 = await requestWithAuth("99999","9","POST","/cursos/1/docentes",{
             "username":"12345678",
-            "id":1,
             "rol":"Ayudante de cátedra"
             })
     
@@ -371,9 +370,8 @@ describe("Test /cursos",()=>{
         expect(responseInit.statusCode).to.equal(200)
 
 
-        const response1 = await requestWithAuth("99999","9","POST","/cursos/id/docentes",{
+        const response1 = await requestWithAuth("99999","9","POST","/cursos/2/docentes",{
             "username":"39111222",
-            "id":2,
             "rol":"Ayudante de cátedra"
             })
     
@@ -391,7 +389,7 @@ describe("Test /cursos",()=>{
         expect(response2.body.courses).to.have.lengthOf(2)
         expect(response2.statusCode).to.equal(200)
                 
-            const response3 = await requestWithAuth("99999","9","DELETE","/cursos/id/docentes/2-39111222")
+            const response3 = await requestWithAuth("99999","9","DELETE","/cursos/2/docentes/39111222")
 
             console.log("Here 5 \n")
             console.log(response3.body)
