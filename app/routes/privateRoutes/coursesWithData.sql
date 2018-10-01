@@ -84,6 +84,6 @@ where
     c.id=pd.course
 and c.id=cd.course
 and c.id=sd.course
-and s.subject_code = c.subject_code
+and s.code = c.subject_code
 and s.department_code = c.department_code
 ;
