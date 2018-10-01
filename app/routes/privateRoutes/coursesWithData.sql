@@ -36,6 +36,7 @@ professors_data as (
 ),
 some_classroom_data as (
     select course, json_agg(json_build_object(
+        'id',id,
         'classroom_code',classroom_code,
         'classroom_campus',classroom_campus,
         'beginning',beginning,

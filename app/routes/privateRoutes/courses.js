@@ -212,6 +212,15 @@ function mountRoutes(app,db,schemaValidation){
         next()
     })
 
+
+    app.delete("/cursos/:id_curso/horarios/:id_horario",async function(req,res,next){
+        let query = `
+        delete from classroom_uses
+        where id=$1;
+        `
+        await db.query(query,[req.params.id_horario])
+        res.sendStatus(204)
+    })
     const hourBodySchema={
         required:[
             "classroomCode",
@@ -220,14 +229,16 @@ function mountRoutes(app,db,schemaValidation){
             "beginningMinutes",
             "endingHour",
             "endingMinutes",
-            "dayOfWeek"
+            "dayOfWeek",
+            "description"
         ],
         properties:{
             "beginningHour":{type:"number"},
             "beginningMinutes":{type:"number"},
             "endingHour":{type:"number"},
             "endingMinutes":{type:"number"},
-            "dayOfWeek":{enum:["lun","mar","mie","jue","vie","sab"]}
+            "dayOfWeek":{enum:["lun","mar","mie","jue","vie","sab"]},
+            "description":{type:"string"}
         }
     }
 
@@ -242,7 +253,9 @@ function mountRoutes(app,db,schemaValidation){
             beginning,
             ending,
 
-            day_of_week
+            day_of_week,
+            
+            description
         ) values (
             $1,
 
@@ -252,7 +265,9 @@ function mountRoutes(app,db,schemaValidation){
             $4,
             $5,
 
-            $6
+            $6,
+
+            $7
         );
         `
         let {
@@ -262,7 +277,8 @@ function mountRoutes(app,db,schemaValidation){
             beginningMinutes,
             endingHour,
             endingMinutes,
-            dayOfWeek
+            dayOfWeek,
+            description
         } = req.body
         data =[
             req.params.id,
@@ -273,10 +289,12 @@ function mountRoutes(app,db,schemaValidation){
             `${beginningHour}:${beginningMinutes}`,
             `${endingHour}:${endingMinutes}`,
 
-            dayOfWeek
+            dayOfWeek,
+
+            description
         ]
         await db.query(query,data)
-        res.sendStatus(200)
+        res.sendStatus(201)
         next()
     })
 

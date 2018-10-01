@@ -233,6 +233,49 @@ describe("Test /cursos",()=>{
         expect(response4.statusCode).to.equal(200)
         expect(response4.body.courses).to.have.lengthOf(1)     
     })
+
+
+    it("Adding hours to an empty course and removing them",async ()=>{
+
+        await requestWithAuth("99999","9","POST","/cursos",{
+            "cod_departamento":"75",
+            "cod_materia":"06",
+            "nombre":"Cátedra Peronista",
+            "vacantes_totales":67
+        })
+
+        const response2=await requestWithAuth("99999","9","GET","/cursos?cod_departamento=75&cod_materia=06")
+        let course=response2.body.courses.filter((x)=>x.name.includes("Peronista"))[0]
+        const courseId=course.course
+        const postResponse = await requestWithAuth("99999","9","POST",`/cursos/${courseId}/horarios`,{
+            classroomCode:'200',
+            classroomCampus:'Paseo Colón',
+            beginningHour:18,
+            beginningMinutes:00,
+            endingHour:22,
+            endingMinutes:15,
+            dayOfWeek:"lun",
+            description:"yeah"
+        })
+        expect(postResponse.statusCode).to.equal(201)
+
+        const response3=await requestWithAuth("99999","9","GET","/cursos?cod_departamento=75&cod_materia=06")
+        let slot =response3.body.courses.filter((x)=>x.name.includes("Peronista"))[0].time_slots[0]
+        console.log(slot)
+        expect(slot.description).to.equal("yeah")
+        expect(slot.day_of_week).to.equal("lun")
+
+        const response4=await requestWithAuth("99999","9","DELETE",`/cursos/${courseId}/horarios/${slot.id}`)
+
+        expect(response4.statusCode).to.equal(204)
+
+        const response5=await requestWithAuth("99999","9","GET","/cursos?cod_departamento=75&cod_materia=06")
+        let courseAgain =response5.body.courses.filter((x)=>x.name.includes("Peronista"))[0]
+
+        expect(courseAgain.time_slots).to.be.lengthOf(0)
+
+        await requestWithAuth("99999","9","DELETE",`/cursos/${courseId}`)
+    })
      
 /*
     it("happy path delete",async ()=>{

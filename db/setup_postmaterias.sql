@@ -74,6 +74,8 @@ insert into days_of_week(day) values
     ('dom'), ('lun'), ('mar'), ('mie'), ('jue'), ('vie'), ('sab');
 
 create table classroom_uses(
+    id serial primary key,
+
     course serial,
     foreign key (course) references courses(id) on delete cascade,
 
