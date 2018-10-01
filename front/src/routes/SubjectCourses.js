@@ -132,25 +132,23 @@ class SubjectCourses extends Component {
 
     addSchedule() {
         var updatedCourses = this.state.courses;
-        var value = parseInt(this.state.slots);
-        if ((value <= 300 && value >= 5) && this.state.id.length > 0) {
-            var newCourse = {
-                department_code: this.state.code.substr(0, 2),
-                subject_code: this.state.code.substr(2, 2),
-                name: this.state.id,
-                total_slots: this.state.slots,
-                professors: [],
-                time_slots: []
+        var newSchedule = {
+            classroom_code: this.state.classroom,
+            classroom_campus: this.state.place.length == 0 ? "Paseo Colón" : this.state.place,
+            day_of_week: this.state.day.length == 0 ? "Lunes" : this.state.day,
+            beginning: this.state.begin,
+            ending: this.state.end,
+            description: this.state.type.length == 0 ? "Teórica Obligatoria" : this.state.type
+        };
+        for (var i = 0; i < updatedCourses.length; i++) {
+            if (updatedCourses[i].name == this.state.selectedData.name) {
+                updatedCourses[i].time_slots.push(newSchedule);
+            
             }
-            updatedCourses.push(newCourse)
-            this.setState({courses: updatedCourses});
-            this.handleHide("add_course");
         }
-
-        else {
-            this.setState({inputError: true, errorMsg: "Recuerde que la vacante es un valor numérico entre 5 y 300 y que el nombre del curso no puede exceder los 100 caracteres"})
-        }
-
+        
+        this.setState({courses: updatedCourses});
+        this.handleHide("add_schedule");
     } 
 
     addCourse() {
@@ -198,7 +196,6 @@ class SubjectCourses extends Component {
 
     render() {
         window.scrollTo(0, 0);
-        
         return (
         <div>
             <div className="row">
@@ -265,12 +262,12 @@ class SubjectCourses extends Component {
                     </tr>
                 </thead>
                 <tbody>
-                    {course.time_slots.map(function(schedule, idx){
+                    {course.time_slots.map(function(schedule, idx_schedule){
                         var data = {}
                         data.schedule = schedule;
                         data.idx = idx;
                         return (
-                            <tr key={idx}>
+                            <tr key={idx_schedule}>
                                 <td>{schedule.classroom_code}</td>
                                 <td>{schedule.classroom_campus}</td>
                                 <td>{schedule.day_of_week}</td>
@@ -307,7 +304,7 @@ class SubjectCourses extends Component {
                 <div className="form-group">
                 <label htmlFor="select" className="col-lg-2 control-label">Sede</label>
                 <div className="col-lg-10">
-                    <select value={this.state.place} className="form-control" id="sede">
+                    <select value={this.state.place} className="form-control" id="sede" onChange={ e => this.setState({ place : e.target.value }) }>
                     <option>Paseo Colón</option>
                     <option>Las Heras</option>
                     <option>Ciudad Universitaria</option>
@@ -318,7 +315,13 @@ class SubjectCourses extends Component {
                 <div className="form-group">
                 <label htmlFor="inputAula" className="col-lg-2 control-label">Aula</label>
                 <div className="col-lg-10">
-                    <input type="text" value={this.state.classroom} className="form-control" id="inputAula"/>
+                    <input type="text" value={this.state.classroom} className="form-control" id="inputAula" onChange={ e => {
+                        const re = /^[a-zA-Z0-9]+$/;
+
+                        if ((e.target.value == "" || re.test(e.target.value)) && (e.target.value.length < 100)) {
+                            this.setState({classroom: e.target.value});
+                        }
+                    } }/>
                 </div>
                 </div>
             
@@ -326,7 +329,7 @@ class SubjectCourses extends Component {
                 <div className="form-group">
                 <label htmlFor="select" className="col-lg-2 control-label">Día</label>
                 <div className="col-lg-10">
-                    <select value={this.state.day} className="form-control" id="dia">
+                    <select value={this.state.day} className="form-control" id="dia" onChange={ e => this.setState({ day : e.target.value }) }>
                     <option>Lunes</option>
                     <option>Martes</option>
                     <option>Miércoles</option>
@@ -340,21 +343,21 @@ class SubjectCourses extends Component {
                 <div className="form-group">
                 <label htmlFor="inputInicio" className="col-lg-2 control-label">Horario de inicio</label>
                 <div className="col-lg-3">
-                    <input type="time" value={this.state.begin} className="form-control" id="inputInicio"/>
+                    <input type="time" value={this.state.begin} className="form-control" id="inputInicio" onChange={ e => this.setState({ begin : e.target.value }) }/>
                 </div>
                 </div>
 
                 <div className="form-group">
                 <label htmlFor="inputFin" className="col-lg-2 control-label">Horario de fin</label>
                 <div className="col-lg-3">
-                    <input type="time" value={this.state.end} className="form-control" id="inputFin"/>
+                    <input type="time" value={this.state.end} className="form-control" id="inputFin" onChange={ e => this.setState({ end : e.target.value }) }/>
                 </div>
                 </div>
 
                 <div className="form-group">
                 <label htmlFor="tipo" className="col-lg-2 control-label">Tipo</label>
                 <div className="col-lg-10">
-                    <select value={this.state.type} className="form-control" id="tipo">
+                    <select value={this.state.type} className="form-control" id="tipo" onChange={ e => this.setState({ type : e.target.value}) }>
                     <option>Teórica Obligatoria</option>
                     <option>Práctica Obligatoria</option>
                     <option>Teórico Práctica Obligatoria</option>
@@ -372,7 +375,7 @@ class SubjectCourses extends Component {
             </Modal.Body>
             <Modal.Footer>
                 <Button onClick={this.handleHide.bind(this, "add_schedule")}>Cancelar</Button>
-                <Button bsStyle="primary" onClick={this.handleHide.bind(this)}>Aceptar</Button>
+                <Button bsStyle="primary" onClick={this.addSchedule.bind(this)}>Aceptar</Button>
             </Modal.Footer>
             </Modal>}
 
@@ -564,7 +567,7 @@ class SubjectCourses extends Component {
                         if (e.target.value.length < 100) {
                             this.setState({id: e.target.value});
                         }
-                        } } />
+                    } } />
                 </div>
                 </div>
 
