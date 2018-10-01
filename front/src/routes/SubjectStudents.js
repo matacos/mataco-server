@@ -26,7 +26,7 @@ class SubjectStudents extends Component {
 
     componentDidMount() {
 
-        /*Proxy.getCourseStudents(this.state.courseId)
+        Proxy.getCourseStudents(this.state.courseId)
         .then(
             (result) => {
                 //this.setState({courses: result.courses})
@@ -46,8 +46,8 @@ class SubjectStudents extends Component {
             (error) => {
                 console.log(error)
             }
-        ) */
-        
+        ) 
+        /*
         this.setState({students: [{id: "98557", apellido: "Rodriguez", nombre: "Roberto", estado: "Regular", prioridad: "1"},
                         {id: "87445", apellido: "Herrera", nombre: "Candela", estado: "Regular", prioridad: "12"},
                         {id: "94333", apellido: "Pérez", nombre: "Julieta", estado: "Regular", prioridad: "3"},
@@ -56,8 +56,8 @@ class SubjectStudents extends Component {
                         {id: "93242", apellido: "Pazzini", nombre: "Rodrigo", estado: "Regular", prioridad: "24"},
                         {id: "91872", apellido: "Marconi", nombre: "Luciano", estado: "Condicional", prioridad: "33"}]})
 
+        */
     }
-
 
     showConditionalModal(student) {
         this.setState({conditional: student})
