@@ -17,7 +17,7 @@ class Proxy  {
                   username: dni,
                   password: password
                 }),
-             }).then(res => console.log(res.text()))
+             }).then(res => res.json())
 
       }
 
