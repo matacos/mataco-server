@@ -56,8 +56,51 @@ class Proxy  {
                 headers: {
                   'Authorization': 'bearer ' + Assistant.getField("token")
                 },
+                
              }).then(res => res.json()) 
 
+      }
+
+      /*
+      var newCourse = {
+                department_code: this.state.code.substr(0, 2),
+                subject_code: this.state.code.substr(2, 2),
+                name: this.state.id,
+                total_slots: this.state.slots,
+                professors: [],
+                time_slots: []
+            }
+            */
+
+      addCourse(course){
+        return fetch(this.url + "/cursos",{
+          method:"POST",
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+            'Authorization': 'bearer ' + Assistant.getField("token")
+          },
+          body:JSON.stringify({
+            "cod_departamento":course.department_code,
+            "cod_materia":course.subject_code,
+            "nombre":course.name,
+            "vacantes_totales":parseInt(course.total_slots)
+          })
+        }).then((x)=>{
+          return x.json()
+        }).then((m)=>{
+          console.log(m)
+          return m
+        })
+      }
+
+      deleteCourse(course){
+        return fetch(this.url + "/cursos/"+course,{
+          method:"DELETE",
+          headers: {
+            'Authorization': 'bearer ' + Assistant.getField("token")
+          }
+        })
       }
 
 

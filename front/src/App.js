@@ -17,7 +17,8 @@ class App extends Component {
             <Route path="/login" render={ () => Assistant.isLoggedIn() ? <Redirect to="/home" /> : <Login/> } />
             <Route path="/home" render={ () => Assistant.isLoggedIn() ? <Home /> : <Redirect to="/login" /> } />
             <Route path="/cursos/:idCurso" component={SubjectStudents} />
-            <Route path="/materias/:idMateria" component={SubjectCourses} />
+            <Route path="/materias/:idMateria/:nombreMateria" component={SubjectCourses} />
+            
             <Redirect from="/" exact to="/login" />
             <Route component={Error} />
           </Switch>

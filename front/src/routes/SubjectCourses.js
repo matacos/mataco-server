@@ -9,9 +9,11 @@ import { Glyphicon, PageHeader } from 'react-bootstrap';
 class SubjectCourses extends Component {
     constructor(props) {
         super(props);
+        console.log("El id de esta materia es:")
+        console.log(this.props.match.params.idMateria)
 
         this.state = {
-            subject: "Algoritmos y Programación III",
+            subject: this.props.match.params.nombreMateria,
             code: this.props.match.params.idMateria,
             selectSubjects: false,
             showAddSchedule: false,
@@ -36,17 +38,45 @@ class SubjectCourses extends Component {
         };
     }
 
-    componentDidMount() {
-        Proxy.getSubjectCourses("75", "06")
+    setCoursesInformation(subject){
+        let departmentCode=subject.slice(0,2)
+        let subjCode=subject.slice(2,4)
+        console.log("Me traigo las cosas del curso ",subject)
+        return Proxy.getSubjectCourses(departmentCode, subjCode)
         .then(
             (result) => {
-                this.setState({courses: result.courses})
+                
+                console.log("==================")
+                console.log("==================")
+                console.log("==================")
+                console.log("==================")
+                console.log(result)
+                console.log("==================")
+                console.log("==================")
+                console.log("==================")
+                console.log("==================")
+                this.setState({courses: result.courses,subject:this.props.match.params.nombreMateria})
                 Assistant.setField("token", result.token);
             },
             (error) => {
                 console.log(error)
             }
-        ) 
+        )
+    }
+
+    componentDidUpdate(prevProps){
+        if(this.props.match.params.idMateria != prevProps.match.params.idMateria){
+            
+            this.setCoursesInformation(this.props.match.params.idMateria)
+
+
+        }
+
+        
+    }
+
+    componentDidMount() {
+        this.setCoursesInformation(this.props.match.params.idMateria)
     }
 
     showModal(modalType, data) {
@@ -163,9 +193,12 @@ class SubjectCourses extends Component {
                 professors: [],
                 time_slots: []
             }
-            updatedCourses.push(newCourse)
-            this.setState({courses: updatedCourses});
             this.handleHide("add_course");
+            Proxy.addCourse(newCourse).then(()=>{
+                this.setCoursesInformation(this.state.code)
+                
+            })
+            
         }
 
         else {
@@ -177,6 +210,18 @@ class SubjectCourses extends Component {
     removeCourse() {
         var updatedCourses = this.state.courses.filter(course => course.name != this.state.selectedData.name);
         this.setState({courses: updatedCourses});
+        console.log("$$$$$$$$")
+        console.log("$$$$$$$$")
+        console.log("$$$$$$$$")
+        console.log("$$$$$$$$")
+        console.log(this.state.selectedData.course)
+        console.log("######")
+        console.log(this.state.selectedData)
+        console.log("$$$$$$$$")
+        console.log("$$$$$$$$")
+        console.log("$$$$$$$$")
+
+        Proxy.deleteCourse(this.state.selectedData.course)
         this.handleHide("remove_course");
     }
 
@@ -195,6 +240,22 @@ class SubjectCourses extends Component {
     }
 
     render() {
+        console.log("#########################")
+        console.log("#########################")
+        console.log("#########################")
+        console.log("#########################")
+        console.log("#########################")
+        console.log("#########################")
+        console.log("#########################")
+        console.log("#########################")
+        console.log("#########################")
+        console.log(this.state.courses)
+        console.log("#########################")
+        console.log("#########################")
+        console.log("#########################")
+        console.log("#########################")
+        console.log("#########################")
+        console.log("#########################")
         window.scrollTo(0, 0);
         return (
         <div>

@@ -101,8 +101,8 @@ class Panel extends Component {
         this.props.history.push('/cursos/' + courseId);
     }
 
-    goToSubject(subjectId) {
-        this.props.history.push('/materias/' + subjectId);
+    goToSubject(subjectId,subjectName) {
+        this.props.history.push('/materias/' + subjectId+"/"+subjectName);
     }
 
     goToHome() {
@@ -118,7 +118,7 @@ class Panel extends Component {
         if (Assistant.getField("mode") == "professor")
         var listItems = this.state.courses.map((d) => <div key={d.department_code + d.subject_code} style={{marginLeft: "2em"}}><button className="text-primary text-left" style={{background: "none", border: "none", padding: "0"}} onClick={this.goToCourse.bind(this, d.department_code + d.subject_code + d.course)}>{d.name}</button><hr /></div>);
     else
-        var listItems = this.state.subjects.map((d) => <div key={d.department_code + d.code} style={{marginLeft: "2em"}}><button className="text-primary text-left" style={{background: "none", border: "none", padding:"0"}} onClick={this.goToSubject.bind(this, d.department_code + d.code)}>{d.name}</button><hr /></div>);
+        var listItems = this.state.subjects.map((d) => <div key={d.department_code + d.code} style={{marginLeft: "2em"}}><button className="text-primary text-left" style={{background: "none", border: "none", padding:"0"}} onClick={this.goToSubject.bind(this, d.department_code + d.code,d.name)}>{d.name}</button><hr /></div>);
         return (
         <div className="panel panel-default col-md-3" style={{margin: "0", padding: "0"}}>
             <div className="panel-heading" style={{width: "auto"}}>

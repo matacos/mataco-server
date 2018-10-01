@@ -105,6 +105,22 @@ function mountRoutes(app,db,schemaValidation){
     }
 
     app.post("/cursos",schemaValidation({body:cursosQueryPost}), async function (req,res,next) {
+        console.log("$$$$$$$$$$$$$$$$$")
+        console.log("$$$$$$$$$$$$$$$$$")
+        console.log("$$$$$$$$$$$$$$$$$")
+        console.log("$$$$$$$$$$$$$$$$$")
+        console.log("$$$$$$$$$$$$$$$$$")
+        console.log("SOY EL POST DE CURSOS :D")
+        console.log("$$$$$$$$$$$$$$$$$")
+        console.log("$$$$$$$$$$$$$$$$$")
+        console.log("$$$$$$$$$$$$$$$$$")
+        console.log("$$$$$$$$$$$$$$$$$")
+        console.log(req.body)
+        console.log("$$$$$$$$$$$$$$$$$")
+        console.log("$$$$$$$$$$$$$$$$$")
+        console.log("$$$$$$$$$$$$$$$$$")
+        console.log("$$$$$$$$$$$$$$$$$")
+
         const viewCreation = await db.query(coursesView)
 
         const cod_departamento = req.body.cod_departamento
@@ -121,7 +137,27 @@ function mountRoutes(app,db,schemaValidation){
         
 
         res.status(201).json({"insert":"OK", "result":result.rows})
+
+        console.log("$$$$$$$$$$$$$$$$$")
+        console.log("$$$$$$$$$$$$$$$$$")
+        console.log("$$$$$$$$$$$$$$$$$")
+        console.log("$$$$$$$$$$$$$$$$$")
+        console.log("$$$$$$$$$$$$$$$$$")
+        console.log("SOY EL POST DE CURSOS :D")
+        console.log("$$$$$$$$$$$$$$$$$")
+        console.log("$$$$$$$$$$$$$$$$$")
+        console.log("$$$$$$$$$$$$$$$$$")
+        console.log("$$$$$$$$$$$$$$$$$")
+        console.log(req.body)
+        console.log("$$$$$$$$$$$$$$$$$")
+        console.log("$$$$$$$$$$$$$$$$$")
+        console.log("$$$$$$$$$$$$$$$$$")
+        console.log("$$$$$$$$$$$$$$$$$")
+
+        
         next()
+
+        
     })
 
     const cursosQueryPut={
