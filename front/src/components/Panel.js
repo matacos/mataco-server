@@ -21,6 +21,20 @@ class Panel extends Component {
     componentDidMount() {
         // TODO para docente: Llamada a proxy: GET /cursos?professor=<id de docente>
         // Luego con id de materia hago GET /materias y saco el nombre, codigo y depto
+
+
+            Proxy.getProfessorCourses(Assistant.getField("username")).then(
+            (coursesResult) => {
+                        console.log(coursesResult);
+                        this.setState({courses: coursesResult.courses});
+                        Assistant.setField("token", coursesResult.token);
+                        },
+                    (error) => {
+                        console.log(error)
+                    }
+                )	
+    
+
         Proxy.getDepartmentSubjects("Computación")
         .then(
             (result) => {
@@ -32,7 +46,7 @@ class Panel extends Component {
                 console.log(error)
             }
         )
-
+        
         /*Proxy.getProfessorCourses("12345678")
         .then(
             (cousesResult) => {
@@ -54,11 +68,11 @@ class Panel extends Component {
                 console.log(error)
             }
         )*/
-
+/*
         this.setState({courses: [{department_code: "75", subject_code: "07", name: "Algoritmos y Programación III", course: "2"},
                                     {department_code: "75", subject_code: "44", name: "Admin. y Control de Desarrollo de Proy. Informáticos II", course: "4"},
                                     {department_code: "75", subject_code: "47", name: "Taller de Desarrollo de Proyectos II", course: "3"}]})
-        
+ */       
         // DEPTO
         /*this.setState({subjects: [{department_code: "75", code: "07", name: "Algoritmos y Programación III"},
                                 {department_code: "75", code: "44", name: "Admin. y Control de Desarrollo de Proy. Informáticos II"},
@@ -125,7 +139,7 @@ class Panel extends Component {
                 <img className="img-responsive center-block" alt="logo" src={logoFIUBA} height="50%" width="50%" style={{marginLeft: "auto", marginRight: "auto", width: "50%", paddingTop: "1em"}}/>
                 {/*</div><h3 className="panel-title text-center" style={{padding: "1em"}}>Carlos Fontela</h3>*/}
                 {/*<h3 className="text-center" style={{color: "#696969"}}>Carlos Fontela</h3>*/}
-                <h3 className="text-center" style={{color: "#696969"}}>{(Assistant.getField("mode") == "professor") ? "Carlos Fontela" : "Departamento de Computación"}</h3>
+                <h3 className="text-center" style={{color: "#696969"}}>{(Assistant.getField("mode") == "professor") ? Assistant.getField("username") : "Departamento de " + Assistant.getField("department")}</h3>
             </div>
 
             <div className="panel-body" style={this.props.selectedSubjects ? {height: "auto"} : {height: "100vh"}}>

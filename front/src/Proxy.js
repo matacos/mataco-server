@@ -103,7 +103,36 @@ class Proxy  {
         })
       }
 
+      postCourse(department_code, subject_code, department_name, vacancies) {
+        return fetch(this.url + "/cursos", {
+                method: 'POST',
+                headers: {
+                  'Accept': 'application/json',
+                  'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                  cod_departamento: department_code,
+                  cod_materia: subject_code,
+                  nombre: department_name,
+                  vacantes_totales: vacancies
+                }),
+             }).then(res => console.log(res.text()))
+      }
 
+      putAcceptConditionalStudent(course, username) {
+        return fetch(this.url + "/cursadas/"+course+"-"+username, {
+                method: 'PUT',
+                headers: {
+                  'Accept': 'application/json',
+                  'Content-Type': 'application/json',
+                  'Authorization': 'bearer ' + Assistant.getField("token")
+                },
+                body: JSON.stringify({
+                  accepted:true
+                }),
+             })
+             .then(res => res.json())
+      }
 
   }
   

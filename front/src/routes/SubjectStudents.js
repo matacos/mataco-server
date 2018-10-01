@@ -26,7 +26,7 @@ class SubjectStudents extends Component {
 
     componentDidMount() {
 
-        /*Proxy.getCourseStudents(this.state.courseId)
+        Proxy.getCourseStudents(this.state.courseId)
         .then(
             (result) => {
                 //this.setState({courses: result.courses})
@@ -46,8 +46,8 @@ class SubjectStudents extends Component {
             (error) => {
                 console.log(error)
             }
-        ) */
-        
+        ) 
+        /*
         this.setState({students: [{id: "98557", apellido: "Rodriguez", nombre: "Roberto", estado: "Regular", prioridad: "1"},
                         {id: "87445", apellido: "Herrera", nombre: "Candela", estado: "Regular", prioridad: "12"},
                         {id: "94333", apellido: "Pérez", nombre: "Julieta", estado: "Regular", prioridad: "3"},
@@ -56,8 +56,8 @@ class SubjectStudents extends Component {
                         {id: "93242", apellido: "Pazzini", nombre: "Rodrigo", estado: "Regular", prioridad: "24"},
                         {id: "91872", apellido: "Marconi", nombre: "Luciano", estado: "Condicional", prioridad: "33"}]})
 
+        */
     }
-
 
     showConditionalModal(student) {
         this.setState({conditional: student})
@@ -68,7 +68,46 @@ class SubjectStudents extends Component {
         if (this.state.conditional) {
             for (var i = 0; i < updatedList.length; i++) {
                 if (updatedList[i].id == this.state.conditional.id) {
+
                     updatedList[i].estado = "Regular";
+
+                    
+
+                    Proxy.putAcceptConditionalStudent(this.state.courseId, this.state.conditional.id)
+                    .then(
+                        (result) => {
+                            //Assistant.setField("token", result.token);
+
+                            Proxy.getCourseStudents(this.state.courseId)
+                            .then(
+                                (result) => {
+                                    //this.setState({courses: result.courses})
+                                    console.log(result.courseInscriptions)
+                                    var studentsList = result.courseInscriptions.map(inscription => {
+                                        var data = {};
+                                        data.estado = inscription.accepted ? "Regular" : "Condicional";
+                                        data.nombre = inscription.student.name;
+                                        data.apellido = inscription.student.surname;
+                                        data.prioridad = "2";
+                                        data.id = inscription.student.username;
+                                        return data;
+                                    })
+                                    Assistant.setField("token", result.token);
+                                    this.setState({students: studentsList})
+                                },
+                                (error) => {
+                                    console.log(error)
+                                }
+                            ) 
+
+                        },
+                        (error) => {
+                            console.log(error)
+                        }
+                    ) 
+
+                    
+                    
                 }
             }
         }

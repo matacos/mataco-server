@@ -158,6 +158,8 @@ function mountRoutes(app,db,schemaValidation){
         {required:["grade_date"]},
     ]}
     app.put(["/inscripciones_cursos/:id","/cursadas/:id"], schemaValidation({body:updateBodySchema}),async function(req,res,next){
+        console.log("Hola Santi 1")
+        console.log(req.body)
         let parts = req.params.id.split("-")
         let course=parts[0]
         let student=parts[1]
@@ -182,6 +184,7 @@ function mountRoutes(app,db,schemaValidation){
         await db.query(query,[
             course,student
         ].concat(updates_values))
+        console.log("Chau Santi 1")
         res.sendStatus(204)
     })
 }
