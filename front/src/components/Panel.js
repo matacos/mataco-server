@@ -139,7 +139,7 @@ class Panel extends Component {
                 <img className="img-responsive center-block" alt="logo" src={logoFIUBA} height="50%" width="50%" style={{marginLeft: "auto", marginRight: "auto", width: "50%", paddingTop: "1em"}}/>
                 {/*</div><h3 className="panel-title text-center" style={{padding: "1em"}}>Carlos Fontela</h3>*/}
                 {/*<h3 className="text-center" style={{color: "#696969"}}>Carlos Fontela</h3>*/}
-                <h3 className="text-center" style={{color: "#696969"}}>{(Assistant.getField("mode") == "professor") ? "Carlos Fontela" : "Departamento de Computación"}</h3>
+                <h3 className="text-center" style={{color: "#696969"}}>{(Assistant.getField("mode") == "professor") ? Assistant.getField("username") : "Departamento de " + Assistant.getField("department")}</h3>
             </div>
 
             <div className="panel-body" style={this.props.selectedSubjects ? {height: "auto"} : {height: "100vh"}}>

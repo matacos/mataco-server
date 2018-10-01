@@ -76,7 +76,18 @@ class Proxy  {
              }).then(res => console.log(res.text()))
       }
 
-
+      putAcceptStudent(course, username) {
+        return fetch(this.url + "/cursadas/"+course+"-"+username, {
+                method: 'PUT',
+                headers: {
+                  'Accept': 'application/json',
+                  'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                  accepted:"true"
+                }),
+             }).then(res => console.log(res.text()))
+      }
 
   }
   
