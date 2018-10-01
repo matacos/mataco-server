@@ -21,6 +21,21 @@ class Panel extends Component {
     componentDidMount() {
         // TODO para docente: Llamada a proxy: GET /cursos?dado_por=<id de docente>
         // Luego con id de materia hago GET /materias y saco el nombre, codigo y depto
+
+	if (Assistant.getField("mode") == "professor") {
+		Proxy.getProfessorCourses(Assistant.getField("username")).then(
+		(coursesResult) => {
+                	console.log(coursesResult);
+                	this.setState({courses: coursesResult.courses});
+                	Assistant.setField("token", coursesResult.token);
+            		},
+            	(error) => {
+                	console.log(error)
+            	}
+        	)	
+
+	} else {
+
         Proxy.getDepartmentSubjects("Computación")
         .then(
             (result) => {
@@ -33,31 +48,12 @@ class Panel extends Component {
             }
         )
 
-        /*Proxy.getProfessorCourses("12345678")
-        .then(
-            (cousesResult) => {
-                console.log(coursesResult);
-                //this.setState({courses: result.courses});
-                Assistant.setField("token", coursesResult.token);
-                Proxy.getDepartmentSubjects("Computación")
-                .then(
-                    (subjectResult) => {
-                        this.setState({courses: this.getCourses(coursesResult.courses, subjectResult.subjects)});
-                        Assistant.setField("token", subjectResult.token);
+	}
 
-                },
-                (error) => {
-                    console.log(error)
-                })
-            },
-            (error) => {
-                console.log(error)
-            }
-        )*/
 
-        this.setState({courses: [{department_code: "75", subject_code: "07", name: "Algoritmos y Programación III", course: "2"},
-                                    {department_code: "75", subject_code: "44", name: "Admin. y Control de Desarrollo de Proy. Informáticos II", course: "4"},
-                                    {department_code: "75", subject_code: "47", name: "Taller de Desarrollo de Proyectos II", course: "3"}]})
+
+
+
         
         // DEPTO
         /*this.setState({subjects: [{department_code: "75", code: "07", name: "Algoritmos y Programación III"},
