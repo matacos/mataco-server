@@ -267,9 +267,9 @@ describe("Test /cursos",()=>{
     expect(responseInit.body).to.be.jsonSchema(correctProfessorSchema)
     expect(responseInit.statusCode).to.equal(200)
 
-})
+    })
 
-it("happy path get docentes",async ()=>{
+    it("happy path get docentes",async ()=>{
 
     const responseInit = await requestWithAuth("99999","9","GET","/docentes")
 
@@ -280,7 +280,32 @@ it("happy path get docentes",async ()=>{
     expect(responseInit.body.professors).to.have.lengthOf(4)
     expect(responseInit.statusCode).to.equal(200)
 
-})
+    })
 
+    it("happy path query post de profesor a curso",async ()=>{
+
+        const responseInit = await requestWithAuth("99999","9","GET","/docentes")
+
+        console.log("Here 15 \n")
+        console.log(responseInit.body)
+        console.log("Here 16 \n")
+    
+        expect(responseInit.body.professors).to.have.lengthOf(4)
+        expect(responseInit.statusCode).to.equal(200)
+
+
+        const response1 = await requestWithAuth("99999","9","POST","/cursos/id/docentes",{
+            "username":"12345678",
+            "id":1,
+            "rol":"Ayudante de cátedra"
+            })
+    
+            console.log("Here 17 \n")
+            console.log(response1.body)
+            console.log("Here 18 \n")
+        
+            expect(response1.statusCode).to.equal(201)
+        
+        })
 
 })

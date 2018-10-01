@@ -233,6 +233,56 @@ function mountRoutes(app,db,schemaValidation){
         next()
     })
 
+    const cursosAddProfessorQueryPost={
+        requires:["cod_departamento","cod_materia","name","vacantes_totales"],
+        properties:{
+            "username":{type:"string"},
+            "id":{type:"number"},
+            "rol":{type:"string"},
+        }
+    }
+
+    app.post("/cursos/id/docentes",schemaValidation({body:cursosAddProfessorQueryPost}), async function (req,res,next) {
+        const viewCreation = await db.query(coursesView)
+
+        const username = req.body.username
+        const id = req.body.id
+        const rol = req.body.rol
+
+        const query=`
+        insert into professors_roles values
+        ($1,$2,$3);
+        `
+        const result = await db.query(query,[username,id,rol])
+        const result_waiter=await db.query("select * from professors_roles;")
+
+        console.log("$$$$$")
+        console.log("$$$$$")
+        console.log("$$$$$")
+        console.log("$$$$$")
+        console.log(result)
+        console.log("$$$$$")
+        console.log("$$$$$")
+        console.log("$$$$$")
+        console.log("$$$$$")
+        console.log(result_waiter)
+        console.log("$$$$$")
+        console.log("$$$$$")
+        console.log("$$$$$")
+        console.log("$$$$$")
+        console.log("$$$$$")
+        console.log("$$$$$")
+        console.log(await db.query("commit;"))
+        console.log("$$$$$")
+        console.log("$$$$$")
+        console.log("$$$$$")
+        
+
+        res.status(201).json({"insert":"OK", "result":result.rows})
+        next()
+    })
+
+
 }
 
 module.exports={
