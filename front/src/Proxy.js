@@ -76,17 +76,19 @@ class Proxy  {
              }).then(res => console.log(res.text()))
       }
 
-      putAcceptStudent(course, username) {
+      putAcceptConditionalStudent(course, username) {
         return fetch(this.url + "/cursadas/"+course+"-"+username, {
                 method: 'PUT',
                 headers: {
                   'Accept': 'application/json',
-                  'Content-Type': 'application/json'
+                  'Content-Type': 'application/json',
+                  'Authorization': 'bearer ' + Assistant.getField("token")
                 },
                 body: JSON.stringify({
-                  accepted:"true"
+                  accepted:true
                 }),
-             }).then(res => console.log(res.text()))
+             })
+             .then(res => res.json())
       }
 
   }

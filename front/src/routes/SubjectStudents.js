@@ -71,40 +71,43 @@ class SubjectStudents extends Component {
 
                     updatedList[i].estado = "Regular";
 
-                    /*
+                    
 
-                    Proxy.putAcceptStudent(this.state.courseId, this.state.conditional.id)
+                    Proxy.putAcceptConditionalStudent(this.state.courseId, this.state.conditional.id)
                     .then(
                         (result) => {
-                            Assistant.setField("token", result.token);
+                            //Assistant.setField("token", result.token);
+
+                            Proxy.getCourseStudents(this.state.courseId)
+                            .then(
+                                (result) => {
+                                    //this.setState({courses: result.courses})
+                                    console.log(result.courseInscriptions)
+                                    var studentsList = result.courseInscriptions.map(inscription => {
+                                        var data = {};
+                                        data.estado = inscription.accepted ? "Regular" : "Condicional";
+                                        data.nombre = inscription.student.name;
+                                        data.apellido = inscription.student.surname;
+                                        data.prioridad = "2";
+                                        data.id = inscription.student.username;
+                                        return data;
+                                    })
+                                    Assistant.setField("token", result.token);
+                                    this.setState({students: studentsList})
+                                },
+                                (error) => {
+                                    console.log(error)
+                                }
+                            ) 
+
                         },
                         (error) => {
                             console.log(error)
                         }
                     ) 
 
-                    Proxy.getCourseStudents(this.state.courseId)
-                    .then(
-                        (result) => {
-                            //this.setState({courses: result.courses})
-                            console.log(result.courseInscriptions)
-                            var studentsList = result.courseInscriptions.map(inscription => {
-                                var data = {};
-                                data.estado = inscription.accepted ? "Regular" : "Condicional";
-                                data.nombre = inscription.student.name;
-                                data.apellido = inscription.student.surname;
-                                data.prioridad = "2";
-                                data.id = inscription.student.username;
-                                return data;
-                            })
-                            Assistant.setField("token", result.token);
-                            this.setState({students: studentsList})
-                        },
-                        (error) => {
-                            console.log(error)
-                        }
-                    ) 
-                    */
+                    
+                    
                 }
             }
         }
