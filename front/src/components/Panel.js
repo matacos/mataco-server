@@ -19,7 +19,7 @@ class Panel extends Component {
     }
 
     componentDidMount() {
-        // TODO para docente: Llamada a proxy: GET /cursos?dado_por=<id de docente>
+        // TODO para docente: Llamada a proxy: GET /cursos?professor=<id de docente>
         // Luego con id de materia hago GET /materias y saco el nombre, codigo y depto
         Proxy.getDepartmentSubjects("Computación")
         .then(

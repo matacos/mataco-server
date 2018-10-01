@@ -46,6 +46,8 @@ function mountRoutes(app,db,checkSchemas){
 
     //estrategia passport
     passport.use(new Strategy(async function(token, cb) {
+        console.log("-- hola soy passport --")
+        console.log("Recibo el token:",token)
         //TODO: GENERAR TOKENS NUEVOS
         try{
             const tokenedUsers=await db.query("select * from users where token=$1;",[token])

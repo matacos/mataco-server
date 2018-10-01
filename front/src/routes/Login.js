@@ -24,6 +24,19 @@ class Login extends Component {
     }
 
     saveData(result) {
+        console.log("###")
+        console.log("###")
+        console.log("###")
+        console.log("###")
+        console.log(result)
+        console.log("###")
+        console.log("###")
+        console.log("###")
+        if ("department_administrators" in result.user.rolesDescriptions){
+            Assistant.setField("department", result.user.rolesDescriptions["department_administrators"].department_name);
+        }else{
+            Assistant.setField("department","NO DEPARTMENT,DUDE. GTFO.");
+        }
         Assistant.setField("token", result.token);
         Assistant.setField("username", result.user.username);
         Assistant.setField("email", result.user.email);
