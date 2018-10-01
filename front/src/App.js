@@ -6,6 +6,7 @@ import Home from "./routes/Home";
 import SubjectStudents from "./routes/SubjectStudents";
 import SubjectCourses from "./routes/SubjectCourses";
 import Error from "./routes/Error";
+import Assistant from './Assistant';
 
 class App extends Component {
   render() {
@@ -13,11 +14,11 @@ class App extends Component {
       <BrowserRouter>
         <div>
           <Switch>
-            <Route path="/login" component={Login} />
-            <Route path="/home" component={Home} />
+            <Route path="/login" render={ () => Assistant.isLoggedIn() ? <Redirect to="/home" /> : <Login/> } />
+            <Route path="/home" render={ () => Assistant.isLoggedIn() ? <Home /> : <Redirect to="/login" /> } />
             <Route path="/cursos/:idCurso" component={SubjectStudents} />
             <Route path="/materias/:idMateria" component={SubjectCourses} />
-            <Redirect from="/" to="/login" exact/>
+            <Redirect from="/" exact to="/login" />
             <Route component={Error} />
           </Switch>
         </div>

@@ -15,6 +15,14 @@ class Assistant  {
     isDepartmentAdmin() {
         return localStorage.getItem("roles").includes("department_administrator");
     }
+
+    clearData() {
+        localStorage.clear();
+    }
+
+    isLoggedIn() {
+        return localStorage.length > 0;
+    }
   }
   
   export default new Assistant();

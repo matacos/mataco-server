@@ -1,7 +1,12 @@
 import React, { Component } from 'react';
 import '../App.css';
-import logoFIUBA from '../images/logo.png';
+import Panel from '../components/Panel';
+import Proxy from '../Proxy';
 import { Modal, Button } from 'react-bootstrap';
+import { Glyphicon, Tabs, Tab, PageHeader } from 'react-bootstrap';
+import BootstrapTable  from 'react-bootstrap-table-next';
+import 'react-bootstrap-table-next/dist/react-bootstrap-table2.min.css';
+import Assistant from '../Assistant';
 
 class SubjectStudents extends Component {
     constructor(props) {
@@ -9,95 +14,189 @@ class SubjectStudents extends Component {
 
         this.state = {
             subject: "Algoritmos y Programación III",
-            selectedCourses: false,
+            courseId: this.props.match.params.idCurso.substr(4),
+            selectSubjects: false,
             students: [],
-            coursesText: "> Mis Cursos",
-            conditional: false
+            columns: [],
+            conditional: null,
+            key: 1
         };
+        console.log(this.state.courseId)
     }
 
     componentDidMount() {
-        // TODO: Llamada a proxy: GET /cursos?dado_por=<id de docente>
-        // Luego con id de curso hago GET /cursadas?con_nota=false
-        // Con el id de cada alumno debería obtener su nombre para la tabla
-        this.setState({students: [{id: "98557", apellido: "Rodriguez", nombre: "Roberto", estado: "Regular"},
-                        {id: "87445", apellido: "Herrera", nombre: "Candela", estado: "Regular"},
-                        {id: "94333", apellido: "Pérez", nombre: "Julieta", estado: "Regular"},
-                        {id: "96421", apellido: "Dominguez", nombre: "Juan", estado: "Condicional"},
-                        {id: "98765", apellido: "Álvarez", nombre: "Maria", estado: "Regular"},
-                        {id: "93242", apellido: "Pazzini", nombre: "Rodrigo", estado: "Regular"},
-                        {id: "91872", apellido: "Marconi", nombre: "Luciano", estado: "Condicional"}]})
+
+        /*Proxy.getCourseStudents(this.state.courseId)
+        .then(
+            (result) => {
+                //this.setState({courses: result.courses})
+                console.log(result.courseInscriptions)
+                var studentsList = result.courseInscriptions.map(inscription => {
+                    var data = {};
+                    data.estado = inscription.accepted ? "Regular" : "Condicional";
+                    data.nombre = inscription.student.name;
+                    data.apellido = inscription.student.surname;
+                    data.prioridad = "2";
+                    data.id = inscription.student.username;
+                    return data;
+                })
+                Assistant.setField("token", result.token);
+                this.setState({students: studentsList})
+            },
+            (error) => {
+                console.log(error)
+            }
+        ) */
+        
+        this.setState({students: [{id: "98557", apellido: "Rodriguez", nombre: "Roberto", estado: "Regular", prioridad: "1"},
+                        {id: "87445", apellido: "Herrera", nombre: "Candela", estado: "Regular", prioridad: "12"},
+                        {id: "94333", apellido: "Pérez", nombre: "Julieta", estado: "Regular", prioridad: "3"},
+                        {id: "96421", apellido: "Dominguez", nombre: "Juan", estado: "Condicional", prioridad: "6"},
+                        {id: "98765", apellido: "Álvarez", nombre: "Maria", estado: "Regular", prioridad: "11"},
+                        {id: "93242", apellido: "Pazzini", nombre: "Rodrigo", estado: "Regular", prioridad: "24"},
+                        {id: "91872", apellido: "Marconi", nombre: "Luciano", estado: "Condicional", prioridad: "33"}]})
+
     }
 
-    handleSelectedCourses() {
-        if (this.state.selectedCourses) 
-            this.setState({selectedCourses: false, coursesText: "> Mis Cursos"})
-        
-        else 
-            this.setState({selectedCourses: true, coursesText: "v Mis Cursos"})
-        
+
+    showConditionalModal(student) {
+        this.setState({conditional: student})
     }
 
     acceptConditional() {
-        this.setState({conditional: true})
+        var updatedList = this.state.students;
+        if (this.state.conditional) {
+            for (var i = 0; i < updatedList.length; i++) {
+                if (updatedList[i].id == this.state.conditional.id) {
+                    updatedList[i].estado = "Regular";
+                }
+            }
+        }
+        this.setState({students: updatedList});
+        this.handleHide();
     }
 
     handleHide() {
-        this.setState({ conditional: false });
+        this.setState({conditional: null})
+    }
+
+    setSelectedSubjects(bool) {
+        this.setState({selectSubjects: bool});
+    }
+
+    handleSelect() {
+        if (this.state.key == 1) {
+            this.setState({key: 2})
+        }
+        else {
+            this.setState({key: 1})
+        }
     }
 
     render() {
+        var conditionalStudents = this.state.students.filter(student => student.estado == "Condicional");
+        var regularStudents = this.state.students.filter(student => student.estado == "Regular");
+
+        const columns = [
+        {
+            dataField: 'id',
+            text: 'Padrón',
+            sort: true
+        },
+        {
+            dataField: 'apellido',
+            text: 'Apellido',
+            sort: true
+        },
+        {
+            dataField: 'nombre',
+            text: 'Nombre',
+            sort: true
+        },
+        {
+            dataField: 'estado',
+            text: 'Estado'
+        },
+        {
+            dataField: 'prioridad',
+            text: 'Prioridad',
+            sort: true
+        }
+        ];
+        const conditionalColumns = [
+        {
+            dataField: 'prioridad',
+            text: 'Prioridad',
+            sort: true
+        },
+        {
+            dataField: 'id',
+            text: 'Padrón',
+            sort: true
+        },
+        {
+            dataField: 'apellido',
+            text: 'Apellido',
+            sort: true
+        },
+        {
+            dataField: 'nombre',
+            text: 'Nombre',
+            sort: true
+        },
+        {
+            dataField: 'estado',
+            text: 'Estado'
+        },
+        {
+            dataField: 'aceptar',
+            text: ''
+        }];
+
+
         return (
         <div>
             <div className="row">
-            <div className="panel panel-default col-md-3" style={{margin: "0", padding: "0"}}>
-            <div className="panel-heading" style={{width: "auto"}}>
-                <img className="img-responsive center-block" alt="logo" src={logoFIUBA} height="50%" width="50%" style={{marginLeft: "auto", marginRight: "auto", width: "50%", paddingTop: "1em"}}/>
-                <h3 className="panel-title text-center" style={{padding: "1em"}}>Carlos Fontela</h3>
+            <Panel selectedSubjects={this.state.selectSubjects} setSelectedSubjects={this.setSelectedSubjects.bind(this)}/>
+            
+            <div className="jumbotron col-md-9" style={{backgroundColor: "#C0C0C0"}}>
+                <h1>Sistema de <br/> Gestión Académica</h1>
             </div>
 
-            <div className="panel-body" style={{height: "100vh"}}>
-                <div style={{padding: "1em"}}>
-                <button className="text-primary" style={{background: "none", border: "none"}} onClick={this.handleSelectedCourses.bind(this)}> {this.state.coursesText} </button>
-                {this.state.selectedCourses && 
-                <p className="text-primary" style={{padding: "1em", paddingLeft: "2em"}}> Soy curso </p>}
-                </div>
-            </div>
-            </div>
-            <div className="col-md-9" style={{padding: "4em"}}>
-            <h1 className="App" style={{paddingBottom: "1em"}}> Sistema de Gestión Académica </h1>
-            <h2 style={{paddingBottom: "1em"}}> {this.state.subject} </h2>
-            <table className="table table-striped table-hover ">
-            <thead>
-                <tr>
-                <th>#</th>
-                <th>Padrón</th>
-                <th>Apellido</th>
-                <th>Nombre</th>
-                <th>Estado</th>
-                <th></th>
-                </tr>
-            </thead>
-            <tbody>
-                {this.state.students.map(function(student, idx){
-                    return (
-                        <tr key={student.id}>
-                            <td>{idx + 1}</td>
-                            <td>{student.id}</td>
-                            <td>{student.apellido}</td>
-                            <td>{student.nombre}</td>
-                            <td>{student.estado}</td>
-                            {(student.estado == "Condicional") && <td><a href="#" className="btn btn-primary" onClick={this.acceptConditional.bind(this)}>Aceptar</a></td>}
-                            {(student.estado != "Condicional") && <td></td>}
-                        </tr>
-                    )
-                }, this)}
-                
-            </tbody>
-            </table>
+            <div className="col-md-9">
             
-            {this.state.conditional &&  <Modal
-            show={this.state.conditional}
+            <PageHeader style={{marginBottom: "4em"}}> {this.state.subject} </PageHeader>
+            
+            <Tabs activeKey={(conditionalStudents.length > 0 && this.state.key) || 1}
+                onSelect={this.handleSelect.bind(this)}
+                id="controlled-tab">
+            <Tab eventKey={1} title={<h4 className={(this.state.key == 1 && "text-primary") || ""}>Alumnos Regulares</h4>}>
+                <div style={{paddingTop: "1.5em"}}>
+                <h3 style={{paddingBottom: "1em"}}> Listado de alumnos regulares <span className="badge"> {regularStudents.length} </span></h3>
+                <BootstrapTable keyField='idx' striped hover bordered={ false } data={ regularStudents.map(function(student, idx){ 
+                    student.idx = idx + 1;
+                    student.padron = parseInt(student.padron);
+                    student.prioridad = parseInt(student.prioridad);
+                    return student;}, this) } columns={ columns } />
+                </div>
+            </Tab>
+            {conditionalStudents.length > 0 &&
+            <Tab eventKey={2} title={<h4 className={(this.state.key == 2 && "text-primary") || ""}>Alumnos Condicionales</h4>}>
+            
+            <div style={{paddingTop: "1.5em"}}>
+            <h3 style={{paddingBottom: "1em"}}> Listado de alumnos condicionales <span className="badge"> {conditionalStudents.length} </span></h3>
+            <BootstrapTable keyField='idx' striped hover bordered={ false } key='idx' data={ conditionalStudents.map(function(student, idx){ 
+                    student.idx = idx + 1;
+                    student.padron = parseInt(student.padron);
+                    student.prioridad = parseInt(student.prioridad);
+                    student.aceptar = <button type="button" className="btn btn-primary pull-right" onClick={this.showConditionalModal.bind(this, student)}><Glyphicon glyph="ok" /> Aceptar</button>;
+                    return student;}, this) } columns={ conditionalColumns } />
+            </div>
+            </Tab>}
+            </Tabs>
+            
+            {(this.state.conditional != null) &&  <Modal
+            show={this.state.conditional != null}
             onHide={this.handleHide.bind(this)}
             container={this}
             aria-labelledby="contained-modal-title"
@@ -112,7 +211,7 @@ class SubjectStudents extends Component {
             </Modal.Body>
             <Modal.Footer>
                 <Button onClick={this.handleHide.bind(this)}>Cancelar</Button>
-                <Button bsStyle="primary" onClick={this.handleHide.bind(this)}>Aceptar</Button>
+                <Button bsStyle="primary" onClick={this.acceptConditional.bind(this)}>Aceptar</Button>
             </Modal.Footer>
             </Modal>}
 
