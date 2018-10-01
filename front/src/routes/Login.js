@@ -42,11 +42,11 @@ class Login extends Component {
             //this.setState({ formClass: this.state.formClass + " has-danger", inputClass: this.state.inputClass + " is-invalid" })
             this.setState({passwordError: true});
         else {
-            Proxy.login("gryn", "777") // CAMBIAR POR DNI Y PASSWORD
+            Proxy.login(this.state.dni, this.state.password) // CAMBIAR POR DNI Y PASSWORD
             .then(
                 (result) => {
-                    console.log(result);
                     this.saveData(result);
+                    console.log(result);
                     //this.props.history.push('/home');
                     window.location.reload()
                 },

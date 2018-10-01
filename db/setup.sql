@@ -27,8 +27,8 @@ insert into users (name,surname,username,password,email,token,token_expiration) 
     ('José Ignacio','Sbruzzi','jose','jojo','jose.jose@gmail.com','78',now()+'5 minutes'),
     ('José Ignacio','Sbruzzi','97452','jojo','jose.jose@gmail.com','79',now()+'5 minutes'),
     ('Andorid No. 9','Cell','99999','9','nina.niner@gmail.com','99',now()+'5 minutes'),
-    ('Sebastian','Grynberg','gryn','777','sebas@fi.uba.ar','18',now()+'5 minutes');
-
+    ('Sebastian','Grynberg','gryn','777','sebas@fi.uba.ar','18',now()+'5 minutes'),
+    ('José Ignacio','Sbru','39287287','287','jose.sb@gmail.com','19',now()+'5 minutes');
 
 /******************************************
 ROLES
@@ -58,8 +58,8 @@ create table professors(
 );
 
 insert into students (username) values ('jose'),('97452'),('99999');
-insert into professors (username) values ('gryn');
-insert into department_administrators (username) values ('gryn');
+insert into professors (username) values ('gryn'), ('39287287');
+insert into department_administrators (username) values ('gryn'), ('39287287');
 
 
 /*********************************************

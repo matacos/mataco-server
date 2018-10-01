@@ -320,7 +320,7 @@ describe("Test /cursos",()=>{
     console.log(responseInit.body)
     console.log("Here 14 \n")
 
-    expect(responseInit.body.professors).to.have.lengthOf(4)
+    expect(responseInit.body.professors).to.have.lengthOf(5)
     expect(responseInit.statusCode).to.equal(200)
 
     })
@@ -333,7 +333,7 @@ describe("Test /cursos",()=>{
         console.log(responseInit.body)
         console.log("Here 16 \n")
     
-        expect(responseInit.body.professors).to.have.lengthOf(4)
+        expect(responseInit.body.professors).to.have.lengthOf(5)
         expect(responseInit.statusCode).to.equal(200)
 
 
@@ -366,7 +366,7 @@ describe("Test /cursos",()=>{
         console.log(responseInit.body)
         console.log("Here 16 \n")
     
-        expect(responseInit.body.professors).to.have.lengthOf(4)
+        expect(responseInit.body.professors).to.have.lengthOf(5)
         expect(responseInit.statusCode).to.equal(200)
 
 

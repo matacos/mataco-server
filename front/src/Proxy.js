@@ -2,7 +2,7 @@ import Assistant from "./Assistant";
 
 class Proxy  {
     constructor() {
-        this.url = "http://mataco2.herokuapp.com/api"
+        this.url = "/api"//"http://mataco2.herokuapp.com/api"
         this.local = "http://localhost:3000/api"
     }
 
@@ -10,14 +10,14 @@ class Proxy  {
         return fetch(this.url + "/login", {
                 method: 'POST',
                 headers: {
-                  //'Accept': 'application/json',
+                  'Accept': 'application/json',
                   'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
                   username: dni,
                   password: password
                 }),
-             }).then(res => res.json())
+             }).then(res => console.log(res.text()))
 
       }
 
