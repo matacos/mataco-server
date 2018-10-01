@@ -146,7 +146,7 @@ function mountRoutes(app,db,schemaValidation){
         where
             course = $5;
         `
-        await db.query(query,[
+        const result = await db.query(query,[
             cod_departamento,cod_materia,nombre,vacantes_totales,course
         ])
         res.sendStatus(204)
@@ -155,13 +155,12 @@ function mountRoutes(app,db,schemaValidation){
     app.delete(["/cursos/:id"], async function(req,res,next){
         const viewCreation = await db.query(coursesView)
 
-        let parts = req.params.id.split("-")
-        let course=parts[0]
+        let course = req.params.id
         const query=`
         delete from courses c where
             c.id = $1;
         `
-        await db.query(query,[course])
+        const result = await db.query(query,[course])
         res.sendStatus(204)
     })
 

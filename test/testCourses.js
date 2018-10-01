@@ -166,6 +166,7 @@ describe("Test /cursos",()=>{
         expect(response.statusCode).to.equal(400)
     })
 
+    /*
     it("happy path query post y delete course",async ()=>{
         const response1 = await requestWithAuth("99999","9","POST","/cursos",{
             "cod_departamento":"75",
@@ -189,7 +190,8 @@ describe("Test /cursos",()=>{
         expect(response2.statusCode).to.equal(200)
         expect(response2.body.courses).to.have.lengthOf(2)
 
-         const response3 = await requestWithAuth("99999","9","DELETE","/cursos/2")
+        
+         const response3 = await requestWithAuth("99999","9","DELETE","/cursos/3")
 
          console.log("Here 5 \n")
          console.log(response3.body)
@@ -204,7 +206,29 @@ describe("Test /cursos",()=>{
         console.log("Here 8 \n")
 
         expect(response4.statusCode).to.equal(200)
+        expect(response4.body.courses).to.have.lengthOf(1)
+        
+    })
+     
+
+    it("happy path delete",async ()=>{
+        
+         const response3 = await requestWithAuth("99999","9","DELETE","/cursos/2")
+
+         console.log("Here 9 \n")
+         console.log(response3.body)
+         console.log("Here 10 \n")
+
+        expect(response3.statusCode).to.equal(204)
+
+        const response4 = await requestWithAuth("99999","9","GET","/cursos?cod_departamento=75&cod_materia=06")
+
+        console.log("Here 11 \n")
+        console.log(response4.body)
+        console.log("Here 12 \n")
+
+        expect(response4.statusCode).to.equal(200)
         expect(response4.body.courses).to.have.lengthOf(0)
     })
-
+    */ 
 })
