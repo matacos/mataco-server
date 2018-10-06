@@ -84,7 +84,7 @@ create table degree_enrollments (
 );
 insert into degree_enrollments( degree, student) values 
     ('10','jose'),
-    ('1','97452'),
+    ('10','97452'),
     ('1','99999'),
     ('2','99999'),
     ('3','99999');

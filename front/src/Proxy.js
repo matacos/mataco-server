@@ -2,7 +2,7 @@ import Assistant from "./Assistant";
 
 class Proxy  {
     constructor() {
-        this.url = "/api"//"http://mataco2.herokuapp.com/api"
+        this.url = "/api"//"https://mataco2.herokuapp.com/api"
         this.local = "http://localhost:3000/api"
     }
 

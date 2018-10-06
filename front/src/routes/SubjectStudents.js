@@ -13,7 +13,7 @@ class SubjectStudents extends Component {
         super(props);
 
         this.state = {
-            subject: "Algoritmos y Programación III",
+            subject: "Ver Curso",
             courseId: this.props.match.params.idCurso.substr(4),
             selectSubjects: false,
             students: [],

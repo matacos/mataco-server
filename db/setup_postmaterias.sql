@@ -38,8 +38,8 @@ create table courses(
     id serial primary key
 );
 insert into courses(department_code,subject_code,semester,name,total_slots) values
-    ('75','07','1c2018','Onrganización de Datos',200),
-    ('75','06','1c2018','Algoritmos y Programacion III',120);
+    ('75','06','1c2018','Onrganización de Datos',200),
+    ('75','07','1c2018','Algoritmos y Programacion III',120);
 create table professors_roles(
     professor varchar(10),
     foreign key (professor) references professors(username) on delete cascade,

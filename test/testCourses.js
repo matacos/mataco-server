@@ -303,22 +303,25 @@ describe("Test /cursos",()=>{
 
     const responseInit = await requestWithAuth("99999","9","GET","/docente?username=12345678")
 
-    console.log("Here 13 \n")
-    console.log(responseInit.body)
-    console.log("Here 14 \n")
-
     expect(responseInit.body).to.be.jsonSchema(correctProfessorSchema)
     expect(responseInit.statusCode).to.equal(200)
 
     })
 
+    it("put de curso",async ()=>{
+        const responseInit = await requestWithAuth("99999","9","GET","/cursos?cod_departamento=75&cod_materia=07")
+        const course=responseInit.body.courses[0]
+        const responsePut=await requestWithAuth("99999","9","PUT",`/cursos/${course.course}`,{
+            name:"Algoritmos III Fontela"
+        })
+        const responseGetAgain = await requestWithAuth("99999","9","GET","/cursos?cod_departamento=75&cod_materia=07")
+        const courseAgain=responseGetAgain.body.courses[0]
+        expect(courseAgain.name).to.be.equal("Algoritmos III Fontela")
+    })
+
     it("happy path get docentes",async ()=>{
 
     const responseInit = await requestWithAuth("99999","9","GET","/docentes")
-
-    console.log("Here 13 \n")
-    console.log(responseInit.body)
-    console.log("Here 14 \n")
 
     expect(responseInit.body.professors).to.have.lengthOf(5)
     expect(responseInit.statusCode).to.equal(200)

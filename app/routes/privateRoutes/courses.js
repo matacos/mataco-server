@@ -160,40 +160,33 @@ function mountRoutes(app,db,schemaValidation){
         
     })
 
-    const cursosQueryPut={
-        requires:["cod_departamento","cod_materia","name","vacantes_totales"],
+    const cursosBodyPut={anyOf:[{
+        requires:["total_slots"],
         properties:{
-            "cod_departamento":{type:"string"},
-            "cod_materia":{type:"string"},
-            "nombre":{type:"string"},
-            "vacantes_totales":{type:"number"},
+            "total_slots":{type:"number"},
         }
-    }
+    },{
+        requires:["name"],
+        properties:{
+            "name":{type:"number"},
+        }
+    }]}
 
-    app.put(["/cursos/:id"], schemaValidation({body:cursosQueryPut}),async function(req,res,next){
+    app.put(["/cursos/:id"], schemaValidation({body:cursosBodyPut}),async function(req,res,next){
         const viewCreation = await db.query(coursesView)
-
-        const cod_departamento = req.body.cod_departamento
-        const cod_materia = req.body.cod_materia
-        const nombre = req.body.nombre
-        const vacantes_totales = req.body.vacantes_totales
-
-        let parts = req.params.id.split("-")
-        let course=parts[0]
-
+        let modifications=[]
+        let newValues=[]
+        for( let parameter in req.body){
+            modifications.push(` ${parameter}=$${modifications.length + 2 } `)
+            newValues.push(req.body[parameter])
+        }
         const query=`
         update courses
-        set cod_departamento = $1
-            cod_materia = $2
-            nombre = $3
-            vacantes_totales = $4
+        set ${modifications.join(",")}
         where
-            course = $5;
+            id = $1;
         `
-        const result = await db.query(query,[
-            cod_departamento,cod_materia,nombre,vacantes_totales,course
-        ])
-        const result_waiter=await db.query("select * from courses;")
+        const result = await db.query(query,[req.params.id].concat(newValues))
         res.sendStatus(204)
     })
 
