@@ -179,7 +179,7 @@ class Exam extends Component {
       }
 
     validInput() {
-        var errorMsg = "Debe completar todos los campos para agregar un examen";
+        var errorMsg = "Debe completar todos los campos para modificar un examen";
         var begin = this.state.examData.beginning.split(":");
         var end = this.state.examData.ending.split(":");
 
@@ -255,8 +255,27 @@ class Exam extends Component {
         }
     }
 
-    render() {
+    canPutGrades() {
+        let date = new Date();
+        if (this.state.data != null) {
+            let parts = this.state.data.exam_date.substring(0, 10).match(/(\d+)/g);
+            let examDate = new Date(parts[0], parts[1] - 1, parts[2]);
+            let examEnd = this.state.examData.ending.split(":");
+            if (date > examDate)
+                return true;
+            else if ((date.getFullYear() == examDate.getFullYear()) && (date.getMonth() == examDate.getMonth()) && (date.getDate() == examDate.getDate())) {
+                if (date.getHours() > examEnd[0])
+                    return true;
+                if ((date.getHours() == examEnd[0]) && (date.getMinutes() > examEnd[1]))
+                    return true;
+            }
+            return false;  
+        }
+        else 
+            return false;  
+    }
 
+    render() {
         const columns = [
         {
             dataField: 'id',
@@ -292,6 +311,7 @@ class Exam extends Component {
         {
             dataField: 'grade',
             text: 'Nota de final',
+            editable: this.canPutGrades(),   
             validator: (newValue, row, column) => {
                 if (newValue == "-")
                     return true;
@@ -378,7 +398,8 @@ class Exam extends Component {
                     props => (
                         
                     <div>
-                        <button type="button" className="btn btn-primary pull-right" style={{marginBlockStart: "-0.2em", marginInlineStart: "0.5em"}} onClick={this.showModal.bind(this, "import")}><Glyphicon glyph="upload" /> Subir archivo de notas</button>
+                        {this.canPutGrades() &&
+                        <button type="button" className="btn btn-primary pull-right" style={{marginBlockStart: "-0.2em", marginInlineStart: "0.5em"}} onClick={this.showModal.bind(this, "import")}><Glyphicon glyph="upload" /> Subir archivo de notas</button>}
                         <ExportCSVButton { ...props.csvProps } type="button" className="btn btn-primary pull-right" style={{marginTop: "-0.2em"}}> <Glyphicon glyph="download" /> Descargar listado de alumnos</ExportCSVButton>                    
                         
                         <h3> Listado de alumnos inscriptos
