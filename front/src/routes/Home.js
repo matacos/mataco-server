@@ -17,7 +17,7 @@ class Home extends Component {
     }
 
     obtainMode() {
-        return this.inProfessorMode() ? "modo docente" : "modo administrador de departamento";
+        return this.inProfessorMode() ? "Modo docente" : "Modo administrador de departamento";
     }
 
     changeMode() {
@@ -34,10 +34,10 @@ class Home extends Component {
 
     otherMode() {
         if (this.inProfessorMode()) {
-            return "modo Administrador de departamento";
+            return "Modo administrador de departamento";
         }
         else 
-            return "modo docente";
+            return "Modo docente";
         
     }
 
@@ -48,7 +48,6 @@ class Home extends Component {
     goToSubject(subjectId) {
         this.props.history.push('/materias/' + subjectId);
     }
-
 
     inProfessorMode() {
         return Assistant.getField("mode") == "professor";
@@ -72,7 +71,7 @@ class Home extends Component {
                 {this.inProfessorMode() && <Glyphicon glyph="apple" /> }
                 {!this.inProfessorMode() && <Glyphicon glyph="briefcase" /> }
                 <span>  Estás conectado en </span><strong>{this.obtainMode()}</strong>.</p> 
-                <p className="text-right"><a className="btn btn-primary btn-lg" onClick={this.changeMode.bind(this)}>Pasar a {this.otherMode()}</a></p></div>}
+                <p className="text-right"><a className="btn btn-primary btn-lg" onClick={this.changeMode.bind(this)}>{this.otherMode()}</a></p></div>}
                 </div>
             </div>
         </div>

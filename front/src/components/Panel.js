@@ -10,69 +10,25 @@ class Panel extends Component {
         super(props);
 
         this.state = {
-            selectedCourses: false,
             text: '',
-            courses:[],
-            subjects: []
+            subjects: [],
+            courses: []
         };
 
     }
 
     componentDidMount() {
-        // TODO para docente: Llamada a proxy: GET /cursos?professor=<id de docente>
-        // Luego con id de materia hago GET /materias y saco el nombre, codigo y depto
-
-
-            Proxy.getProfessorCourses(Assistant.getField("username")).then(
-            (coursesResult) => {
-                        console.log(coursesResult);
-                        this.setState({courses: coursesResult.courses});
-                        Assistant.setField("token", coursesResult.token);
-                        },
-                    (error) => {
-                        console.log(error)
-                    }
-                )	
+        if (Assistant.isProfessor())
+            Proxy.getProfessorCourses().then(courses => this.setState({courses: courses}));	
     
+        if (Assistant.isDepartmentAdmin())
+            Proxy.getDepartmentSubjects().then(subjects => this.setState({subjects: subjects}));
 
-        Proxy.getDepartmentSubjects("Computación")
-        .then(
-            (result) => {
-                console.log(result);
-                this.setState({subjects: this.removeDuplicates(result.subjects)});
-                Assistant.setField("token", result.token);
-            },
-            (error) => {
-                console.log(error)
-            }
-        )
-        
-        /*Proxy.getProfessorCourses("12345678")
-        .then(
-            (cousesResult) => {
-                console.log(coursesResult);
-                //this.setState({courses: result.courses});
-                Assistant.setField("token", coursesResult.token);
-                Proxy.getDepartmentSubjects("Computación")
-                .then(
-                    (subjectResult) => {
-                        this.setState({courses: this.getCourses(coursesResult.courses, subjectResult.subjects)});
-                        Assistant.setField("token", subjectResult.token);
-
-                },
-                (error) => {
-                    console.log(error)
-                })
-            },
-            (error) => {
-                console.log(error)
-            }
-        )*/
-/*
+        /*
         this.setState({courses: [{department_code: "75", subject_code: "07", name: "Algoritmos y Programación III", course: "2"},
                                     {department_code: "75", subject_code: "44", name: "Admin. y Control de Desarrollo de Proy. Informáticos II", course: "4"},
                                     {department_code: "75", subject_code: "47", name: "Taller de Desarrollo de Proyectos II", course: "3"}]})
- */       
+        */       
         // DEPTO
         /*this.setState({subjects: [{department_code: "75", code: "07", name: "Algoritmos y Programación III"},
                                 {department_code: "75", code: "44", name: "Admin. y Control de Desarrollo de Proy. Informáticos II"},
@@ -81,42 +37,28 @@ class Panel extends Component {
                                 {department_code: "75", code: "41", name: "Algoritmos y Programación II"}]})*/
     }
 
-    removeDuplicates(subjects) {
-        var i;
-        var uniqueSubjects = [subjects[0]];
-        var first = subjects[0];
-        for (i = 1; i < subjects.length; i++) {
-            if (subjects[i].name != first.name) {
-                uniqueSubjects.push(subjects[i]);
-                first = subjects[i];
-            }
-        }
-        uniqueSubjects.sort((a,b) => (a.name > b.name) ? 1 : ((b.name > a.name) ? -1 : 0));
-        return uniqueSubjects;
-    }
-
     obtainMode() {
-        return (Assistant.getField("mode") == "professor") ? "modo docente" : "modo administrador de departamento";
+        return Assistant.inProfessorMode() ? "modo docente" : "modo administrador de departamento";
     }
 
     handleSelectedCourses() {
         if (this.props.selectedSubjects) {
-            //this.setState({selectedCourses: false, text: this.state.text.replace("v", ">")});
             this.props.setSelectedSubjects(false);
         }
         else {
-            //this.setState({selectedCourses: true, text: this.state.text.replace(">", "v")});
             this.props.setSelectedSubjects(true);
         }
         
     }
 
-    goToCourse(courseId) {
-        this.props.history.push('/cursos/' + courseId);
+    goToCourse(courseId, subjectName) {
+        this.props.history.push('/cursos/' + subjectName + '/' + courseId);
+        this.handleSelectedCourses();
     }
 
-    goToSubject(subjectId,subjectName) {
-        this.props.history.push('/materias/' + subjectId+"/"+subjectName);
+    goToSubject(subjectId, subjectName) {
+        this.props.history.push('/materias/' + subjectId + '/' + subjectName);
+        this.handleSelectedCourses();
     }
 
     goToHome() {
@@ -124,22 +66,21 @@ class Panel extends Component {
     }
 
     logout() {
-        Assistant.clearData();
+        Proxy.logout();
         this.props.history.push('/login');
     }
 
     render() {
-        if (Assistant.getField("mode") == "professor")
-        var listItems = this.state.courses.map((d) => <div key={d.department_code + d.subject_code} style={{marginLeft: "2em"}}><button className="text-primary text-left" style={{background: "none", border: "none", padding: "0"}} onClick={this.goToCourse.bind(this, d.department_code + d.subject_code + d.course)}>{d.name}</button><hr /></div>);
-    else
-        var listItems = this.state.subjects.map((d) => <div key={d.department_code + d.code} style={{marginLeft: "2em"}}><button className="text-primary text-left" style={{background: "none", border: "none", padding:"0"}} onClick={this.goToSubject.bind(this, d.department_code + d.code,d.name)}>{d.name}</button><hr /></div>);
+        var listItems;
+        if (Assistant.inProfessorMode())
+            listItems = this.state.courses.map((d) => <div key={d.department_code + d.subject_code} style={{marginLeft: "2em"}}><button className="text-primary text-left" style={{background: "none", border: "none", padding: "0"}} onClick={this.goToCourse.bind(this, d.department_code + d.subject_code + d.course, d.name.replace(/ /g, "-"))}>{d.name}</button><hr /></div>);
+        else
+            listItems = this.state.subjects.map((d) => <div key={d.department_code + d.code} style={{marginLeft: "2em"}}><button className="text-primary text-left" style={{background: "none", border: "none", padding:"0"}} onClick={this.goToSubject.bind(this, d.department_code + d.code, d.name.replace(/ /g, "-"))}>{d.name}</button><hr /></div>);
         return (
         <div className="panel panel-default col-md-3" style={{margin: "0", padding: "0"}}>
             <div className="panel-heading" style={{width: "auto"}}>
                 <img className="img-responsive center-block" alt="logo" src={logoFIUBA} height="50%" width="50%" style={{marginLeft: "auto", marginRight: "auto", width: "50%", paddingTop: "1em"}}/>
-                {/*</div><h3 className="panel-title text-center" style={{padding: "1em"}}>Carlos Fontela</h3>*/}
-                {/*<h3 className="text-center" style={{color: "#696969"}}>Carlos Fontela</h3>*/}
-                <h3 className="text-center" style={{color: "#696969"}}>{(Assistant.getField("mode") == "professor") ? Assistant.getField("username") : "Departamento de " + Assistant.getField("department")}</h3>
+                <h3 className="text-center" style={{color: "#696969"}}>{Assistant.inProfessorMode() ? Assistant.getField("name") : "Departamento de " + Assistant.getField("department")}</h3>
             </div>
 
             <div className="panel-body" style={this.props.selectedSubjects ? {height: "auto"} : {height: "100vh"}}>
@@ -148,7 +89,7 @@ class Panel extends Component {
                 <button style={{background: "none", border: "none"}} onClick={this.handleSelectedCourses.bind(this)}><h4 className="text-primary"> 
                 {(this.props.selectedSubjects) && <Glyphicon style={{fontSize:"0.75em"}} glyph="minus" />}
                 {!(this.props.selectedSubjects) && <Glyphicon style={{fontSize:"0.75em"}} glyph="plus" />}
-                {(Assistant.getField("mode") == "professor") ? " Mis Cursos" : " Mis Materias"}</h4> </button>
+                {Assistant.inProfessorMode() ? " Mis Cursos" : " Mis Materias"}</h4></button>
                 {(this.props.selectedSubjects) && 
                 <div style={{marginTop: "1em"}}>{listItems}</div>}
                 <p><button className="text-primary" style={{background: "none", border: "none"}} onClick={this.logout.bind(this)}><h4 className="text-primary">  Cerrar sesión </h4></button></p>

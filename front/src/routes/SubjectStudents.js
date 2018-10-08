@@ -6,47 +6,28 @@ import { Modal, Button } from 'react-bootstrap';
 import { Glyphicon, Tabs, Tab, PageHeader } from 'react-bootstrap';
 import BootstrapTable  from 'react-bootstrap-table-next';
 import 'react-bootstrap-table-next/dist/react-bootstrap-table2.min.css';
-import Assistant from '../Assistant';
 
 class SubjectStudents extends Component {
     constructor(props) {
         super(props);
 
         this.state = {
-            subject: "Ver Curso",
-            courseId: this.props.match.params.idCurso.substr(4),
             selectSubjects: false,
             students: [],
             columns: [],
             conditional: null,
             key: 1
         };
-        console.log(this.state.courseId)
+    }
+
+    getStudents() {
+        let courseId = this.props.match.params.idCurso.substr(4);
+        Proxy.getCourseStudents(courseId)
+        .then(students => this.setState({students: students}));
     }
 
     componentDidMount() {
-
-        Proxy.getCourseStudents(this.state.courseId)
-        .then(
-            (result) => {
-                //this.setState({courses: result.courses})
-                console.log(result.courseInscriptions)
-                var studentsList = result.courseInscriptions.map(inscription => {
-                    var data = {};
-                    data.estado = inscription.accepted ? "Regular" : "Condicional";
-                    data.nombre = inscription.student.name;
-                    data.apellido = inscription.student.surname;
-                    data.prioridad = "2";
-                    data.id = inscription.student.username;
-                    return data;
-                })
-                Assistant.setField("token", result.token);
-                this.setState({students: studentsList})
-            },
-            (error) => {
-                console.log(error)
-            }
-        ) 
+        this.getStudents();
         /*
         this.setState({students: [{id: "98557", apellido: "Rodriguez", nombre: "Roberto", estado: "Regular", prioridad: "1"},
                         {id: "87445", apellido: "Herrera", nombre: "Candela", estado: "Regular", prioridad: "12"},
@@ -59,59 +40,26 @@ class SubjectStudents extends Component {
         */
     }
 
+    componentDidUpdate(prevProps){
+        if(this.props.match.params.idMateria != prevProps.match.params.idMateria){
+            this.getStudents();
+        }
+    }
+
+    getSubjectName() {
+        return this.props.match.params.nombreMateria.replace(/-/g, " ");
+    }
+
     showConditionalModal(student) {
         this.setState({conditional: student})
     }
 
     acceptConditional() {
-        var updatedList = this.state.students;
         if (this.state.conditional) {
-            for (var i = 0; i < updatedList.length; i++) {
-                if (updatedList[i].id == this.state.conditional.id) {
-
-                    updatedList[i].estado = "Regular";
-
-                    
-
-                    Proxy.putAcceptConditionalStudent(this.state.courseId, this.state.conditional.id)
-                    .then(
-                        (result) => {
-                            //Assistant.setField("token", result.token);
-
-                            Proxy.getCourseStudents(this.state.courseId)
-                            .then(
-                                (result) => {
-                                    //this.setState({courses: result.courses})
-                                    console.log(result.courseInscriptions)
-                                    var studentsList = result.courseInscriptions.map(inscription => {
-                                        var data = {};
-                                        data.estado = inscription.accepted ? "Regular" : "Condicional";
-                                        data.nombre = inscription.student.name;
-                                        data.apellido = inscription.student.surname;
-                                        data.prioridad = "2";
-                                        data.id = inscription.student.username;
-                                        return data;
-                                    })
-                                    Assistant.setField("token", result.token);
-                                    this.setState({students: studentsList})
-                                },
-                                (error) => {
-                                    console.log(error)
-                                }
-                            ) 
-
-                        },
-                        (error) => {
-                            console.log(error)
-                        }
-                    ) 
-
-                    
-                    
-                }
-            }
+            let courseId = this.props.match.params.idCurso.substr(4);
+            Proxy.putAcceptConditionalStudent(courseId, this.state.conditional.id)
+            .then(students => this.setState({students: students}));
         }
-        this.setState({students: updatedList});
         this.handleHide();
     }
 
@@ -204,7 +152,7 @@ class SubjectStudents extends Component {
 
             <div className="col-md-9">
             
-            <PageHeader style={{marginBottom: "4em"}}> {this.state.subject} </PageHeader>
+            <PageHeader style={{marginBottom: "4em"}}> {this.getSubjectName()} </PageHeader>
             
             <Tabs activeKey={(conditionalStudents.length > 0 && this.state.key) || 1}
                 onSelect={this.handleSelect.bind(this)}

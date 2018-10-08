@@ -23,10 +23,10 @@ class Login extends Component {
         this.setState({dniError: false, passwordError: false, credentialsError: false})
     }
 
-    saveData(result) {
+    /*saveData(result) {
         if ("department_administrators" in result.user.rolesDescriptions){
             Assistant.setField("department", result.user.rolesDescriptions["department_administrators"].department_name);
-        }else{
+        } else {
             Assistant.setField("department","NO DEPARTMENT,DUDE. GTFO.");
         }
         Assistant.setField("token", result.token);
@@ -34,7 +34,7 @@ class Login extends Component {
         Assistant.setField("email", result.user.email);
         Assistant.setField("roles", result.user.roles.join(","));
         Assistant.isProfessor() ? Assistant.setField("mode", "professor") : Assistant.setField("mode", "department_admin");
-    }
+    }*/
 
     processInput() {
         this.clearErrors()
@@ -50,7 +50,7 @@ class Login extends Component {
             Proxy.login(this.state.dni, this.state.password) // CAMBIAR POR DNI Y PASSWORD
             .then(
                 (result) => {
-                    this.saveData(result);
+                    //this.saveData(result);
                     console.log(result);
                     //this.props.history.push('/home');
                     window.location.reload()
