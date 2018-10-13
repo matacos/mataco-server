@@ -107,7 +107,8 @@ describe("Test /inscripciones_cursos",()=>{
             expect(inscription.course.course).to.be.equal(1)
         }
     })
- /*   it("add 97452 to course 2 (he is enrolled in course 1 already), and then remove him from course 1",async ()=>{
+    /*
+    it("add 97452 to course 2 (he is enrolled in course 1 already), and then remove him from course 1",async ()=>{
         let response = await requestWithAuth("97452","jojo","POST","/cursadas/",{
             "student":"97452",
             "course":"2"
@@ -134,6 +135,7 @@ describe("Test /inscripciones_cursos",()=>{
         expect(response.statusCode).to.equal(204)
 
         response = await requestWithAuth("97452","jojo","GET","/cursadas?curso=1")
+        //ese request es un alumno poniendose la nota :D
         console.log("=======")
         console.log("=======")
         console.log("=======")
@@ -145,8 +147,10 @@ describe("Test /inscripciones_cursos",()=>{
         
         expect(response.body.courseInscriptions[0].accepted).to.be.true
         expect(response.body.courseInscriptions[0].grade).to.be.equal("6")
+
+        await requestWithAuth("97452","jojo","DELETE","/cursadas?curso=1")
         
     })
-*/
+    */
 
 })
