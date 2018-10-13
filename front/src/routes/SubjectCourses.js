@@ -3,17 +3,13 @@ import '../App.css';
 import Proxy from '../Proxy';
 import Panel from '../components/Panel';
 import { Modal, Button } from 'react-bootstrap';
-import Assistant from '../Assistant';
 import { Glyphicon, PageHeader } from 'react-bootstrap';
 
 class SubjectCourses extends Component {
     constructor(props) {
         super(props);
-        console.log("El id de esta materia es:")
-        console.log(this.props.match.params.idMateria)
 
         this.state = {
-            subject: this.props.match.params.nombreMateria,
             code: this.props.match.params.idMateria,
             selectSubjects: false,
             showAddSchedule: false,
@@ -38,45 +34,28 @@ class SubjectCourses extends Component {
         };
     }
 
-    setCoursesInformation(subject){
-        let departmentCode=subject.slice(0,2)
-        let subjCode=subject.slice(2,4)
-        console.log("Me traigo las cosas del curso ",subject)
-        return Proxy.getSubjectCourses(departmentCode, subjCode)
-        .then(
-            (result) => {
-                
-                console.log("==================")
-                console.log("==================")
-                console.log("==================")
-                console.log("==================")
-                console.log(result)
-                console.log("==================")
-                console.log("==================")
-                console.log("==================")
-                console.log("==================")
-                this.setState({courses: result.courses,subject:this.props.match.params.nombreMateria})
-                Assistant.setField("token", result.token);
-            },
-            (error) => {
-                console.log(error)
-            }
-        )
+    setCoursesInformation(){
+        let subject = this.props.match.params.idMateria;
+        let departmentCode = subject.slice(0,2);
+        let subjectCode = subject.slice(2,4);
+
+        Proxy.getSubjectCourses(departmentCode, subjectCode)
+        .then(courses => this.setState({courses: courses}));
+        
     }
 
     componentDidUpdate(prevProps){
         if(this.props.match.params.idMateria != prevProps.match.params.idMateria){
-            
-            this.setCoursesInformation(this.props.match.params.idMateria)
-
-
+            this.setCoursesInformation();
         }
-
-        
     }
 
     componentDidMount() {
-        this.setCoursesInformation(this.props.match.params.idMateria)
+        this.setCoursesInformation();
+    }
+
+    getSubjectName() {
+        return this.props.match.params.nombreMateria.replace(/-/g, " ");
     }
 
     showModal(modalType, data) {
@@ -140,17 +119,19 @@ class SubjectCourses extends Component {
         this.setState({selectSubjects: bool});
     }
 
+    validSlot(slot) {
+        return (slot <= 300 && slot >= 5);
+    }
+
     changeTotalSlot() {
-        var updatedCourses = this.state.courses;
         var value = parseInt(this.state.slots);
-        if (value <= 300 && value >= 5) {
-            for (var i = 0; i < updatedCourses.length; i++) {
-                if (updatedCourses[i].name == this.state.selectedData.name) {
-                    updatedCourses[i].total_slots = this.state.slots;
-                
-                }
+        if (this.validSlot(value)) {
+            let body = {
+                total_slots: value
             }
-            this.setState({courses: updatedCourses});
+            
+            Proxy.changeCourse(this.state.selectedData.course, body)
+            .then(this.setCoursesInformation());
             this.handleHide("change_slot");
         }
 
@@ -160,45 +141,78 @@ class SubjectCourses extends Component {
 
     } 
 
+    validSchedule(schedule) {
+        if (schedule == null)
+            return false;
+
+        if ((schedule.classroomCode.length > 0) && (schedule.beginningHour < schedule.endingHour)) 
+            return true;
+        return false;
+    }
+
     addSchedule() {
-        var updatedCourses = this.state.courses;
-        var newSchedule = {
-            classroom_code: this.state.classroom,
-            classroom_campus: this.state.place.length == 0 ? "Paseo Colón" : this.state.place,
-            day_of_week: this.state.day.length == 0 ? "Lunes" : this.state.day,
-            beginning: this.state.begin,
-            ending: this.state.end,
-            description: this.state.type.length == 0 ? "Teórica Obligatoria" : this.state.type
-        };
-        for (var i = 0; i < updatedCourses.length; i++) {
-            if (updatedCourses[i].name == this.state.selectedData.name) {
-                updatedCourses[i].time_slots.push(newSchedule);
-            
-            }
+        var begin = this.state.begin.split(":");
+        var end = this.state.end.split(":");
+        var newSchedule = null;
+        if (begin[0].length > 0 && begin[1].length > 0 && end[0].length > 0 && end[1].length > 0) {
+            newSchedule = {
+                classroomCode: this.state.classroom,
+                classroomCampus: this.state.place.length == 0 ? "Paseo Colón" : this.state.place,
+                beginningHour: parseInt(begin[0]),
+                beginningMinutes: parseInt(begin[1]),
+                endingHour: parseInt(end[0]),
+                endingMinutes: parseInt(end[1]),
+                dayOfWeek: this.state.day.length == 0 ? "lun" : this.state.day,
+                description: this.state.type.length == 0 ? "Teórica Obligatoria" : this.state.type
+            };
         }
         
-        this.setState({courses: updatedCourses});
-        this.handleHide("add_schedule");
+        if (this.validSchedule(newSchedule)) {
+            Proxy.addSchedule(this.state.selectedData.course, newSchedule)
+            .then(this.setCoursesInformation())
+            this.handleHide("add_schedule");
+        }
+        else {
+            this.setState({inputError: true, errorMsg: "Debe completar todos los campos para agregar un horario"})
+        }
+    } 
+
+    addProfessor() {
+        if ((this.state.id.length > 4) && (this.state.id.length <= 8)) {
+            var newProfessor = {
+                username: this.state.id,
+                rol: this.state.type.length == 0 ? "Jefe de Cátedra" : this.state.type
+            } 
+            
+            Proxy.addProfessor(this.state.selectedData.course, newProfessor)
+            .then(res => {
+                if (res.status == 500) {
+                    this.setState({inputError: true, errorMsg: "Debe ingresar el DNI de un docente que no se encuentre en el curso"})
+                } 
+                else {
+                    this.setCoursesInformation();
+                    this.handleHide("add_teacher");
+                }
+            })
+        }
+        else {
+            this.setState({inputError: true, errorMsg: "Recuerde que debe ingresar el DNI de un docente válido"})
+        }
+        
     } 
 
     addCourse() {
-        var updatedCourses = this.state.courses;
         var value = parseInt(this.state.slots);
-        if ((value <= 300 && value >= 5) && this.state.id.length > 0) {
+        if (this.validSlot(value) && this.state.id.length > 0) {
             var newCourse = {
-                department_code: this.state.code.substr(0, 2),
-                subject_code: this.state.code.substr(2, 2),
+                cod_departamento: this.state.code.substr(0, 2),
+                cod_materia: this.state.code.substr(2, 2),
                 name: this.state.id,
-                total_slots: this.state.slots,
-                professors: [],
-                time_slots: []
+                vacantes_totales: value
             }
+            Proxy.addCourse(newCourse)
+            .then(this.setCoursesInformation());
             this.handleHide("add_course");
-            Proxy.addCourse(newCourse).then(()=>{
-                this.setCoursesInformation(this.state.code)
-                
-            })
-            
         }
 
         else {
@@ -208,54 +222,24 @@ class SubjectCourses extends Component {
     } 
 
     removeCourse() {
-        var updatedCourses = this.state.courses.filter(course => course.name != this.state.selectedData.name);
-        this.setState({courses: updatedCourses});
-        console.log("$$$$$$$$")
-        console.log("$$$$$$$$")
-        console.log("$$$$$$$$")
-        console.log("$$$$$$$$")
-        console.log(this.state.selectedData.course)
-        console.log("######")
-        console.log(this.state.selectedData)
-        console.log("$$$$$$$$")
-        console.log("$$$$$$$$")
-        console.log("$$$$$$$$")
-
         Proxy.deleteCourse(this.state.selectedData.course)
+        .then(this.setCoursesInformation());
         this.handleHide("remove_course");
     }
 
     removeTeacher() {
-        var updatedCourses = this.state.courses;
-        updatedCourses[this.state.selectedData.idx].professors = updatedCourses[this.state.selectedData.idx].professors.filter(professor => professor.username != this.state.selectedData.username);
-        this.setState({courses: updatedCourses});
+        Proxy.deleteProfessor(this.state.selectedData.course, this.state.selectedData.professor.username)
+        .then(this.setCoursesInformation());
         this.handleHide("remove_teacher");
     }
 
     removeSchedule() {
-        var updatedCourses = this.state.courses;
-        updatedCourses[this.state.selectedData.idx].time_slots = updatedCourses[this.state.selectedData.idx].time_slots.filter(schedule => schedule != this.state.selectedData.schedule);
-        this.setState({courses: updatedCourses});
+        Proxy.deleteSchedule(this.state.selectedData.course, this.state.selectedData.schedule.id)
+        .then(this.setCoursesInformation());
         this.handleHide("remove_schedule");
     }
 
     render() {
-        console.log("#########################")
-        console.log("#########################")
-        console.log("#########################")
-        console.log("#########################")
-        console.log("#########################")
-        console.log("#########################")
-        console.log("#########################")
-        console.log("#########################")
-        console.log("#########################")
-        console.log(this.state.courses)
-        console.log("#########################")
-        console.log("#########################")
-        console.log("#########################")
-        console.log("#########################")
-        console.log("#########################")
-        console.log("#########################")
         window.scrollTo(0, 0);
         return (
         <div>
@@ -269,7 +253,7 @@ class SubjectCourses extends Component {
             
             {this.state.courses && <div>
             <div style={{paddingBottom:"4em"}}>
-            <PageHeader style={{marginBottom: "1.2em"}}> Cursos de {this.state.subject} </PageHeader>
+            <PageHeader style={{marginBottom: "1.2em"}}> Cursos de {this.getSubjectName()} </PageHeader>
             
             
             <button type="button" className="btn btn-primary pull-right" style={{marginRight: "1.5em"}} onClick={this.showModal.bind(this, "add_course")}><Glyphicon glyph="plus" /> Agregar curso</button>
@@ -293,8 +277,10 @@ class SubjectCourses extends Component {
                 </thead>
                 <tbody>
                     {course.professors.map(function(professor, idx_professor){
-                        var data = professor;
+                        var data = {}
+                        data.professor = professor;
                         data.idx = idx;
+                        data.course = course.course;
                         return (
                             <tr key={idx_professor}>
                                 <td>{professor.username}</td>
@@ -327,6 +313,7 @@ class SubjectCourses extends Component {
                         var data = {}
                         data.schedule = schedule;
                         data.idx = idx;
+                        data.course = course.course;
                         return (
                             <tr key={idx_schedule}>
                                 <td>{schedule.classroom_code}</td>
@@ -368,14 +355,13 @@ class SubjectCourses extends Component {
                     <select value={this.state.place} className="form-control" id="sede" onChange={ e => this.setState({ place : e.target.value }) }>
                     <option>Paseo Colón</option>
                     <option>Las Heras</option>
-                    <option>Ciudad Universitaria</option>
                     </select>
                 </div>
                 </div>
 
                 <div className="form-group">
                 <label htmlFor="inputAula" className="col-lg-2 control-label">Aula</label>
-                <div className="col-lg-10">
+                <div className="col-lg-3">
                     <input type="text" value={this.state.classroom} className="form-control" id="inputAula" onChange={ e => {
                         const re = /^[a-zA-Z0-9]+$/;
 
@@ -391,12 +377,12 @@ class SubjectCourses extends Component {
                 <label htmlFor="select" className="col-lg-2 control-label">Día</label>
                 <div className="col-lg-10">
                     <select value={this.state.day} className="form-control" id="dia" onChange={ e => this.setState({ day : e.target.value }) }>
-                    <option>Lunes</option>
-                    <option>Martes</option>
-                    <option>Miércoles</option>
-                    <option>Jueves</option>
-                    <option>Viernes</option>
-                    <option>Sábado</option>
+                    <option>lun</option>
+                    <option>mar</option>
+                    <option>mie</option>
+                    <option>jue</option>
+                    <option>vie</option>
+                    <option>sab</option>
                     </select>
                 </div>
                 </div>
@@ -421,10 +407,10 @@ class SubjectCourses extends Component {
                     <select value={this.state.type} className="form-control" id="tipo" onChange={ e => this.setState({ type : e.target.value}) }>
                     <option>Teórica Obligatoria</option>
                     <option>Práctica Obligatoria</option>
-                    <option>Teórico Práctica Obligatoria</option>
+                    <option>Teórico-Práctica Obligatoria</option>
                     <option>Teórica</option>
                     <option>Práctica</option>
-                    <option>Teórico Práctica</option>
+                    <option>Teórico-Práctica</option>
                     <option>Desarrollo y Consulta</option>
                     </select>
                 </div>
@@ -433,6 +419,11 @@ class SubjectCourses extends Component {
 
             </fieldset>
             </form>
+            {this.state.inputError && 
+                        <div className="alert alert-dismissible alert-danger" >
+                            <button type="button" className="close" data-dismiss="alert" onClick={ e => this.setState({ inputError : false }) }>&times;</button>
+                            <a href="#" className="alert-link"/>{this.state.errorMsg}
+                        </div>}
             </Modal.Body>
             <Modal.Footer>
                 <Button onClick={this.handleHide.bind(this, "add_schedule")}>Cancelar</Button>
@@ -476,15 +467,22 @@ class SubjectCourses extends Component {
             <fieldset>
                 <div className="form-group">
                 <label htmlFor="inputDni" className="col-lg-2 control-label">DNI</label>
-                <div className="col-lg-10">
-                    <input type="text" className="form-control" id="inputDni"/>
+                <div className="col-lg-3">
+                    <input type="text" value={this.state.id} className="form-control" id="inputDni" onChange={ e => {
+                        const re = /^[0-9]+$/;
+
+                        if (e.target.value == '' || re.test(e.target.value)) {
+                            this.setState({id: e.target.value});
+                        }
+                        } } />
+                        
                 </div>
                 </div>
 
                 <div className="form-group">
                 <label htmlFor="select" className="col-lg-2 control-label">Cargo</label>
                 <div className="col-lg-10">
-                    <select className="form-control" id="cargo">
+                    <select className="form-control" value={this.state.type} id="cargo" onChange={ e => this.setState({ type : e.target.value}) }>
                     <option>Jefe de Cátedra</option>
                     <option>Jefe de Trabajos Prácticos</option>
                     <option>Ayudante</option>
@@ -494,10 +492,15 @@ class SubjectCourses extends Component {
 
             </fieldset>
             </form>
+            {this.state.inputError && 
+                        <div className="alert alert-dismissible alert-danger" >
+                            <button type="button" className="close" data-dismiss="alert" onClick={ e => this.setState({ inputError : false }) }>&times;</button>
+                            <a href="#" className="alert-link"/>{this.state.errorMsg}
+                        </div>}
             </Modal.Body>
             <Modal.Footer>
                 <Button onClick={this.handleHide.bind(this, "add_teacher")}>Cancelar</Button>
-                <Button bsStyle="primary" onClick={this.handleHide.bind(this, "add_teacher")}>Aceptar</Button>
+                <Button bsStyle="primary" onClick={this.addProfessor.bind(this)}>Aceptar</Button>
             </Modal.Footer>
             </Modal>}
 
@@ -542,47 +545,6 @@ class SubjectCourses extends Component {
             <Modal.Footer>
                 <Button onClick={this.handleHide.bind(this, "change_slot")}>Cancelar</Button>
                 <Button bsStyle="primary" onClick={this.changeTotalSlot.bind(this)}>Aceptar</Button>
-            </Modal.Footer>
-            </Modal>}
-        
-        {this.state.showAddTeacher &&  <Modal
-            show={this.state.showAddTeacher}
-            onHide={this.handleHide.bind(this, "add_teacher")}
-            container={this}
-            aria-labelledby="contained-modal-title"
-            >
-            <Modal.Header>
-                <Modal.Title id="contained-modal-title">
-                Agregar docente
-                </Modal.Title>
-            </Modal.Header>
-            <Modal.Body>
-            <form className="form-horizontal">
-            <fieldset>
-                <div className="form-group">
-                <label htmlFor="inputDni" className="col-lg-2 control-label">DNI</label>
-                <div className="col-lg-10">
-                    <input type="text" className="form-control" id="inputDni"/>
-                </div>
-                </div>
-
-                <div className="form-group">
-                <label htmlFor="select" className="col-lg-2 control-label">Cargo</label>
-                <div className="col-lg-10">
-                    <select className="form-control" id="cargo">
-                    <option>Jefe de Cátedra</option>
-                    <option>Jefe de Trabajos Prácticos</option>
-                    <option>Ayudante</option>
-                    </select>
-                </div>
-                </div>
-
-            </fieldset>
-            </form>
-            </Modal.Body>
-            <Modal.Footer>
-                <Button onClick={this.handleHide.bind(this, "add_teacher")}>Cancelar</Button>
-                <Button bsStyle="primary" onClick={this.handleHide.bind(this, "add_teacher")}>Aceptar</Button>
             </Modal.Footer>
             </Modal>}
 

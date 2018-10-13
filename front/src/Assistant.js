@@ -23,6 +23,10 @@ class Assistant  {
     isLoggedIn() {
         return localStorage.length > 0;
     }
+
+    inProfessorMode() {
+        return localStorage.getItem("mode") == "professor";
+    }
   }
   
   export default new Assistant();
