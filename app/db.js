@@ -1,5 +1,5 @@
 const Pool = require("pg").Pool;
-
+const copyFrom = require('pg-copy-streams').from;
 
 //base de datos
 
@@ -34,7 +34,12 @@ module.exports={
     query:async (text,params)=>{
         const c=await connection()
         return await c.query(text,params)
+    },
+    copyFrom:async(text)=>{
+        const c=await connection()
+        return await c.query(copyFrom(text))
     }
+
 }
 
 console.log("------------------------")

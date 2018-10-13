@@ -1,7 +1,8 @@
 {
   "name": "mataco-server",
   "scripts": {
-    "start": "node index.js"
+    "start": "node index.js",
+    "seed": "node seeder.js"
   },
   "version": "1.0.0",
   "main": "index.js",
@@ -18,6 +19,7 @@
     "morgan": "^1.9.1",
     "passport": "^0.4.0",
     "passport-http-bearer": "^1.0.1",
-    "pg": "^7.4.3"
+    "pg": "^7.4.3",
+    "pg-copy-streams": "^1.2.0"
   }
 }
