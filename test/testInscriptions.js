@@ -115,7 +115,23 @@ describe("Test /inscripciones_cursos",()=>{
         expect(response.body.courseInscriptions).to.have.lengthOf(1)
         let cursoInicial = response.body.courseInscriptions[0]
 
-        //inscribo al estudiante al curso 1
+        //chequeo que esa inscripción aparezca en /materias
+        response = await requestWithAuth("97452","jojo","GET","/materias?carrera=10")
+        let good_subject=null
+        for(let s of response.body.subjects){
+            if(s.department_code=='75' && s.code=='07'){
+                good_subject=s
+            }
+        }
+        expect(good_subject).to.not.be.null
+        expect(good_subject).to.be.jsonSchema({
+            required:["enroled"],
+            properties:{
+                "enroled":{const:false}
+            }
+        })
+
+        //inscribo al estudiante al curso 2
         response = await requestWithAuth("97452","jojo","POST","/cursadas/",{
             "student":"97452",
             "course":"2"
@@ -126,6 +142,29 @@ describe("Test /inscripciones_cursos",()=>{
         response = await requestWithAuth("97452","jojo","GET","/inscripciones_cursos?estudiante=97452")
         expect(response.body.courseInscriptions).to.have.lengthOf(2)
 
+
+        //chequeo que esa desinscripción aparezca en /materias
+        response = await requestWithAuth("97452","jojo","GET","/materias?carrera=10")
+        good_subject=null
+        for(let s of response.body.subjects){
+            if(s.department_code=='75' && s.code=='07'){
+                good_subject=s
+            }
+        }
+        console.log("========")
+        console.log(good_subject)
+        console.log("========")
+        console.log("========")
+        expect(good_subject).to.not.be.null
+        expect(good_subject).to.be.jsonSchema({
+            required:["enroled"],
+            properties:{
+                "enroled":{const:true}
+            }
+        })
+
+
+
         //desinscribo al estudiante del curso 2
         response = await requestWithAuth("97452","jojo","DELETE","/cursadas/2-97452")
         expect(response.statusCode).to.equal(204)
@@ -133,6 +172,8 @@ describe("Test /inscripciones_cursos",()=>{
         // chequeo que haya 1
         response = await requestWithAuth("97452","jojo","GET","/inscripciones_cursos?estudiante=97452")
         expect(response.body.courseInscriptions).to.have.lengthOf(1)
+
+        
 
         // le pongo nota
         let date=(new Date()).toISOString()
@@ -152,28 +193,32 @@ describe("Test /inscripciones_cursos",()=>{
         response = await requestWithAuth("97452","jojo","DELETE","/cursadas/1-97452")
         expect(response.statusCode).to.equal(204)
 
-        //inscribo al estudianye al curso 2, con el curso de antes
+        //inscribo al estudianye al curso ..1??, con el curso de antes
         let newCourse={
             student:cursoInicial.student.username+"",
             course:cursoInicial.course.course+""
         }
         response = await requestWithAuth("97452","jojo","POST","/cursadas/",newCourse)
-        /*
-        console.log("======")
-        console.log(cursoInicial)
-        console.log("======")
-        console.log(response.body.validations.body)
-        console.log("======")
-        console.log(response.body)
-        console.log("======")
-        console.log(response.body.jsonSchemasValidated)
-        console.log("======")
-        */
         expect(response.statusCode).to.equal(201)
 
         // chequeo que haya 1
         response = await requestWithAuth("97452","jojo","GET","/inscripciones_cursos?estudiante=97452")
         expect(response.body.courseInscriptions).to.have.lengthOf(1)
+        //chequeo que esa inscripción aparezca en /materias
+        response = await requestWithAuth("97452","jojo","GET","/materias?carrera=10")
+        good_subject=null
+        for(let s of response.body.subjects){
+            if(s.department_code=='75' && s.code=='07'){
+                good_subject=s
+            }
+        }
+        expect(good_subject).to.not.be.null
+        expect(good_subject).to.be.jsonSchema({
+            required:["enroled"],
+            properties:{
+                "enroled":{const:false}
+            }
+        })
         
     })
 
