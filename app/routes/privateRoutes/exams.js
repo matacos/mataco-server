@@ -11,6 +11,11 @@ function mountRoutes(app,db,schemaValidation){
             "cod_departamento":{type:"string"},
         },
         required:["cod_materia","cod_departamento"]
+    },{
+        properties:{
+            "docente":{type:"string"},
+        },
+        required:["docente"]
     }]}
     app.get("/finales",schemaValidation({query:examsQuery}),async function(req,res,next){
         const viewCreation1 = await db.query(subjectsView)
@@ -33,9 +38,14 @@ function mountRoutes(app,db,schemaValidation){
         where 
             subject_code like $1
         and department_code like $2
+        and examiner_username like $3
         ;
         `
-        const result = await db.query(query,[subject_code,department_code])
+        const result = await db.query(query,[
+            subject_code,
+            department_code,
+            req.query["docente"] || '%'
+        ])
         res.json({"exams":result.rows})
         next()
     })
