@@ -37,21 +37,25 @@ async function requestWithAuth(username,password,verb,uriPart,body){
     })
     return response
 }
+const examSchema={
+    required:[
+        "semester_code",
+        "subject",
+        "examiner",
+        "id",
+        "classroom_code",
+        "classroom_campus",
+        "beginning",
+        "ending",
+        "exam_date",
+        "enroled"
+    ]
+}
+const singleFinalJsonSchema={required:["exam"],properties:{exam:
+    examSchema
+}}
 const finalsJsonSchema={required:["exams"],properties:{exams:{
-    items:{
-        required:[
-            "semester_code",
-            "subject",
-            "examiner",
-            "id",
-            "classroom_code",
-            "classroom_campus",
-            "beginning",
-            "ending",
-            "exam_date",
-            "enroled"
-        ]
-    }
+    items:examSchema
 }}}
 describe("Test /exams",()=>{
     it("test GET without filter query",async ()=>{
@@ -63,5 +67,42 @@ describe("Test /exams",()=>{
         const response = await requestWithAuth("jose","jojo","GET","/finales?cod_departamento=75&cod_materia=07")
         expect(response.statusCode).to.equal(200)
         expect(response.body).to.be.jsonSchema(finalsJsonSchema)
+    })
+    it("now GET for 75.06 returns no exams",async ()=>{
+        const response = await requestWithAuth("jose","jojo","GET","/finales?cod_departamento=75&cod_materia=06")
+        expect(response.statusCode).to.equal(200)
+        expect(response.body).to.be.jsonSchema(finalsJsonSchema)
+        expect(response.body.exams).to.be.lengthOf(0)
+    })
+    it("test POST",async ()=>{
+        let exam={
+            semester_code:"1c2018",
+            department_code:"75",
+            subject_code:"06",
+            examiner_username:"39111222",
+            classroom_code:"200",
+            classroom_campus:"Paseo Colón",
+            beginning:"16:55",
+            ending:"19:00",
+            exam_date:"2018-04-04"
+        }
+        const response = await requestWithAuth("jose","jojo","POST","/finales",exam)
+        console.log("$$$$$$$$$$$$$")
+        console.log("$$$$$$$$$$$$$")
+        console.log("$$$$$$$$$$$$$")
+
+        console.log(response.body)
+
+        console.log("$$$$$$$$$$$$$")
+        console.log("$$$$$$$$$$$$$")
+        console.log("$$$$$$$$$$$$$")
+        expect(response.statusCode).to.equal(200)
+        expect(response.body).to.be.jsonSchema(singleFinalJsonSchema)
+    })
+    it("now GET for 75.06 returns an exam",async ()=>{
+        const response = await requestWithAuth("jose","jojo","GET","/finales?cod_departamento=75&cod_materia=06")
+        expect(response.statusCode).to.equal(200)
+        expect(response.body).to.be.jsonSchema(finalsJsonSchema)
+        expect(response.body.exams).to.be.lengthOf(1)
     })
 })

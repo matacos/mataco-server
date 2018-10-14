@@ -36,6 +36,8 @@ function createUsersSeed(n){
     s.push(null);
     return s
 }
+
+
 console.log("88888888888888888")
 console.log("88888888888888888")
 console.log("88888888888888888")
@@ -45,26 +47,41 @@ console.log("88888888888888888")
 console.log("88888888888888888")
 setTimeout(doIt, 20000);
 
+
 function doIt(){
-    console.log("ES LA HORA",new Date())
-    db.copyFrom("COPY users FROM STDIN with (format 'csv');").then((stream)=>{
-        console.log("####################")
-        console.log("####################")
-        console.log("####################")
-        console.log("####################")
-        console.log("####################")
-        console.log("####################")
-        console.log("####################")
-        console.log("####################")
-        console.log("####################")
-        console.log("####################")
-        console.log("####################")
-        console.log("####################")
-        console.log("####################")
-        var fileStream = createUsersSeed(10000)
-        fileStream.pipe(stream);
+    db.query("select count(*) from users;").then((usersCount)=>{
+        console.log("====")
+        console.log("====")
+        console.log("====")
+        console.log(usersCount.rows[0].count)
+        console.log("====")
+        console.log("====")
+        console.log("====")
         console.log("ES LA HORA",new Date())
+        if(usersCount.rows[0].count<100){
+            db.copyFrom("COPY users FROM STDIN with (format 'csv');").then((stream)=>{
+                console.log("####################")
+                console.log("####################")
+                console.log("####################")
+                console.log("####################")
+                console.log("####################")
+                console.log("####################")
+                console.log("####################")
+                console.log("####################")
+                console.log("####################")
+                console.log("####################")
+                console.log("####################")
+                console.log("####################")
+                console.log("####################")
+                var fileStream = createUsersSeed(10000)
+                fileStream.pipe(stream);
+                console.log("ES LA HORA",new Date())
+            })
+        }
+        
+
     })
+    
     
 
 }
