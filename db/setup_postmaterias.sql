@@ -38,7 +38,7 @@ create table courses(
     id serial primary key
 );
 insert into courses(department_code,subject_code,semester,name,total_slots) values
-    ('75','06','1c2018','Onrganización de Datos',200),
+    ('75','06','1c2018','Organización de Datos',200),
     ('75','07','1c2018','Algoritmos y Programacion III',120);
 create table professors_roles(
     professor varchar(10),
@@ -138,3 +138,29 @@ create table department_administrators(
     foreign key (username) references users(username)
 );
 insert into department_administrators (username,department_name) values ('gryn','Matemática'), ('39287287','Matemática'),('12345678','Computación');
+
+/**********************************************
+FINALES
+**********************************************/
+create table exams(
+    semester_code varchar(10) references semesters(code),
+    department_code varchar(10),
+    subject_code varchar(10),
+    examiner_username varchar(10) references professors(username),
+
+    id serial primary key,
+
+    classroom_code varchar(100),
+    classroom_campus varchar(100),
+    foreign key (classroom_code,classroom_campus) references classrooms(code,campus),
+
+    beginning time,
+    ending time,
+    exam_date date
+);
+insert into exams (semester_code,department_code,subject_code,examiner_username,classroom_code,classroom_campus,beginning,ending,exam_date) values
+    ('1c2018','75','07','12345678','200','Paseo Colón','19:00','22:00','2018-03-17'),
+    ('1c2018','75','07','12345678','200','Paseo Colón','19:00','22:00','2018-03-24'),
+    ('1c2018','75','07','12345678','200','Paseo Colón','19:00','22:00','2018-03-31'),
+    ('1c2018','75','07','12345678','200','Paseo Colón','19:00','22:00','2018-04-5'),
+    ('1c2018','75','07','12345678','200','Paseo Colón','19:00','22:00','2018-04-12');

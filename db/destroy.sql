@@ -18,3 +18,4 @@ drop table if exists days_of_week cascade;
 drop table if exists classroom_uses cascade;
 drop table if exists course_enrollments cascade;
 drop table if exists department_administrators cascade;
+drop table if exists exams cascade;
