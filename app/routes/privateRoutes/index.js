@@ -5,6 +5,7 @@ const coursesView=fs.readFileSync(__dirname+"/coursesWithData.sql").toString()
 const studentsWithDegreesView=fs.readFileSync(__dirname+"/studentsWithDegrees.sql").toString()
 const courseEnrolments=require("./courseEnrolments.js")
 const courses=require("./courses.js")
+const exams=require("./exams.js")
 function mountRoutes(app,db,schemaValidation){
     
 
@@ -124,6 +125,7 @@ function mountRoutes(app,db,schemaValidation){
     
     courseEnrolments.mountRoutes(promiseRouter,db,schemaValidation)
     courses.mountRoutes(promiseRouter,db,schemaValidation)
+    exams.mountRoutes(promiseRouter,db,schemaValidation)
 
 
     app.use(promiseRouter)
