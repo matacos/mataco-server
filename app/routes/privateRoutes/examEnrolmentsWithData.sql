@@ -6,7 +6,8 @@ create or replace view exam_enrolments_with_data(
     student_username,
     creation,
     grade,
-    grade_date
+    grade_date,
+    enrolment_type
 ) as
 select
     row_to_json(e) as exams_with_data,
@@ -15,9 +16,10 @@ select
     ee.student_username,
     ee.creation,
     ee.grade,
-    ee.grade_date
+    ee.grade_date,
+    ee.enrolment_type
 from
-    exams as e,
+    exams_with_data as e,
     (select username,email,name,surname from users) as u,
     exam_enrolments as ee
 where

@@ -65,6 +65,7 @@ describe("Test /exams",()=>{
     })
     it("test GET filtering by subject",async ()=>{
         const response = await requestWithAuth("jose","jojo","GET","/finales?cod_departamento=75&cod_materia=07")
+        
         expect(response.statusCode).to.equal(200)
         expect(response.body).to.be.jsonSchema(finalsJsonSchema)
     })
@@ -87,6 +88,8 @@ describe("Test /exams",()=>{
             exam_date:"2018-04-04"
         }
         const response = await requestWithAuth("jose","jojo","POST","/finales",exam)
+
+        
         
         expect(response.statusCode).to.equal(200)
         expect(response.body).to.be.jsonSchema(singleFinalJsonSchema)
@@ -104,7 +107,8 @@ describe("Test /exams",()=>{
             "student",
             "creation",
             "grade",
-            "grade_date"
+            "grade_date",
+            "enrolment_type"
         ],
         properties:{
             exam:{type:"object"},
@@ -112,6 +116,7 @@ describe("Test /exams",()=>{
             creation:{type:"string"},
             grade:{type:"string"},
             grade_date:{type:"string"},
+            enrolment_type:{type:"string"},
         }
     }
     const finalEnrolmentsJsonSchema={required:["exam_enrolments"],properties:{exam_enrolments:{
@@ -127,6 +132,20 @@ describe("Test /exams",()=>{
 
     it("test GET inscripciones_final filtering by exam id",async ()=>{
         const response = await requestWithAuth("jose","jojo","GET","/inscripciones_final?id_examen=1")
+
+        /*
+        console.log("$$$$$$$$")
+        console.log("$$$$$$$$")
+        console.log("$$$$$$$$")
+        console.log("$$$$$$$$")
+        console.log(response.body)
+        console.log(response.body.exam_enrolments)
+        console.log(response.body.exam_enrolments[0].exam)
+        console.log("$$$$$$$$")
+        console.log("$$$$$$$$")
+        console.log("$$$$$$$$")
+        console.log("$$$$$$$$")
+        */
 
         expect(response.statusCode).to.equal(200)
         expect(response.body).to.be.jsonSchema(finalEnrolmentsJsonSchema)

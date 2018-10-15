@@ -30,7 +30,8 @@ function mountRoutes(app,db,schemaValidation){
             student,
             creation,
             grade,
-            grade_date
+            grade_date,
+            enrolment_type
         from exam_enrolments_with_data
         where 
             cast(exam_id as text) like $1
