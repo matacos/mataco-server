@@ -43,7 +43,6 @@ class App extends Component {
         this.setState({selected: this.getClearSelection(), mode: "professor"})
         Assistant.setField("mode", "professor");
     }
-    //window.location.reload();
   }
 
   render() {

@@ -374,14 +374,30 @@ class SubjectCourses extends Component {
     }
 
     removeTeacher() {
-        Proxy.deleteProfessor(this.state.selectedData.course, this.state.selectedData.professor.username)
-        .then(this.setCoursesInformation());
+        if (this.state.selectedData.temporary) {
+            let updatedCourses = this.state.courses;
+            let courseProfessors = this.state.courses[this.state.selectedData.idx].professors;
+            updatedCourses[this.state.selectedData.idx].professors = courseProfessors.filter(professor => professor.username != this.state.selectedData.professor.username);
+            this.setState({courses: updatedCourses});
+        }
+        else {
+            Proxy.deleteProfessor(this.state.selectedData.course, this.state.selectedData.professor.username)
+            .then(this.setCoursesInformation());
+        }
         this.handleHide("remove_teacher");
     }
 
     removeSchedule() {
-        Proxy.deleteSchedule(this.state.selectedData.course, this.state.selectedData.schedule.id)
-        .then(this.setCoursesInformation());
+        if (this.state.selectedData.temporary) {
+            let updatedCourses = this.state.courses;
+            let courseTimeSlots = this.state.courses[this.state.selectedData.idx].time_slots;
+            updatedCourses[this.state.selectedData.idx].time_slots = courseTimeSlots.filter(schedule => schedule != this.state.selectedData.schedule);
+            this.setState({courses: updatedCourses});
+        }
+        else {
+            Proxy.deleteSchedule(this.state.selectedData.course, this.state.selectedData.schedule.id)
+            .then(this.setCoursesInformation());
+        }
         this.handleHide("remove_schedule");
     }
 
@@ -431,13 +447,14 @@ class SubjectCourses extends Component {
                         data.professor = professor;
                         data.idx = idx;
                         data.course = course.course;
+                        data.temporary = course.temporary;
                         return (
                             <tr key={idx_professor}>
                                 <td>{professor.username}</td>
                                 <td>{professor.surname}</td>
                                 <td>{professor.name}</td>
                                 <td>{professor.role}</td>
-                                <td><button type="button" className="btn btn-danger pull-right" onClick={this.showModal.bind(this, "remove_teacher", data)}><Glyphicon glyph="minus" /> Eliminar</button></td>
+                                <td><button type="button" className="btn btn-danger pull-right" onClick={this.showModal.bind(this, "remove_teacher", data)} disabled={course.professors.length == 1}><Glyphicon glyph="minus" /> Eliminar</button></td>
                             </tr>
                         )
                     }, this)}
@@ -446,7 +463,7 @@ class SubjectCourses extends Component {
                 </table>
                 <div className="row">
                     <div className="col-md-3">
-                        <button type="button" className="btn btn-primary"  onClick={this.showModal.bind(this, "add_teacher", course)}><Glyphicon glyph="plus" /> Agregar docente</button>
+                        <button type="button" className="btn btn-primary"  onClick={this.showModal.bind(this, "add_teacher", course)} disabled={course.professors.length == 6}><Glyphicon glyph="plus" /> Agregar docente</button>
                     </div>
                     <div className="col-md-9">
                         {course.temporary && course.professors.length == 0 && <p className="text-danger" style={{paddingTop: "1em", marginLeft: "-2em"}}> El curso no se guardará si no tiene docentes. </p>}
@@ -471,6 +488,7 @@ class SubjectCourses extends Component {
                         data.schedule = schedule;
                         data.idx = idx;
                         data.course = course.course;
+                        data.temporary = course.temporary;
                         return (
                             <tr key={idx_schedule}>
                                 <td>{schedule.classroom_code}</td>
@@ -478,7 +496,7 @@ class SubjectCourses extends Component {
                                 <td>{schedule.day_of_week}</td>
                                 <td>{schedule.beginning.substr(0, 5) + " a " + schedule.ending.substr(0, 5)}</td>
                                 <td>{schedule.description}</td>
-                                <td><button type="button" className="btn btn-danger pull-right" onClick={this.showModal.bind(this, "remove_schedule", data)}><Glyphicon glyph="minus" /> Eliminar</button></td>
+                                <td><button type="button" className="btn btn-danger pull-right" onClick={this.showModal.bind(this, "remove_schedule", data)} disabled={course.time_slots.length == 1}><Glyphicon glyph="minus" /> Eliminar</button></td>
                             </tr>
                         )
                     }, this)}
@@ -487,7 +505,7 @@ class SubjectCourses extends Component {
                 </table>
                 <div className="row">
                     <div className="col-md-3">
-                        <button type="button" className="btn btn-primary" style={{marginBottom: "1.5em"}} onClick={this.showModal.bind(this, "add_schedule", course)}><Glyphicon glyph="plus" /> Agregar horario</button>
+                        <button type="button" className="btn btn-primary" style={{marginBottom: "1.5em"}} onClick={this.showModal.bind(this, "add_schedule", course)} disabled={course.time_slots.length == 4}><Glyphicon glyph="plus" /> Agregar horario</button>
                     </div>
                     <div className="col-md-9">
                         {course.temporary && course.time_slots.length == 0 && <p className="text-danger" style={{paddingTop: "1em", marginLeft: "-2em"}}> El curso no se guardará si no tiene horarios. </p>}
