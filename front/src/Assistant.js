@@ -16,6 +16,10 @@ class Assistant  {
         return localStorage.getItem("roles").includes("department_administrator");
     }
 
+    isAdministrator() {
+        return localStorage.getItem("roles").includes("administrator");
+    }
+
     clearData() {
         localStorage.clear();
     }
@@ -26,6 +30,14 @@ class Assistant  {
 
     inProfessorMode() {
         return localStorage.getItem("mode") == "professor";
+    }
+
+    inDepartmentAdminMode() {
+        return localStorage.getItem("mode") == "department_administrator";
+    }
+
+    inAdminMode() {
+        return localStorage.getItem("mode") == "administrator";
     }
   }
   

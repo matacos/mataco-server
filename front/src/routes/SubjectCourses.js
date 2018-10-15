@@ -11,7 +11,6 @@ class SubjectCourses extends Component {
 
         this.state = {
             code: this.props.match.params.idMateria,
-            selectSubjects: false,
             showAddSchedule: false,
             showRemovechedule: false,
             showAddTeacher: false,
@@ -45,7 +44,7 @@ class SubjectCourses extends Component {
     }
 
     componentDidUpdate(prevProps){
-        if(this.props.match.params.idMateria != prevProps.match.params.idMateria){
+        if (this.props.match.params.idMateria != prevProps.match.params.idMateria){
             this.setCoursesInformation();
         }
     }
@@ -115,10 +114,6 @@ class SubjectCourses extends Component {
         
     }
 
-    setSelectedSubjects(bool) {
-        this.setState({selectSubjects: bool});
-    }
-
     validSlot(slot) {
         return (slot <= 300 && slot >= 5);
     }
@@ -142,19 +137,27 @@ class SubjectCourses extends Component {
     } 
 
     validSchedule(schedule) {
+        var errorMsg = "Debe completar todos los campos para agregar un horario"
         if (schedule == null)
-            return false;
+            return [false, errorMsg];
 
-        if ((schedule.classroomCode.length > 0) && (schedule.beginningHour < schedule.endingHour)) 
-            return true;
-        return false;
+        if (schedule.classroomCode.length <= 0)
+            return [false, errorMsg];
+        
+        if ((schedule.beginningHour < schedule.endingHour) || ((schedule.beginningHour == schedule.endingHour) && (schedule.beginningMinutes < schedule.endingMinutes))) 
+            return [true, ""];
+        return [false, "Recuerde que el horario de finalización debe ser posterior al horario de inicio"];
+    }
+
+    validTime(beginningHour, beginningMinutes, endingHour, endingMinutes) {
+        return beginningHour.length > 0 && beginningMinutes.length > 0 && endingHour.length > 0 && endingMinutes.length > 0;
     }
 
     addSchedule() {
         var begin = this.state.begin.split(":");
         var end = this.state.end.split(":");
         var newSchedule = null;
-        if (begin[0].length > 0 && begin[1].length > 0 && end[0].length > 0 && end[1].length > 0) {
+        if (this.validTime(begin[0], begin[1], end[0], end[1])) {
             newSchedule = {
                 classroomCode: this.state.classroom,
                 classroomCampus: this.state.place.length == 0 ? "Paseo Colón" : this.state.place,
@@ -167,13 +170,14 @@ class SubjectCourses extends Component {
             };
         }
         
-        if (this.validSchedule(newSchedule)) {
+        var validationResult = this.validSchedule(newSchedule);
+        if (validationResult[0]) {
             Proxy.addSchedule(this.state.selectedData.course, newSchedule)
             .then(this.setCoursesInformation())
             this.handleHide("add_schedule");
         }
         else {
-            this.setState({inputError: true, errorMsg: "Debe completar todos los campos para agregar un horario"})
+            this.setState({inputError: true, errorMsg: validationResult[1]})
         }
     } 
 
@@ -207,9 +211,10 @@ class SubjectCourses extends Component {
             var newCourse = {
                 cod_departamento: this.state.code.substr(0, 2),
                 cod_materia: this.state.code.substr(2, 2),
-                name: this.state.id,
+                nombre: this.state.id,
                 vacantes_totales: value
             }
+
             Proxy.addCourse(newCourse)
             .then(this.setCoursesInformation());
             this.handleHide("add_course");
@@ -243,13 +248,10 @@ class SubjectCourses extends Component {
         window.scrollTo(0, 0);
         return (
         <div>
-            <div className="row">
-            <Panel selectedSubjects={this.state.selectSubjects} setSelectedSubjects={this.setSelectedSubjects.bind(this)}/>
             
-            <div className="jumbotron col-md-9" style={{backgroundColor: "#C0C0C0"}}>
+            <div className="jumbotron" style={{backgroundColor: "#C0C0C0"}}>
                 <h1>Sistema de <br/> Gestión Académica</h1>
             </div>
-            <div className="col-md-9">
             
             {this.state.courses && <div>
             <div style={{paddingBottom:"4em"}}>
@@ -644,8 +646,6 @@ class SubjectCourses extends Component {
             </Modal.Footer>
             </Modal>}
 
-        </div>
-        </div>
         </div>
 
         );

@@ -1,0 +1,11 @@
+.Panel-item {
+  background: none;
+  border: none;
+}
+
+.Panel-list-item {
+  background: none;
+  border: none;
+  padding: 0;
+  margin-left: 2em;
+}
