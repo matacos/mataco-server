@@ -23,37 +23,20 @@ class Login extends Component {
         this.setState({dniError: false, passwordError: false, credentialsError: false})
     }
 
-    /*saveData(result) {
-        if ("department_administrators" in result.user.rolesDescriptions){
-            Assistant.setField("department", result.user.rolesDescriptions["department_administrators"].department_name);
-        } else {
-            Assistant.setField("department","NO DEPARTMENT,DUDE. GTFO.");
-        }
-        Assistant.setField("token", result.token);
-        Assistant.setField("username", result.user.username);
-        Assistant.setField("email", result.user.email);
-        Assistant.setField("roles", result.user.roles.join(","));
-        Assistant.isProfessor() ? Assistant.setField("mode", "professor") : Assistant.setField("mode", "department_admin");
-    }*/
-
     processInput() {
         this.clearErrors()
         if (!this.state.dni.match('^[0-9]*$')) 
             this.setState({dniError: true, dniErrorMsg: "Debés ingresar tu DNI sin puntos ni espacios. Debe tener caracteres numéricos únicamente"});
         else if (this.state.dni.length > 8 || this.state.dni.length < 5) 
-            //this.setState({ formClass: this.state.formClass + " has-danger", inputClass: this.state.inputClass + " is-invalid" })
             this.setState({dniError: true, dniErrorMsg: "El número ingresado en 'DNI' debe tener 8 dígitos o menos"});
         else if (this.state.password.length < 1)
-            //this.setState({ formClass: this.state.formClass + " has-danger", inputClass: this.state.inputClass + " is-invalid" })
             this.setState({passwordError: true});
         else {
-            Proxy.login(this.state.dni, this.state.password) // CAMBIAR POR DNI Y PASSWORD
+            Proxy.login(this.state.dni, this.state.password) 
             .then(
-                (result) => {
-                    //this.saveData(result);
-                    console.log(result);
+                () => {
                     //this.props.history.push('/home');
-                    window.location.reload()
+                    window.location.reload();
                 },
                 (error) => {
                     console.log(error)

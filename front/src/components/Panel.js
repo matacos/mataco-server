@@ -3,62 +3,58 @@ import logoFIUBA from '../images/logo.png';
 import Assistant from '../Assistant';
 import Proxy from '../Proxy';
 import { withRouter } from 'react-router-dom';
-import { Glyphicon } from 'react-bootstrap';
+import { Glyphicon, DropdownButton, MenuItem, ButtonGroup } from 'react-bootstrap';
+import "./Panel.css";
 
 class Panel extends Component {
     constructor(props) {
         super(props);
 
         this.state = {
-            text: '',
             subjects: [],
-            courses: []
+            courses: [],
+            currentCourse: null
         };
 
     }
 
     componentDidMount() {
-        if (Assistant.isProfessor())
-            Proxy.getProfessorCourses().then(courses => this.setState({courses: courses}));	
+        if (Assistant.isProfessor()) 
+            Proxy.getProfessorCourses().then(courses => {
+                this.setState({courses: courses});
+                if ((this.state.currentCourse == null) && (this.state.courses.length > 0)) {
+                    this.setState({currentCourse: this.state.courses[0]});
+                }
+            });
+           
     
         if (Assistant.isDepartmentAdmin())
             Proxy.getDepartmentSubjects().then(subjects => this.setState({subjects: subjects}));
-
-        /*
-        this.setState({courses: [{department_code: "75", subject_code: "07", name: "Algoritmos y Programación III", course: "2"},
-                                    {department_code: "75", subject_code: "44", name: "Admin. y Control de Desarrollo de Proy. Informáticos II", course: "4"},
-                                    {department_code: "75", subject_code: "47", name: "Taller de Desarrollo de Proyectos II", course: "3"}]})
-        */       
-        // DEPTO
-        /*this.setState({subjects: [{department_code: "75", code: "07", name: "Algoritmos y Programación III"},
-                                {department_code: "75", code: "44", name: "Admin. y Control de Desarrollo de Proy. Informáticos II"},
-                                {department_code: "75", code: "47", name: "Taller de Desarrollo de Proyectos II"},
-                                {department_code: "75", code: "40", name: "Algoritmos y Programación I"},
-                                {department_code: "75", code: "41", name: "Algoritmos y Programación II"}]})*/
     }
 
-    obtainMode() {
-        return Assistant.inProfessorMode() ? "modo docente" : "modo administrador de departamento";
-    }
-
-    handleSelectedCourses() {
-        if (this.props.selectedSubjects) {
-            this.props.setSelectedSubjects(false);
+    handleSelectedField(value) {
+        if (this.props.selected[value]) {
+            this.props.setSelected(value, false);
         }
         else {
-            this.props.setSelectedSubjects(true);
+            this.props.setSelected(value, true);
         }
         
     }
 
-    goToCourse(courseId, subjectName) {
+    selectCourse(course) {
+        this.setState({currentCourse: course});
+        this.goToHome(course);
+    }
+
+    goToCourse(course) {
+        let courseId = course.department_code + course.subject_code + course.course;
+        let subjectName = course.subject_name.replace(/ /g, "-");
         this.props.history.push('/cursos/' + subjectName + '/' + courseId);
-        this.handleSelectedCourses();
     }
 
     goToSubject(subjectId, subjectName) {
         this.props.history.push('/materias/' + subjectId + '/' + subjectName);
-        this.handleSelectedCourses();
     }
 
     goToHome() {
@@ -70,32 +66,114 @@ class Panel extends Component {
         this.props.history.push('/login');
     }
 
-    render() {
-        var listItems;
-        if (Assistant.inProfessorMode())
-            listItems = this.state.courses.map((d) => <div key={d.department_code + d.subject_code} style={{marginLeft: "2em"}}><button className="text-primary text-left" style={{background: "none", border: "none", padding: "0"}} onClick={this.goToCourse.bind(this, d.department_code + d.subject_code + d.course, d.name.replace(/ /g, "-"))}>{d.name}</button><hr /></div>);
-        else
-            listItems = this.state.subjects.map((d) => <div key={d.department_code + d.code} style={{marginLeft: "2em"}}><button className="text-primary text-left" style={{background: "none", border: "none", padding:"0"}} onClick={this.goToSubject.bind(this, d.department_code + d.code, d.name.replace(/ /g, "-"))}>{d.name}</button><hr /></div>);
+    defineCoursesTitle() {
+        if ((this.state.currentCourse == '') && (this.state.courses.length > 0)) {
+            this.setState({currentCourse: this.state.courses[0]});
+            return this.state.currentCourse.subject_name;
+        }
+
+        return "No hay cursos";
+    }
+
+    showCourseDropdown(courses) {
         return (
-        <div className="panel panel-default col-md-3" style={{margin: "0", padding: "0"}}>
+            <ButtonGroup justified>
+            <DropdownButton
+            title={this.state.currentCourse.subject_name}
+            id="dropdown-basic"
+            bsStyle="primary"
+            style={{whiteSpace: "normal"}}
+            >
+            {courses.map(course => 
+                <MenuItem 
+                key={course.department_code + course.subject_code} 
+                onClick={this.selectCourse.bind(this, course)} 
+                active={this.state.currentCourse.subject_name == course.subject_name}> 
+                    {course.subject_name}
+                </MenuItem>)}
+            </DropdownButton>
+            </ButtonGroup>
+        );
+    }
+
+    showMenuByRole(role) {
+        switch(role) {
+            case "professor":
+                return (
+                    <div>
+                        {this.state.currentCourse != null && <div> {this.showCourseDropdown(this.state.courses)}
+                        <div><button className="Panel-item" style={{paddingTop: "1em"}} onClick={this.goToCourse.bind(this, this.state.currentCourse)}><h4 className="text-primary"> Cursada</h4> </button></div>
+                        <div className="row" style={{paddingLeft: "1em"}}>
+                        </div>
+                        <div className="row" style={{paddingLeft: "1em"}}>
+                            <button className="Panel-item" onClick={this.handleSelectedField.bind(this, "exams")}><h4 className="text-primary"> 
+                                {((this.props.selected["exams"]) && <Glyphicon style={{fontSize:"0.75em"}} glyph="minus" />) || <Glyphicon style={{fontSize:"0.75em"}} glyph="plus" />}
+                                {" Finales"}
+                            </h4></button>
+                        </div>
+                        </div>}
+                    </div>
+                );
+
+            case "department_administrator":
+                var listItems = this.state.subjects.map((d) => <div key={d.department_code + d.code}>
+                <button className="text-primary text-left Panel-list-item" onClick={this.goToSubject.bind(this, d.department_code + d.code, d.name.replace(/ /g, "-"))}>
+                    {d.name}
+                    <hr />
+                </button></div>);
+                return (
+                    <div>
+                        <button className="Panel-item" onClick={this.handleSelectedField.bind(this, "subjects")}><h4 className="text-primary"> 
+                        {((this.props.selected["subjects"]) && <Glyphicon style={{fontSize:"0.75em"}} glyph="minus" />) || <Glyphicon style={{fontSize:"0.75em"}} glyph="plus" />}
+                        {" Mis Materias"}</h4></button>
+                        {(this.props.selected["subjects"]) && 
+                        <div style={{marginTop: "1em"}}>
+                            <div style={{marginLeft: "2em"}}><hr /></div>
+                            {listItems}
+                        </div>}
+                    </div>
+                );
+
+            case "administrator":
+                return (
+                    <div>
+                        <div><button className="Panel-item" onClick={this.goToHome.bind(this)}><h4 className="text-primary"> Alta de materias</h4> </button></div>
+                        <div><button className="Panel-item" onClick={this.goToHome.bind(this)}><h4 className="text-primary"> Alta de estudiantes</h4> </button></div>
+                        <div><button className="Panel-item" onClick={this.goToHome.bind(this)}><h4 className="text-primary"> Alta de docentes</h4> </button></div>
+                    </div>
+                );
+            default:
+                console.log("Menu Error: invalid role");
+        }
+    }
+
+    showMenu(mode) {
+        return (
+            <div style={{padding: "1em"}}>
+                <div><button className="Panel-item" onClick={this.goToHome.bind(this)}><h4 className="text-primary"> Home</h4> </button></div>
+                <hr />
+                {this.showMenuByRole(mode)}
+                <hr />
+                <p><button className="text-primary Panel-item" onClick={this.logout.bind(this)}><h4 className="text-primary">  Cerrar sesión </h4></button></p>
+            </div>
+        );
+    }
+
+    render() {
+        return (
+            <div>
+            {Assistant.isLoggedIn() && <div className="panel panel-default col-md-3" style={{margin: "0", padding: "0"}}>
             <div className="panel-heading" style={{width: "auto"}}>
                 <img className="img-responsive center-block" alt="logo" src={logoFIUBA} height="50%" width="50%" style={{marginLeft: "auto", marginRight: "auto", width: "50%", paddingTop: "1em"}}/>
                 <h3 className="text-center" style={{color: "#696969"}}>{Assistant.inProfessorMode() ? Assistant.getField("name") : "Departamento de " + Assistant.getField("department")}</h3>
             </div>
 
-            <div className="panel-body" style={this.props.selectedSubjects ? {height: "auto"} : {height: "100vh"}}>
-                <div style={{padding: "1em"}}>
-                <div ><button style={{background: "none", border: "none"}} onClick={this.goToHome.bind(this)}><h4 className="text-primary"> Home</h4> </button></div>
-                <button style={{background: "none", border: "none"}} onClick={this.handleSelectedCourses.bind(this)}><h4 className="text-primary"> 
-                {(this.props.selectedSubjects) && <Glyphicon style={{fontSize:"0.75em"}} glyph="minus" />}
-                {!(this.props.selectedSubjects) && <Glyphicon style={{fontSize:"0.75em"}} glyph="plus" />}
-                {Assistant.inProfessorMode() ? " Mis Cursos" : " Mis Materias"}</h4></button>
-                {(this.props.selectedSubjects) && 
-                <div style={{marginTop: "1em"}}>{listItems}</div>}
-                <p><button className="text-primary" style={{background: "none", border: "none"}} onClick={this.logout.bind(this)}><h4 className="text-primary">  Cerrar sesión </h4></button></p>
-                </div>
+            <div className="panel-body" style={this.props.selected["subjects"] ? {height: "auto"} : {height: "100vh"}}>
+                {this.showMenu(this.props.mode)}
             </div>
-        </div>);
+            </div>}
+            </div>
+        );
     }
 }
 

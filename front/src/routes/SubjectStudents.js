@@ -12,36 +12,28 @@ class SubjectStudents extends Component {
         super(props);
 
         this.state = {
-            selectSubjects: false,
             students: [],
             columns: [],
             conditional: null,
-            key: 1
+            key: 1,
+            wait: true
         };
     }
 
     getStudents() {
         let courseId = this.props.match.params.idCurso.substr(4);
         Proxy.getCourseStudents(courseId)
-        .then(students => this.setState({students: students}));
+        .then(students => {
+            this.setState({students: students, wait: false});
+        });
     }
 
     componentDidMount() {
         this.getStudents();
-        /*
-        this.setState({students: [{id: "98557", apellido: "Rodriguez", nombre: "Roberto", estado: "Regular", prioridad: "1"},
-                        {id: "87445", apellido: "Herrera", nombre: "Candela", estado: "Regular", prioridad: "12"},
-                        {id: "94333", apellido: "Pérez", nombre: "Julieta", estado: "Regular", prioridad: "3"},
-                        {id: "96421", apellido: "Dominguez", nombre: "Juan", estado: "Condicional", prioridad: "6"},
-                        {id: "98765", apellido: "Álvarez", nombre: "Maria", estado: "Regular", prioridad: "11"},
-                        {id: "93242", apellido: "Pazzini", nombre: "Rodrigo", estado: "Regular", prioridad: "24"},
-                        {id: "91872", apellido: "Marconi", nombre: "Luciano", estado: "Condicional", prioridad: "33"}]})
-
-        */
     }
 
     componentDidUpdate(prevProps){
-        if(this.props.match.params.idMateria != prevProps.match.params.idMateria){
+        if (this.props.match.params.idMateria != prevProps.match.params.idMateria) {
             this.getStudents();
         }
     }
@@ -65,10 +57,6 @@ class SubjectStudents extends Component {
 
     handleHide() {
         this.setState({conditional: null})
-    }
-
-    setSelectedSubjects(bool) {
-        this.setState({selectSubjects: bool});
     }
 
     handleSelect() {
@@ -142,18 +130,14 @@ class SubjectStudents extends Component {
 
 
         return (
-        <div>
-            <div className="row">
-            <Panel selectedSubjects={this.state.selectSubjects} setSelectedSubjects={this.setSelectedSubjects.bind(this)}/>
-            
-            <div className="jumbotron col-md-9" style={{backgroundColor: "#C0C0C0"}}>
+        <div>  
+            <div className="jumbotron" style={{backgroundColor: "#C0C0C0"}}>
                 <h1>Sistema de <br/> Gestión Académica</h1>
             </div>
-
-            <div className="col-md-9">
             
             <PageHeader style={{marginBottom: "4em"}}> {this.getSubjectName()} </PageHeader>
             
+            {!this.state.wait && ((regularStudents.length == 0 && <h3 className="text-primary text-center">No hay alumnos inscriptos en este curso :( </h3>) || <div>
             <Tabs activeKey={(conditionalStudents.length > 0 && this.state.key) || 1}
                 onSelect={this.handleSelect.bind(this)}
                 id="controlled-tab">
@@ -167,6 +151,7 @@ class SubjectStudents extends Component {
                     return student;}, this) } columns={ columns } />
                 </div>
             </Tab>
+
             {conditionalStudents.length > 0 &&
             <Tab eventKey={2} title={<h4 className={(this.state.key == 2 && "text-primary") || ""}>Alumnos Condicionales</h4>}>
             
@@ -181,6 +166,7 @@ class SubjectStudents extends Component {
             </div>
             </Tab>}
             </Tabs>
+            </div>)}
             
             {(this.state.conditional != null) &&  <Modal
             show={this.state.conditional != null}
@@ -202,8 +188,6 @@ class SubjectStudents extends Component {
             </Modal.Footer>
             </Modal>}
 
-        </div>
-        </div>
         </div>
 
         );
