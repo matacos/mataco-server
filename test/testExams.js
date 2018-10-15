@@ -87,15 +87,7 @@ describe("Test /exams",()=>{
             exam_date:"2018-04-04"
         }
         const response = await requestWithAuth("jose","jojo","POST","/finales",exam)
-        console.log("$$$$$$$$$$$$$")
-        console.log("$$$$$$$$$$$$$")
-        console.log("$$$$$$$$$$$$$")
-
-        console.log(response.body)
-
-        console.log("$$$$$$$$$$$$$")
-        console.log("$$$$$$$$$$$$$")
-        console.log("$$$$$$$$$$$$$")
+        
         expect(response.statusCode).to.equal(200)
         expect(response.body).to.be.jsonSchema(singleFinalJsonSchema)
     })
@@ -104,5 +96,40 @@ describe("Test /exams",()=>{
         expect(response.statusCode).to.equal(200)
         expect(response.body).to.be.jsonSchema(finalsJsonSchema)
         expect(response.body.exams).to.be.lengthOf(1)
+    })
+
+    const examEnrolmentSchema={
+        required:[
+            "exam",
+            "student",
+            "creation",
+            "grade",
+            "grade_date"
+        ],
+        properties:{
+            exam:{type:"object"},
+            student:{type:"object"},
+            creation:{type:"string"},
+            grade:{type:"string"},
+            grade_date:{type:"string"},
+        }
+    }
+    const finalEnrolmentsJsonSchema={required:["exam_enrolments"],properties:{exam_enrolments:{
+        items:examEnrolmentSchema
+    }}}
+    it("test GET inscripciones_final filtering by student",async ()=>{
+        const response = await requestWithAuth("jose","jojo","GET","/inscripciones_final?estudiante=97452")
+
+        expect(response.statusCode).to.equal(200)
+        expect(response.body).to.be.jsonSchema(finalEnrolmentsJsonSchema)
+        expect(response.body.exam_enrolments).to.be.lengthOf(3)
+    })
+
+    it("test GET inscripciones_final filtering by exam id",async ()=>{
+        const response = await requestWithAuth("jose","jojo","GET","/inscripciones_final?id_examen=1")
+
+        expect(response.statusCode).to.equal(200)
+        expect(response.body).to.be.jsonSchema(finalEnrolmentsJsonSchema)
+        expect(response.body.exam_enrolments).to.be.lengthOf(1)
     })
 })
