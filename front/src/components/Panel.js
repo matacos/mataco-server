@@ -18,7 +18,7 @@ class Panel extends Component {
 
     }
 
-    componentDidMount() {
+    setPanelInformation() {
         if (Assistant.isProfessor()) 
             Proxy.getProfessorCourses().then(courses => {
                 this.setState({courses: courses});
@@ -26,10 +26,19 @@ class Panel extends Component {
                     this.setState({currentCourse: this.state.courses[0]});
                 }
             });
-           
     
         if (Assistant.isDepartmentAdmin())
             Proxy.getDepartmentSubjects().then(subjects => this.setState({subjects: subjects}));
+    }
+
+    componentDidMount() {
+        this.setPanelInformation();
+    }
+
+    componentDidUpdate(prevProps) {
+        if (this.props.mode != prevProps.mode) {
+            this.setPanelInformation();
+        }
     }
 
     handleSelectedField(value) {
@@ -66,15 +75,6 @@ class Panel extends Component {
         this.props.history.push('/login');
     }
 
-    defineCoursesTitle() {
-        if ((this.state.currentCourse == '') && (this.state.courses.length > 0)) {
-            this.setState({currentCourse: this.state.courses[0]});
-            return this.state.currentCourse.subject_name;
-        }
-
-        return "No hay cursos";
-    }
-
     showCourseDropdown(courses) {
         return (
             <ButtonGroup justified>
@@ -86,9 +86,9 @@ class Panel extends Component {
             >
             {courses.map(course => 
                 <MenuItem 
-                key={course.department_code + course.subject_code} 
+                key={course.department_code + course.subject_code + course.course} 
                 onClick={this.selectCourse.bind(this, course)} 
-                active={this.state.currentCourse.subject_name == course.subject_name}> 
+                active={this.state.currentCourse.name == course.name}> 
                     {course.subject_name}
                 </MenuItem>)}
             </DropdownButton>

@@ -21,7 +21,7 @@ class Home extends Component {
     }
 
     changeMode() {
-        this.props.changeMode()   
+        this.props.changeMode();   
     }
 
     otherMode() {

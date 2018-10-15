@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import '../App.css';
-import Panel from '../components/Panel';
 import Proxy from '../Proxy';
 import { Modal, Button } from 'react-bootstrap';
 import { Glyphicon, Tabs, Tab, PageHeader } from 'react-bootstrap';
