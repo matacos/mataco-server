@@ -164,3 +164,21 @@ insert into exams (semester_code,department_code,subject_code,examiner_username,
     ('1c2018','75','07','12345678','200','Paseo Colón','19:00','22:00','2018-03-31'),
     ('1c2018','75','07','12345678','200','Paseo Colón','19:00','22:00','2018-04-5'),
     ('1c2018','75','07','12345678','200','Paseo Colón','19:00','22:00','2018-04-12');
+
+create table exam_enrolments(
+    exam_id serial,
+    foreign key (exam_id) references exams(id) on delete cascade,
+
+    student_username varchar(10),
+    foreign key (student_username) references students(username),
+
+    creation timestamp,
+    grade decimal,
+    grade_date date,
+
+    primary key (exam_id,student_username)
+);
+insert into exam_enrolments (exam_id,student_username,creation,grade,grade_date) values
+    (1,'97452',NOW(),-1,NOW()),
+    (2,'97452',NOW(),-1,NOW()),
+    (3,'97452',NOW(),-1,NOW());
