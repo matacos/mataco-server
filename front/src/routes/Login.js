@@ -1,9 +1,7 @@
 import React, { Component } from 'react';
 import '../App.css';
 import Proxy from '../Proxy';
-import Assistant from '../Assistant';
 import logoFIUBA from '../images/logo.png';
-import {Redirect} from 'react-router-dom';
 
 class Login extends Component {
     constructor(props) {

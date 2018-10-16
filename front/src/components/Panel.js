@@ -92,20 +92,20 @@ class Panel extends Component {
     }
 
     goToExam(examId) {
-        this.props.history.push('/finales/' + examId);
+        this.props.history.push('/finales/' + this.state.currentCourse.department_code + this.state.currentCourse.subject_code + '/' + examId);
     }
 
     addExam() {
         let exam = {
-            semester_code:"1c2018",
-            department_code:"75",
-            subject_code:"06",
-            examiner_username:"12345678",
-            classroom_code:"200",
-            classroom_campus:"Paseo Colón",
-            beginning:"16:55",
-            ending:"19:00",
-            exam_date:"2018-04-04"
+            semester_code: "1c2018",
+            department_code: this.state.currentCourse.department_code,
+            subject_code: this.state.currentCourse.subject_code,
+            examiner_username: Assistant.getField("username"),
+            classroom_code: "200",
+            classroom_campus: "Paseo Colón",
+            beginning: "16:55",
+            ending: "19:00",
+            exam_date: "2018-04-04"
         }
 
         Proxy.addExam(exam)

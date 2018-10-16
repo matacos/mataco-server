@@ -58,7 +58,7 @@ class App extends Component {
             <Route path="/home" render={ () => Assistant.isLoggedIn() ? <Home changeMode={this.changeMode.bind(this)} /> : <Redirect to="/login" /> } />
             <Route path="/cursos/:nombreMateria/:idCurso" component={SubjectStudents} />
             <Route path="/materias/:idMateria/:nombreMateria" component={SubjectCourses} />
-            <Route path="/finales/:idExamen" component={Exam} />
+            <Route path="/finales/:idMateria/:idExamen" component={Exam} />
             <Redirect from="/" exact to="/login" />
             <Route component={Error} />
           </Switch>
