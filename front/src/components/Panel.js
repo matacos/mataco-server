@@ -13,10 +13,18 @@ class Panel extends Component {
         this.state = {
             subjects: [],
             courses: [],
+            exams: [],
             currentCourse: null
         };
 
     }
+
+    setExams() {
+        let department_code = this.state.currentCourse.department_code;
+        let subject_code = this.state.currentCourse.subject_code;
+        Proxy.getCourseExams(department_code, subject_code, Assistant.getField("username"))
+        .then(exams => this.setState({exams: exams}));
+    } 
 
     setPanelInformation() {
         if (Assistant.isProfessor()) 
@@ -24,6 +32,10 @@ class Panel extends Component {
                 this.setState({courses: courses});
                 if ((this.state.currentCourse == null) && (this.state.courses.length > 0)) {
                     this.setState({currentCourse: this.state.courses[0]});
+                }
+
+                if (this.state.currentCourse != null) {
+                    this.setExams();
                 }
             });
     
@@ -35,9 +47,13 @@ class Panel extends Component {
         this.setPanelInformation();
     }
 
-    componentDidUpdate(prevProps) {
+    componentDidUpdate(prevProps, prevState) {
         if (this.props.mode != prevProps.mode) {
             this.setPanelInformation();
+        }
+
+        if (this.state.currentCourse != prevState.currentCourse) {
+            this.setExams();
         }
     }
 
@@ -75,6 +91,27 @@ class Panel extends Component {
         this.props.history.push('/login');
     }
 
+    goToExam(examId) {
+        this.props.history.push('/finales/' + examId);
+    }
+
+    addExam() {
+        let exam = {
+            semester_code:"1c2018",
+            department_code:"75",
+            subject_code:"06",
+            examiner_username:"12345678",
+            classroom_code:"200",
+            classroom_campus:"Paseo Colón",
+            beginning:"16:55",
+            ending:"19:00",
+            exam_date:"2018-04-04"
+        }
+
+        Proxy.addExam(exam)
+        .then(this.setExams());
+    }
+
     showCourseDropdown(courses) {
         return (
             <ButtonGroup justified>
@@ -99,6 +136,10 @@ class Panel extends Component {
     showMenuByRole(role) {
         switch(role) {
             case "professor":
+                var examsList = this.state.exams.map(exam => <div key={exam.id}>
+                <button className="text-primary text-left Panel-list-item" onClick={this.goToExam.bind(this, exam.id)}>
+                    {exam.exam_date.substr(0, 10)}
+                </button><hr /></div>);
                 return (
                     <div>
                         {this.state.currentCourse != null && <div> {this.showCourseDropdown(this.state.courses)}
@@ -110,6 +151,15 @@ class Panel extends Component {
                                 {((this.props.selected["exams"]) && <Glyphicon style={{fontSize:"0.75em"}} glyph="minus" />) || <Glyphicon style={{fontSize:"0.75em"}} glyph="plus" />}
                                 {" Finales"}
                             </h4></button>
+                            {(this.props.selected["exams"]) && 
+                            <div style={{marginTop: "1em"}}>
+                                <hr />
+                                {examsList}
+                                {examsList.length < 5 && <div key="Add-exam">
+                                <button className="text-primary text-left Panel-list-item" onClick={this.addExam.bind(this)}>
+                                    Agregar final
+                                </button></div>}
+                            </div>}
                         </div>
                         </div>}
                     </div>

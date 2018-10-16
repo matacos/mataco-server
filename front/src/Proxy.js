@@ -227,6 +227,37 @@ class Proxy  {
           ) 
       }
 
+      getCourseExams(department_code, subject_code, professor) {
+        return fetch(this.url + "/finales?cod_departamento=" + department_code + "&cod_materia=" + subject_code + "&docente=" + professor , {
+          method: 'GET',
+          headers: {
+            'Authorization': 'bearer ' + Assistant.getField("token")
+          },
+          
+          }).then(res => res.json())
+          .then(
+            (result) => {            
+                Assistant.setField("token", result.token);
+                return result.exams;
+                
+            },
+            (error) => {
+                console.log(error)
+            }
+          )  
+        }
+      
+      addExam(exam) {
+        return fetch(this.url + "/finales" , {
+          method:"POST",
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'bearer ' + Assistant.getField("token")
+          },
+          body: JSON.stringify(exam),
+        })
+      }
+
       logout() {
         Assistant.clearData();
       }
