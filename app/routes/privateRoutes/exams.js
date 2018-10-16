@@ -34,6 +34,7 @@ function mountRoutes(app,db,schemaValidation){
             subject,
             examiner,
             cast('f' as boolean) as enroled
+            
         from exams_with_data
         where 
             subject_code like $1
