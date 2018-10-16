@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import '../App.css';
 import Proxy from '../Proxy';
-import Panel from '../components/Panel';
+import alertSign from '../images/alert-icon.png';
 import { Modal, Button } from 'react-bootstrap';
 import { Glyphicon, PageHeader } from 'react-bootstrap';
 
@@ -33,12 +33,16 @@ class SubjectCourses extends Component {
         };
     }
 
-    setCoursesInformation(){
+    getCourses() {
         let subject = this.props.match.params.idMateria;
         let departmentCode = subject.slice(0,2);
         let subjectCode = subject.slice(2,4);
 
-        Proxy.getSubjectCourses(departmentCode, subjectCode)
+        return Proxy.getSubjectCourses(departmentCode, subjectCode);
+    }
+
+    setCoursesInformation(){
+        this.getCourses()
         .then(courses => this.setState({courses: courses}));
         
     }
@@ -125,8 +129,19 @@ class SubjectCourses extends Component {
                 total_slots: value
             }
             
-            Proxy.changeCourse(this.state.selectedData.course, body)
-            .then(this.setCoursesInformation());
+            if (this.state.selectedData.temporary) {
+                let updatedCourses = this.state.courses.map(course => {
+                    if (course.name != this.state.selectedData.name)
+                        return course;
+                    course.total_slots = value;
+                    return course;
+                });
+                this.setState({courses: updatedCourses});
+            }
+            else { 
+                Proxy.changeCourse(this.state.selectedData.course, body)
+                .then(this.setCoursesInformation());
+            }
             this.handleHide("change_slot");
         }
 
@@ -172,14 +187,82 @@ class SubjectCourses extends Component {
         
         var validationResult = this.validSchedule(newSchedule);
         if (validationResult[0]) {
-            Proxy.addSchedule(this.state.selectedData.course, newSchedule)
-            .then(this.setCoursesInformation())
-            this.handleHide("add_schedule");
+            if (this.state.selectedData.temporary) {
+                if (this.state.selectedData.professors.length > 0) {
+                    // Deja de ser un curso temporario
+                    this.addCourseRequest()
+                    .then(() => {  
+                        this.getCourses()
+                        .then(courses => {
+                            console.log(this.state.selectedData)
+                            // Almaceno los horarios y los docentes
+                            this.state.selectedData.professors.map(professor => {
+                                var newProfessor = {
+                                    username: professor.username,
+                                    rol: professor.role
+                                };
+
+                                Proxy.addProfessor(this.getCourse(courses, this.state.selectedData.name).course, newProfessor)
+                                .then(result => console.log(result));
+                            });
+                            Proxy.addSchedule(this.getCourse(courses, this.state.selectedData.name).course, newSchedule)
+                            .then(() => {
+                                this.setCoursesInformation();
+                                this.handleHide("add_schedule");
+                            });
+                        });
+                    });
+                }
+                else {
+                    let updatedCourses = this.state.courses.map(course => {
+                        if (course.name == this.state.selectedData.name) {
+                            var schedule = {};
+                            schedule.classroom_code = newSchedule.classroomCode;
+                            schedule.classroom_campus = newSchedule.classroomCampus;
+                            schedule.day_of_week = newSchedule.dayOfWeek;
+                            schedule.beginning = this.state.begin;
+                            schedule.ending = this.state.end;
+                            schedule.description = newSchedule.description;
+                            course.time_slots.push(schedule);
+                        }
+                        return course;
+                    });
+                    this.setState({courses: updatedCourses});
+                    this.handleHide("add_schedule");
+                }
+            }
+            else {
+                Proxy.addSchedule(this.state.selectedData.course, newSchedule)
+                .then(this.setCoursesInformation())
+                this.handleHide("add_schedule");
+            }
+            
         }
         else {
             this.setState({inputError: true, errorMsg: validationResult[1]})
         }
     } 
+
+    addProfessorRequest(course, professor) {
+        return Proxy.addProfessor(course, professor)
+                .then(res => {
+                    if (res.status == 500) {
+                        this.setState({inputError: true, errorMsg: "Debe ingresar el DNI de un docente que no se encuentre en el curso"});
+                    } 
+                    else {
+                        this.setCoursesInformation();
+                        this.handleHide("add_teacher");
+                    }
+                });
+    }
+
+    getCourse(courses, name) {
+        for(var i = 0; i < courses.length; i++) {
+            if (courses[i].name == name) 
+                return courses[i];
+        }
+        return null;
+    }
 
     addProfessor() {
         if ((this.state.id.length > 4) && (this.state.id.length <= 8)) {
@@ -188,35 +271,87 @@ class SubjectCourses extends Component {
                 rol: this.state.type.length == 0 ? "Jefe de Cátedra" : this.state.type
             } 
             
-            Proxy.addProfessor(this.state.selectedData.course, newProfessor)
-            .then(res => {
-                if (res.status == 500) {
-                    this.setState({inputError: true, errorMsg: "Debe ingresar el DNI de un docente que no se encuentre en el curso"})
-                } 
-                else {
-                    this.setCoursesInformation();
-                    this.handleHide("add_teacher");
+            if (this.state.selectedData.temporary) {
+                if (this.state.selectedData.time_slots.length > 0) {
+                    // Deja de ser un curso temporario
+                    this.addCourseRequest()
+                    .then(() => {
+                        this.getCourses()
+                        .then(courses => {
+                            // Almaceno los horarios y los docentes
+                            this.state.selectedData.time_slots.map(schedule => {
+                                let begin = schedule.beginning.split(":");
+                                let end = schedule.ending.split(":");
+                                var newSchedule = {
+                                    classroomCode: schedule.classroom_code,
+                                    classroomCampus: schedule.classroom_campus,
+                                    beginningHour: parseInt(begin[0]),
+                                    beginningMinutes: parseInt(begin[1]),
+                                    endingHour: parseInt(end[0]),
+                                    endingMinutes: parseInt(end[1]),
+                                    dayOfWeek: schedule.day_of_week,
+                                    description: schedule.description
+                                };
+                                
+                                Proxy.addSchedule(this.getCourse(courses, this.state.selectedData.name).course, newSchedule)
+                                .then(result => console.log(result))
+                            });
+                            this.addProfessorRequest(this.getCourse(courses, this.state.selectedData.name).course, newProfessor);
+                        });
+                    });
                 }
-            })
+                else {
+                    if (this.state.selectedData.professors.filter(professor => professor.username == newProfessor.username).length > 0) {
+                        this.setState({inputError: true, errorMsg: "Debe ingresar el DNI de un docente que no se encuentre en el curso"});
+                    }
+                    else {
+                        let updatedCourses = this.state.courses.map(course => {
+                            if (course.name == this.state.selectedData.name) {
+                                newProfessor.surname = "Cargando";
+                                newProfessor.name = "Cargando";
+                                newProfessor.role = newProfessor.rol;
+                                course.professors.push(newProfessor);
+                            }
+                            return course;
+                        });
+                        this.setState({courses: updatedCourses});
+                        this.handleHide("add_teacher");
+                    }
+                } 
+            }
+            else {
+                this.addProfessorRequest(this.state.selectedData.course, newProfessor);
+            }
         }
         else {
             this.setState({inputError: true, errorMsg: "Recuerde que debe ingresar el DNI de un docente válido"})
         }
         
-    } 
+    }
+
+    addCourseRequest() {
+        var newCourse = {
+            cod_departamento: this.state.code.substr(0, 2),
+            cod_materia: this.state.code.substr(2, 2),
+            nombre: this.state.selectedData.name,
+            vacantes_totales: this.state.selectedData.total_slots
+        }
+
+        return Proxy.addCourse(newCourse);
+    }
 
     addCourse() {
         var value = parseInt(this.state.slots);
         if (this.validSlot(value) && this.state.id.length > 0) {
-            var newCourse = {
-                cod_departamento: this.state.code.substr(0, 2),
-                cod_materia: this.state.code.substr(2, 2),
-                nombre: this.state.id,
-                vacantes_totales: value
-            }
-
-            Proxy.addCourse(newCourse)
-            .then(this.setCoursesInformation());
+            let updatedCourses = this.state.courses;
+            updatedCourses.push({
+                name: this.state.id,
+                total_slots: value,
+                professors: [],
+                time_slots: [],
+                temporary: true
+            })
+            this.setState({courses: updatedCourses});
             this.handleHide("add_course");
         }
 
@@ -227,20 +362,42 @@ class SubjectCourses extends Component {
     } 
 
     removeCourse() {
-        Proxy.deleteCourse(this.state.selectedData.course)
-        .then(this.setCoursesInformation());
+        if (this.state.selectedData.temporary) {
+            let updatedCourses = this.state.courses.filter(course => course.name != this.state.selectedData.name);
+            this.setState({courses: updatedCourses});
+        }
+        else {
+            Proxy.deleteCourse(this.state.selectedData.course)
+            .then(this.setCoursesInformation());
+        }
         this.handleHide("remove_course");
     }
 
     removeTeacher() {
-        Proxy.deleteProfessor(this.state.selectedData.course, this.state.selectedData.professor.username)
-        .then(this.setCoursesInformation());
+        if (this.state.selectedData.temporary) {
+            let updatedCourses = this.state.courses;
+            let courseProfessors = this.state.courses[this.state.selectedData.idx].professors;
+            updatedCourses[this.state.selectedData.idx].professors = courseProfessors.filter(professor => professor.username != this.state.selectedData.professor.username);
+            this.setState({courses: updatedCourses});
+        }
+        else {
+            Proxy.deleteProfessor(this.state.selectedData.course, this.state.selectedData.professor.username)
+            .then(this.setCoursesInformation());
+        }
         this.handleHide("remove_teacher");
     }
 
     removeSchedule() {
-        Proxy.deleteSchedule(this.state.selectedData.course, this.state.selectedData.schedule.id)
-        .then(this.setCoursesInformation());
+        if (this.state.selectedData.temporary) {
+            let updatedCourses = this.state.courses;
+            let courseTimeSlots = this.state.courses[this.state.selectedData.idx].time_slots;
+            updatedCourses[this.state.selectedData.idx].time_slots = courseTimeSlots.filter(schedule => schedule != this.state.selectedData.schedule);
+            this.setState({courses: updatedCourses});
+        }
+        else {
+            Proxy.deleteSchedule(this.state.selectedData.course, this.state.selectedData.schedule.id)
+            .then(this.setCoursesInformation());
+        }
         this.handleHide("remove_schedule");
     }
 
@@ -263,8 +420,15 @@ class SubjectCourses extends Component {
             
             {this.state.courses.map(function(course, idx) {
                 return (<div key={idx} className="well">
-                <h3 style={{paddingBottom: "0.5em"}}> Curso: {course.name} <button type="button" className="btn btn-danger pull-right" onClick={this.showModal.bind(this, "remove_course", course)}><Glyphicon glyph="minus" /> Eliminar curso</button></h3>
-                <p style={{paddingBottom: "3em"}}>Cupo: {course.total_slots}<small><a style={{marginLeft:"0.5em"}} hlink='#' onClick={this.showModal.bind(this, "change_slot", course)}>Modificar cupo</a></small></p>
+                <div className="row">
+                    <div className="col-md-2">
+                        {course.temporary && <img className="img-responsive" alt="alert" src={alertSign} height="85%" width="85%" style={{paddingTop: "1em"}} />}
+                    </div>
+                    <div className={course.temporary ? "col-md-10" : "col-md-12"} >
+                    <h3 style={{paddingBottom: "0.5em"}}> Curso: {course.name} <button type="button" className="btn btn-danger pull-right" onClick={this.showModal.bind(this, "remove_course", course)}><Glyphicon glyph="minus" /> Eliminar curso</button></h3>
+                    <p style={{paddingBottom: "3em"}}>Cupo: {course.total_slots}<small><a style={{marginLeft:"0.5em"}} hlink='#' onClick={this.showModal.bind(this, "change_slot", course)}>Modificar cupo</a></small></p>
+                    </div>
+                </div>
                 <h4 className="text-primary" style={{paddingBottom: "1em"}}> Docentes </h4>
                 
                 <table className="table table-hover ">
@@ -283,22 +447,30 @@ class SubjectCourses extends Component {
                         data.professor = professor;
                         data.idx = idx;
                         data.course = course.course;
+                        data.temporary = course.temporary;
                         return (
                             <tr key={idx_professor}>
                                 <td>{professor.username}</td>
                                 <td>{professor.surname}</td>
                                 <td>{professor.name}</td>
                                 <td>{professor.role}</td>
-                                <td><button type="button" className="btn btn-danger pull-right" onClick={this.showModal.bind(this, "remove_teacher", data)}><Glyphicon glyph="minus" /> Eliminar</button></td>
+                                <td><button type="button" className="btn btn-danger pull-right" onClick={this.showModal.bind(this, "remove_teacher", data)} disabled={course.professors.length == 1}><Glyphicon glyph="minus" /> Eliminar</button></td>
                             </tr>
                         )
                     }, this)}
                     
                 </tbody>
                 </table>
-                <button type="button" className="btn btn-primary" style={{marginBottom: "4em"}} onClick={this.showModal.bind(this, "add_teacher", course)}><Glyphicon glyph="plus" /> Agregar docente</button>
+                <div className="row">
+                    <div className="col-md-3">
+                        <button type="button" className="btn btn-primary"  onClick={this.showModal.bind(this, "add_teacher", course)} disabled={course.professors.length == 6}><Glyphicon glyph="plus" /> Agregar docente</button>
+                    </div>
+                    <div className="col-md-9">
+                        {course.temporary && course.professors.length == 0 && <p className="text-danger" style={{paddingTop: "1em", marginLeft: "-2em"}}> El curso no se guardará si no tiene docentes. </p>}
+                    </div>
+                </div>
 
-                <h4 className="text-primary" style={{paddingBottom: "1em"}}> Información del curso </h4>
+                <h4 className="text-primary" style={{paddingBottom: "1em", marginTop: "4em"}}> Información del curso </h4>
                 <table className="table table-hover ">
                 <thead>
                     <tr>
@@ -316,6 +488,7 @@ class SubjectCourses extends Component {
                         data.schedule = schedule;
                         data.idx = idx;
                         data.course = course.course;
+                        data.temporary = course.temporary;
                         return (
                             <tr key={idx_schedule}>
                                 <td>{schedule.classroom_code}</td>
@@ -323,15 +496,21 @@ class SubjectCourses extends Component {
                                 <td>{schedule.day_of_week}</td>
                                 <td>{schedule.beginning.substr(0, 5) + " a " + schedule.ending.substr(0, 5)}</td>
                                 <td>{schedule.description}</td>
-                                <td><button type="button" className="btn btn-danger pull-right" onClick={this.showModal.bind(this, "remove_schedule", data)}><Glyphicon glyph="minus" /> Eliminar</button></td>
+                                <td><button type="button" className="btn btn-danger pull-right" onClick={this.showModal.bind(this, "remove_schedule", data)} disabled={course.time_slots.length == 1}><Glyphicon glyph="minus" /> Eliminar</button></td>
                             </tr>
                         )
                     }, this)}
                     
                 </tbody>
                 </table>
-                <button type="button" className="btn btn-primary" style={{marginBottom: "1.5em"}} onClick={this.showModal.bind(this, "add_schedule", course)}><Glyphicon glyph="plus" /> Agregar horario</button>
-
+                <div className="row">
+                    <div className="col-md-3">
+                        <button type="button" className="btn btn-primary" style={{marginBottom: "1.5em"}} onClick={this.showModal.bind(this, "add_schedule", course)} disabled={course.time_slots.length == 4}><Glyphicon glyph="plus" /> Agregar horario</button>
+                    </div>
+                    <div className="col-md-9">
+                        {course.temporary && course.time_slots.length == 0 && <p className="text-danger" style={{paddingTop: "1em", marginLeft: "-2em"}}> El curso no se guardará si no tiene horarios. </p>}
+                    </div>
+                </div>
                 </div>)
             }, this)}
             </div>}
