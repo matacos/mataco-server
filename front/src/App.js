@@ -6,6 +6,7 @@ import Home from "./routes/Home";
 import Panel from './components/Panel';
 import SubjectStudents from "./routes/SubjectStudents";
 import SubjectCourses from "./routes/SubjectCourses";
+import Exam from "./routes/Exam";
 import Error from "./routes/Error";
 import Assistant from './Assistant';
 
@@ -57,7 +58,7 @@ class App extends Component {
             <Route path="/home" render={ () => Assistant.isLoggedIn() ? <Home changeMode={this.changeMode.bind(this)} /> : <Redirect to="/login" /> } />
             <Route path="/cursos/:nombreMateria/:idCurso" component={SubjectStudents} />
             <Route path="/materias/:idMateria/:nombreMateria" component={SubjectCourses} />
-            
+            <Route path="/finales/:idMateria/:idExamen" component={Exam} />
             <Redirect from="/" exact to="/login" />
             <Route component={Error} />
           </Switch>

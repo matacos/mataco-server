@@ -136,7 +136,7 @@ class SubjectStudents extends Component {
             
             <PageHeader style={{marginBottom: "4em"}}> {this.getSubjectName()} </PageHeader>
             
-            {!this.state.wait && ((regularStudents.length == 0 && <h3 className="text-primary text-center">No hay alumnos inscriptos en este curso :( </h3>) || <div>
+            {!this.state.wait && ((regularStudents.length == 0 && <h3 className="text-primary text-center">No hay alumnos inscriptos en este curso </h3>) || <div>
             <Tabs activeKey={(conditionalStudents.length > 0 && this.state.key) || 1}
                 onSelect={this.handleSelect.bind(this)}
                 id="controlled-tab">

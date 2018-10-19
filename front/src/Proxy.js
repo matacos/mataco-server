@@ -133,7 +133,6 @@ class Proxy  {
                   console.log(error)
               }
           ) 
-
       }
 
       addCourse(course){
@@ -225,6 +224,73 @@ class Proxy  {
                   console.log(error)
               }
           ) 
+      }
+
+      getCourseExams(department_code, subject_code, professor) {
+        return fetch(this.url + "/finales?cod_departamento=" + department_code + "&cod_materia=" + subject_code + "&docente=" + professor , {
+          method: 'GET',
+          headers: {
+            'Authorization': 'bearer ' + Assistant.getField("token")
+          },
+          
+          }).then(res => res.json())
+          .then(
+            (result) => {       
+                Assistant.setField("token", result.token);
+                return result.exams;
+            },
+            (error) => {
+                console.log(error)
+            }
+          )  
+        }
+      
+      addExam(exam) {
+        return fetch(this.url + "/finales" , {
+          method:"POST",
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'bearer ' + Assistant.getField("token")
+          },
+          body: JSON.stringify(exam),
+        })
+      }
+
+      getExamStudents(examId) {
+        return fetch(this.url + "/inscripciones_final?id_examen=" + examId , {
+                method: 'GET',
+                headers: {
+                  'Authorization': 'bearer ' + Assistant.getField("token")
+                },
+                
+             }).then(res => res.json())
+             .then(
+              (result) => {
+                  var studentsList = result.exam_enrolments.map(inscription => {
+                      var data = {};
+                      data.exam = inscription.exam;
+                      data.condition = inscription.enrolment_type;
+                      data.name = inscription.student.name;
+                      data.surname = inscription.student.surname;
+                      data.priority = Math.floor(Math.random() * 120) + 1;
+                      data.id = inscription.student.username;
+                      return data;
+                  })
+                  Assistant.setField("token", result.token);
+                  return studentsList;
+              },
+              (error) => {
+                  console.log(error)
+              }
+          ) 
+      }
+
+      getExamData(department_code, subject_code, professor, examId) {
+        return this.getCourseExams(department_code, subject_code, professor)
+        .then(exams => {
+          let exam = exams.filter(exam => exam.id == examId);
+          return (exam.length == 0) ? null : exam[0];
+        });
       }
 
       logout() {
