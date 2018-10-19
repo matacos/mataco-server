@@ -46,6 +46,57 @@ function mountRoutes(app,db,schemaValidation){
         next()
     })
 
+    const examEnrolmentBody={required:[
+        "exam_id",
+        "enrolment_type",
+        "student"
+    ]}
+    app.post("/inscripciones_final",schemaValidation({body:examEnrolmentBody}),async function(req,res,next){
+        const queryInsert=`
+        insert into exam_enrolments(
+            exam_id,
+            student_username,
+            creation,
+            grade,
+            grade_date,
+            enrolment_type
+        ) values (
+            $1,
+            $2,
+            NOW(),
+            -1,
+            NOW(),
+            $3
+        )
+        ;
+        `
+        const insertResult = await db.query(queryInsert,[
+            req.body["exam_id"],
+            req.body["student"],
+            req.body["enrolment_type"],
+        ])
+        const querySelect=`
+        select
+            exams_with_data as exam,
+            student,
+            creation,
+            grade,
+            grade_date,
+            enrolment_type
+        from exam_enrolments_with_data
+        where
+            exam_id=$1
+        and student_username=$2
+        ;
+        `
+        const selectResult = await db.query(querySelect,[
+            req.body["exam_id"],
+            req.body["student"]
+        ])
+        res.json({"exam_enrolment":selectResult.rows[0]})
+        next()
+    })
+
 }
 
 module.exports={
