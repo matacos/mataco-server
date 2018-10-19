@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import '../App.css';
 import Proxy from '../Proxy';
 import { Modal, Button } from 'react-bootstrap';
-import { Glyphicon, Tabs, Tab, PageHeader } from 'react-bootstrap';
+import { Glyphicon, DropdownButton, MenuItem, PageHeader } from 'react-bootstrap';
 import Assistant from "../Assistant";
 import BootstrapTable  from 'react-bootstrap-table-next';
 import 'react-bootstrap-table-next/dist/react-bootstrap-table2.min.css';
@@ -15,7 +15,8 @@ class Exam extends Component {
             students: [],
             columns: [],
             data: null,
-            wait: true
+            wait: true,
+            showCancelModal: false
         };
     }
 
@@ -47,25 +48,20 @@ class Exam extends Component {
         }
     }
 
-    /*
-
-    showConditionalModal(student) {
-        this.setState({conditional: student})
+    showCancelModal() {
+        this.setState({showCancelModal: true})
     }
 
-    acceptConditional() {
-        if (this.state.conditional) {
-            let courseId = this.props.match.params.idCurso.substr(4);
-            Proxy.putAcceptConditionalStudent(courseId, this.state.conditional.id)
-            .then(students => this.setState({students: students}));
+    cancelExam() {
+        if (this.state.showCancelModal) {
+            // Delete exam
         }
         this.handleHide();
     }
 
     handleHide() {
-        this.setState({conditional: null})
+        this.setState({showCancelModal: false})
     }
-    */
 
     render() {
 
@@ -103,9 +99,19 @@ class Exam extends Component {
                 <h1>Sistema de <br/> Gestión Académica</h1>
             </div>
             
-            {this.state.data != null && <div><PageHeader style={{marginBottom: "2em"}}> {"Final " + this.state.data.subject.name } <br /> <span className="text-primary">{this.state.data.exam_date.substring(0, 10)} </span></PageHeader>
+            {this.state.data != null && <div><PageHeader style={{marginBottom: "2em"}}> {"Final " + this.state.data.subject.name } <br /> <span className="text-primary">{this.state.data.exam_date.substring(0, 10)} </span>{/*<button type="button" className="btn btn-danger pull-right" onClick={this.showCancelModal.bind(this)}>Cancelar final</button>*/}</PageHeader>
             <div className="well" style={{marginBottom: "2em"}}>
-            <h4 style={{color: "#696969"}}> {"Aula: " + this.state.data.classroom_code }</h4>
+            <h4 style={{color: "#696969"}}> {"Aula: " + this.state.data.classroom_code } <DropdownButton
+            title="Opciones"
+            bsStyle="primary pull-right"
+            id="dropdown-menu"
+            >
+            <MenuItem eventKey="1">Modificar final</MenuItem>
+            <MenuItem eventKey="2">Descargar listado de alumnos</MenuItem>
+            <MenuItem eventKey="3">Enviar notificación</MenuItem>
+            <MenuItem divider />
+            <MenuItem eventKey="4" onClick={this.showCancelModal.bind(this)}><h5 style={{color: "red"}}>Cancelar final</h5></MenuItem>
+            </DropdownButton></h4>
             <h4 style={{color: "#696969"}}> {"Sede: " + this.state.data.classroom_campus }</h4>
             <h4 style={{color: "#696969"}}> {"Inicio: " + this.state.data.beginning.substring(0, 5) }</h4>
             <h4 style={{color: "#696969"}}> {"Finalización: " + this.state.data.ending.substring(0, 5) }</h4>
@@ -123,25 +129,26 @@ class Exam extends Component {
                 }, this)} columns={ columns } />
             </div>)}
             
-            {/*(this.state.conditional != null) &&  <Modal
-            show={this.state.conditional != null}
+            {this.state.showCancelModal &&  <Modal
+            show={this.state.showCancelModal}
             onHide={this.handleHide.bind(this)}
             container={this}
             aria-labelledby="contained-modal-title"
             >
             <Modal.Header>
                 <Modal.Title id="contained-modal-title">
-                Aceptar alumno condicional
+                Cancelar examen
                 </Modal.Title>
             </Modal.Header>
             <Modal.Body>
-                ¿Estás seguro que deseas aceptar a este alumno?
+                ¿Estás seguro que deseas cancelar este examen? <br /><br />
+                <small className="text-muted">Se enviará una notificación a los alumnos inscriptos.</small>
             </Modal.Body>
             <Modal.Footer>
                 <Button onClick={this.handleHide.bind(this)}>Cancelar</Button>
-                <Button bsStyle="primary" onClick={this.acceptConditional.bind(this)}>Aceptar</Button>
+                <Button bsStyle="primary" onClick={this.cancelExam.bind(this)}>Aceptar</Button>
             </Modal.Footer>
-            </Modal>*/}
+            </Modal>}
                 
         </div>
 
