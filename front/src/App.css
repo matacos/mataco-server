@@ -23,6 +23,11 @@
   font-size: large;
 }
 
+.dropdown-menu > li > a:hover {
+  background-color: rgba(126, 124, 124, 0.562);
+  background-image: none;
+}
+
 @keyframes App-logo-spin {
   from { transform: rotate(0deg); }
   to { transform: rotate(360deg); }
