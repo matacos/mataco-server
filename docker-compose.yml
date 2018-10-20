@@ -10,6 +10,8 @@ services:
       context: ./app
     ports:
       - "3000:3000"
+    environment:
+      - DEBUG=express:*
   test:
     build:
       context: ./test

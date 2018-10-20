@@ -17,7 +17,7 @@ app.use(express.static(__dirname+"/static"))
 const apiRouter=express.Router()
 mountRoutes(apiRouter,db)
 app.use("/api",apiRouter)
-require("./seeder")
+//require("./seeder")
 
 
 let port = process.env.PORT || 3000

@@ -13,7 +13,7 @@ LOGIN
 create table users (
     username varchar(10),
     password varchar(30),
-    email varchar(30),
+    email varchar(100),
     name text,
     surname text,
     token varchar(30),

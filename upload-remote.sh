@@ -1,0 +1,1 @@
+curl -F 'csv=@estudiantes.csv' http://mataco2.herokuapp.com/api/estudiantes/csv
