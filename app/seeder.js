@@ -75,6 +75,16 @@ function doIt(){
                 console.log("####################")
                 var fileStream = createUsersSeed(10000)
                 fileStream.pipe(stream);
+                fileStream.on("end",()=>{
+                    console.log("###########")
+                    console.log("###########")
+                    console.log("###########")
+                    console.log("TERMINA LA SUBIDA A LA BASE DE DATOS SQL")
+                    console.log("ES LA HORA",new Date())
+                    console.log("###########")
+                    console.log("###########")
+                    console.log("###########")
+                })
                 console.log("ES LA HORA",new Date())
             })
         }

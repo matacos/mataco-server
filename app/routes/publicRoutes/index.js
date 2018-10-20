@@ -1,5 +1,7 @@
 const Router = require('express-promise-router')
-
+const multer=require("multer")
+var storage = multer.memoryStorage()
+var upload = multer({ storage: storage })
 
 function mountRoutes(app,db,schemaValidation){
     /*
@@ -11,6 +13,21 @@ function mountRoutes(app,db,schemaValidation){
         res.json(resultado.rows)
         next()
     });
+
+    promiseRouter.post("/estudiantes/csv",upload.single("csv"),async function(req,res,next){
+        const fileText=req.file.buffer.toString("utf8")
+        console.log("_______________")
+        console.log("_______________")
+        console.log("_______________")
+        console.log("_______________")
+        console.log("_______________")
+        console.log(fileText)
+        console.log("_______________")
+        console.log("_______________")
+        console.log("_______________")
+        console.log("_______________")
+        console.log("_______________")
+    })
     
     
     
