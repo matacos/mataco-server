@@ -103,6 +103,29 @@ describe("Test login",()=>{
             }
         })
     })
+    it("Happy path admin", async()=>{
+        const response=await login("00000000","00000000")
+        console.log(response)
+        console.log(response)
+        expect(response).to.be.jsonSchema({
+            type:"object",
+            required:["token","user"],
+            properties:{
+                "token":{type:"string"},
+                "user":{
+                    type:"object",
+                    properties:{
+                        username:{type:"string"},
+                        email:{type:"string"},
+                        roles:{
+                            const:['administrators']
+                        },
+                    },
+                    required:["username","email","roles"]
+                },
+            }
+        })
+    })
     it("Bad request", async()=>{
         const body={
             usernae:"jose",
