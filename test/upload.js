@@ -56,12 +56,10 @@ async function uploadWithAuth(username,password,verb,uriPart,fileText){
 
 describe("File uploads to /estudiantes/csv",()=>{
     it("upload",async ()=>{
-        const oneLiner = "97452,97452,Jose,Sbrubru,3,jose.sbrubru@gmail.com,11-22-10"
+        const oneLiner = "97452,97452,Jose,Sbrubru,3,jose.sbrubru@gmail.com,11-10"
         console.log("$$$$$$$")
         const response = await uploadWithAuth("jose","jojo","POST","/estudiantes/csv",oneLiner)
         console.log("$$$$$$$")
         console.log(response.body)
     })
-    
-
 })

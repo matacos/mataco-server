@@ -35,6 +35,7 @@ ROLES
 *******************************************/
 create table students(
     username varchar(10),
+    priority decimal,
     primary key (username),
     foreign key (username) references users(username)
 );
@@ -52,7 +53,7 @@ create table professors(
     foreign key (username) references users(username)
 );
 
-insert into students (username) values ('jose'),('97452'),('99999');
+insert into students (username,priority) values ('jose',24),('97452',13),('99999',99);
 insert into professors (username) values ('gryn'), ('39287287');
 
 /*********************************************
