@@ -31,7 +31,7 @@ function mountRoutes(app,db,schemaValidation){
         my_enrolments as (
             select exam_id 
             from exam_enrolments 
-            where student_username like $3
+            where student_username like $4
         ),
         exams_ids as (
             select id 
@@ -69,7 +69,8 @@ function mountRoutes(app,db,schemaValidation){
         const result = await db.query(query,[
             subject_code,
             department_code,
-            req.query["docente"] || '%'
+            req.query["docente"] || '%',
+            req.user["username"]
         ])
         res.json({"exams":result.rows})
         next()

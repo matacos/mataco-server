@@ -142,58 +142,51 @@ describe("Test /exams",()=>{
 
     it("test GET inscripciones_final filtering by exam id",async ()=>{
         const response = await requestWithAuth("jose","jojo","GET","/inscripciones_final?id_examen=1")
-
-        
-        console.log("$$$$$$$$")
-        console.log("$$$$$$$$")
-        console.log("$$$$$$$$")
-        console.log("$$$$$$$$")
+        console.log("############")
+        console.log("############")
         console.log(response.body)
-        console.log(response.body.exam_enrolments)
-        console.log(response.body.exam_enrolments[0].exam)
-        console.log("$$$$$$$$")
-        console.log("$$$$$$$$")
-        console.log("$$$$$$$$")
-        console.log("$$$$$$$$")
-        
-
+        console.log("############")
+        console.log("############")
+        console.log(response.body.exam_enrolments[0])
+        console.log("############")
+        console.log("############")
         expect(response.statusCode).to.equal(200)
         expect(response.body).to.be.jsonSchema(finalEnrolmentsJsonSchema)
         expect(response.body.exam_enrolments).to.be.lengthOf(1)
     })
-
+    it("test GET filtering by subject, 99999 is not enroled",async ()=>{
+        const response = await requestWithAuth("99999","9","GET","/finales?cod_departamento=75&cod_materia=07")
+        console.log("============")
+        console.log("============")
+        console.log(response.body.exams[0])
+        console.log("============")
+        console.log("============")
+        expect(response.statusCode).to.equal(200)
+        expect(response.body).to.be.jsonSchema(finalsJsonSchema)
+        expect(response.body.exams[0].enroled).to.be.false
+    })
     it("enrol a student to exam 1",async ()=>{
         const response = await requestWithAuth("jose","jojo","POST","/inscripciones_final",{
             "exam_id":1,
             "enrolment_type":"Regular",
             "student":"99999"
         })
-        console.log("###########")
-        console.log("###########")
-        console.log("###########")
-        console.log(response.body)
-        console.log("###########")
-        console.log("###########")
-        console.log("###########")
         expect(response.statusCode).to.equal(200)
+    })
+    it("test GET filtering by subject, 99999 is enroled",async ()=>{
+        const response = await requestWithAuth("99999","9","GET","/finales?cod_departamento=75&cod_materia=07")
+        console.log("============")
+        console.log("============")
+        console.log(response.body.exams[0])
+        console.log("============")
+        console.log("============")
+        expect(response.statusCode).to.equal(200)
+        expect(response.body).to.be.jsonSchema(finalsJsonSchema)
+        expect(response.body.exams[0].enroled).to.be.true
     })
 
     it("test GET inscripciones_final filtering by exam id",async ()=>{
         const response = await requestWithAuth("jose","jojo","GET","/inscripciones_final?id_examen=1")
-
-        
-        console.log("$$$$$$$$")
-        console.log("$$$$$$$$")
-        console.log("$$$$$$$$")
-        console.log("$$$$$$$$")
-        console.log(response.body)
-        console.log(response.body.exam_enrolments)
-        console.log(response.body.exam_enrolments[0].exam)
-        console.log("$$$$$$$$")
-        console.log("$$$$$$$$")
-        console.log("$$$$$$$$")
-        console.log("$$$$$$$$")
-        
 
         expect(response.statusCode).to.equal(200)
         expect(response.body).to.be.jsonSchema(finalEnrolmentsJsonSchema)
@@ -207,20 +200,6 @@ describe("Test /exams",()=>{
 
     it("test GET inscripciones_final filtering by exam id, the DELETE worked OK",async ()=>{
         const response = await requestWithAuth("jose","jojo","GET","/inscripciones_final?id_examen=1")
-
-        
-        console.log("$$$$$$$$")
-        console.log("$$$$$$$$")
-        console.log("$$$$$$$$")
-        console.log("$$$$$$$$")
-        console.log(response.body)
-        console.log(response.body.exam_enrolments)
-        console.log(response.body.exam_enrolments[0].exam)
-        console.log("$$$$$$$$")
-        console.log("$$$$$$$$")
-        console.log("$$$$$$$$")
-        console.log("$$$$$$$$")
-        
 
         expect(response.statusCode).to.equal(200)
         expect(response.body).to.be.jsonSchema(finalEnrolmentsJsonSchema)
