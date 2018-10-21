@@ -40,7 +40,8 @@ const correctRequestJsonschema={
                 "email",
                 "name",
                 "surname",
-                "degrees"
+                "degrees",
+                "priority"
             ]}
         },
         required:["creation","grade","grade_date","student","course"]
@@ -100,7 +101,6 @@ describe("Test /inscripciones_cursos",()=>{
     })
     it("test GET filtering by course",async ()=>{
         const response = await requestWithAuth("jose","jojo","GET","/inscripciones_cursos?curso=1")
-        console.log(response.body)
         expect(response.statusCode).to.equal(200)
         expect(response.body).to.be.jsonSchema(correctRequestJsonschema)
         for(let inscription of response.body.courseInscriptions){

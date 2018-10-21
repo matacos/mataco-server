@@ -112,7 +112,17 @@ describe("Test /exams",()=>{
         ],
         properties:{
             exam:{type:"object"},
-            student:{type:"object"},
+            student:{
+                type:"object",
+                required:[
+                    "username",
+                    "email",
+                    "name",
+                    "surname",
+                    "degrees",
+                    "priority"
+                ]
+            },
             creation:{type:"string"},
             grade:{type:"string"},
             grade_date:{type:"string"},

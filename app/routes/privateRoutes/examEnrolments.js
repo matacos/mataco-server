@@ -18,6 +18,7 @@ function mountRoutes(app,db,schemaValidation){
         required:["estudiante"]
     }]}
     app.get("/inscripciones_final",schemaValidation({query:examEnrolmentQuery}),async function(req,res,next){
+        const viewCreation3 = await db.query(studentsWithDegreesView)
         const viewCreation2 = await db.query(subjectsView)
         const viewCreation1 = await db.query(examsWithDataView)
         const viewCreation0 = await db.query(examEnrolmentsWithDataView)

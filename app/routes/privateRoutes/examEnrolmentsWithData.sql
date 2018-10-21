@@ -20,7 +20,7 @@ select
     ee.enrolment_type
 from
     exams_with_data as e,
-    (select username,email,name,surname from users) as u,
+    students_with_degrees as u,
     exam_enrolments as ee
 where
     ee.exam_id = e.id

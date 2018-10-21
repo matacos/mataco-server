@@ -30,9 +30,13 @@ select
     data.email,
     data.name,
     data.surname,
-    degrees.degrees
+    degrees.degrees,
+    s.priority
 from
     students_data as data,
-    students_degrees as degrees
+    students_degrees as degrees,
+    students as s
 where
-    data.username=degrees.student;
+    data.username = degrees.student
+and data.username = s.username
+;
