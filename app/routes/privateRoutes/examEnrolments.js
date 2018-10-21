@@ -98,6 +98,24 @@ function mountRoutes(app,db,schemaValidation){
         next()
     })
 
+    app.delete("/inscripciones_final/:id",async function(req,res,next){
+        const partsId = req.params["id"].split("-")
+        const examId=partsId[0]
+        const studentId=partsId[1]
+
+        const queryDelete=`
+        delete from exam_enrolments where
+            exam_id=$1
+        and student_username=$2
+        ;
+        `
+        await db.query(queryDelete,[
+            examId,studentId
+        ])
+        res.sendStatus(204)
+        next()
+    })
+
 }
 
 module.exports={

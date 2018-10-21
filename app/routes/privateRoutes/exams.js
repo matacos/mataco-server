@@ -3,6 +3,7 @@ const subjectsView=fs.readFileSync(__dirname+"/subjectsWithData.sql").toString()
 const coursesView=fs.readFileSync(__dirname+"/coursesWithData.sql").toString()
 const studentsWithDegreesView=fs.readFileSync(__dirname+"/studentsWithDegrees.sql").toString()
 const examsWithDataView=fs.readFileSync(__dirname+"/examsWithData.sql").toString()
+const examEnrolmentsWithDataView=fs.readFileSync(__dirname+"/examEnrolmentsWithData.sql").toString()
 
 function mountRoutes(app,db,schemaValidation){
     const examsQuery={anyOf:[{
@@ -18,28 +19,51 @@ function mountRoutes(app,db,schemaValidation){
         required:["docente"]
     }]}
     app.get("/finales",schemaValidation({query:examsQuery}),async function(req,res,next){
+        const viewCreation3 = await db.query(studentsWithDegreesView)
+        
         const viewCreation1 = await db.query(subjectsView)
         const viewCreation = await db.query(examsWithDataView)
+        const viewCreation2 = await db.query(examEnrolmentsWithDataView)
         const department_code = req.query["cod_departamento"]
         const subject_code = req.query["cod_materia"]
         const query=`
+        with
+        my_enrolments as (
+            select exam_id 
+            from exam_enrolments 
+            where student_username like $3
+        ),
+        exams_ids as (
+            select id 
+            from exams_with_data
+        ),
+        enroled as (
+            select id, coalesce(exam_id,0) > 0 as enroled
+            from
+                exams_ids as eids
+                    left outer join my_enrolments as me on (
+                        eids.id = me.exam_id
+                    )
+        )
         select
-            id,
-            semester_code,
-            classroom_code,
-            classroom_campus,
-            beginning,
-            ending,
-            exam_date,
-            subject,
-            examiner,
-            cast('f' as boolean) as enroled
-            
-        from exams_with_data
+            ed.id,
+            ed.semester_code,
+            ed.classroom_code,
+            ed.classroom_campus,
+            ed.beginning,
+            ed.ending,
+            ed.exam_date,
+            ed.subject,
+            ed.examiner,
+            er.enroled as enroled
+        from exams_with_data as ed,
+            enroled as er
         where 
-            subject_code like $1
-        and department_code like $2
-        and examiner_username like $3
+        ed.subject_code like $1
+        and ed.department_code like $2
+        and ed.examiner_username like $3
+        and er.id=ed.id
+        
         ;
         `
         const result = await db.query(query,[

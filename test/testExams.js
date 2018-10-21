@@ -199,4 +199,31 @@ describe("Test /exams",()=>{
         expect(response.body).to.be.jsonSchema(finalEnrolmentsJsonSchema)
         expect(response.body.exam_enrolments).to.be.lengthOf(2)
     })
+
+    it("test DELETE inscripciones_final",async ()=>{
+        const response = await requestWithAuth("jose","jojo","DELETE","/inscripciones_final/1-99999")
+        expect(response.statusCode).to.equal(204)
+    })
+
+    it("test GET inscripciones_final filtering by exam id, the DELETE worked OK",async ()=>{
+        const response = await requestWithAuth("jose","jojo","GET","/inscripciones_final?id_examen=1")
+
+        
+        console.log("$$$$$$$$")
+        console.log("$$$$$$$$")
+        console.log("$$$$$$$$")
+        console.log("$$$$$$$$")
+        console.log(response.body)
+        console.log(response.body.exam_enrolments)
+        console.log(response.body.exam_enrolments[0].exam)
+        console.log("$$$$$$$$")
+        console.log("$$$$$$$$")
+        console.log("$$$$$$$$")
+        console.log("$$$$$$$$")
+        
+
+        expect(response.statusCode).to.equal(200)
+        expect(response.body).to.be.jsonSchema(finalEnrolmentsJsonSchema)
+        expect(response.body.exam_enrolments).to.be.lengthOf(1)
+    })
 })
