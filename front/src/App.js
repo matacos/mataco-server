@@ -7,6 +7,7 @@ import Panel from './components/Panel';
 import SubjectStudents from "./routes/SubjectStudents";
 import SubjectCourses from "./routes/SubjectCourses";
 import Exam from "./routes/Exam";
+import StudentsUpload from "./routes/StudentsUpload";
 import Error from "./routes/Error";
 import Assistant from './Assistant';
 
@@ -59,6 +60,7 @@ class App extends Component {
             <Route path="/cursos/:nombreMateria/:idCurso" component={SubjectStudents} />
             <Route path="/materias/:idMateria/:nombreMateria" component={SubjectCourses} />
             <Route path="/finales/:idMateria/:idExamen" component={Exam} />
+            <Route path="/estudiantes" component={StudentsUpload} />
             <Redirect from="/" exact to="/login" />
             <Route component={Error} />
           </Switch>

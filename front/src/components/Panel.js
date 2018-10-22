@@ -35,7 +35,6 @@ class Panel extends Component {
 
     getDate() {
         var date = new Date();
-        console.log(date.getFullYear() + "/" + date.getMonth() + "/" + date.getDate())
         return date.getFullYear() + "/" + (date.getMonth() + 1) + "/" + date.getDate();
     }
 
@@ -106,6 +105,10 @@ class Panel extends Component {
         this.props.history.push('/home');
     }
 
+    goToUpload(path) {
+        this.props.history.push('/' + path);
+    }
+
     logout() {
         Proxy.logout();
         this.props.history.push('/login');
@@ -151,6 +154,11 @@ class Panel extends Component {
         return [true, ""];
     }
 
+    changeDateFormat(oldDate) {
+        var date =  new Date(oldDate);
+        return date.getDate() + "/" + (date.getMonth() + 1) + "/" + date.getFullYear();
+    }
+
     addExam() {
         if (this.state.showAddExam) {
             var newExam = null;
@@ -166,7 +174,7 @@ class Panel extends Component {
                     classroom_campus: this.state.examData.place.length == 0 ? "Paseo Colón" : this.state.examData.place,
                     beginning: this.state.examData.beginning,
                     ending: this.state.examData.ending,
-                    exam_date: date.getFullYear() + "-" + (date.getMonth() + 1)+ "-" + date.getDate() 
+                    exam_date: date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate() 
                 }
                 
                 Proxy.addExam(newExam)
@@ -205,7 +213,7 @@ class Panel extends Component {
             case "professor":
                 var examsList = this.state.exams.map(exam => <div key={exam.id}>
                 <button className="text-primary text-left Panel-list-item" onClick={this.goToExam.bind(this, exam.id)}>
-                    {exam.exam_date.substr(0, 10)}
+                    {this.changeDateFormat(exam.exam_date.substr(0, 10))}
                 </button><hr /></div>);
                 return (
                     <div>
@@ -251,11 +259,11 @@ class Panel extends Component {
                     </div>
                 );
 
-            case "administrator":
+            case "administrators":
                 return (
                     <div>
                         <div><button className="Panel-item" onClick={this.goToHome.bind(this)}><h4 className="text-primary"> Alta de materias</h4> </button></div>
-                        <div><button className="Panel-item" onClick={this.goToHome.bind(this)}><h4 className="text-primary"> Alta de estudiantes</h4> </button></div>
+                        <div><button className="Panel-item" onClick={this.goToUpload.bind(this, "estudiantes")}><h4 className="text-primary"> Alta de estudiantes</h4> </button></div>
                         <div><button className="Panel-item" onClick={this.goToHome.bind(this)}><h4 className="text-primary"> Alta de docentes</h4> </button></div>
                     </div>
                 );
@@ -274,6 +282,15 @@ class Panel extends Component {
                 <p><button className="text-primary Panel-item" onClick={this.logout.bind(this)}><h4 className="text-primary">  Cerrar sesión </h4></button></p>
             </div>
         );
+    }
+
+    setTitle() {
+        if (Assistant.inProfessorMode()) 
+            return Assistant.getField("name");
+        if (Assistant.inDepartmentAdminMode()) 
+            return "Departamento de " + Assistant.getField("department");
+        if (Assistant.inAdminMode())   
+            return "Administrador";
     }
 
     showAddExamModal() {
@@ -298,7 +315,7 @@ class Panel extends Component {
             {Assistant.isLoggedIn() && <div className="panel panel-default col-md-3" style={{margin: "0", padding: "0"}}>
             <div className="panel-heading" style={{width: "auto"}}>
                 <img className="img-responsive center-block" alt="logo" src={logoFIUBA} height="50%" width="50%" style={{marginLeft: "auto", marginRight: "auto", width: "50%", paddingTop: "1em"}}/>
-                <h3 className="text-center" style={{color: "#696969"}}>{Assistant.inProfessorMode() ? Assistant.getField("name") : "Departamento de " + Assistant.getField("department")}</h3>
+                <h3 className="text-center" style={{color: "#696969"}}>{this.setTitle()}</h3>
             </div>
 
             <div className="panel-body" style={this.props.selected["subjects"] ? {height: "auto"} : {height: "100vh"}}>
