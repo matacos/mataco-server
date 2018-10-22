@@ -18,12 +18,15 @@ create table users (
     surname text,
     token varchar(30),
     token_expiration timestamp,
+    firebase_token text default null,
 
     primary key (username),
     unique (token)
 );
 
 insert into users (name,surname,username,password,email,token,token_expiration) values
+    ('Sofía','Morsele','96107','jojo','sofi.morsele@gmail.com','01',now()+'5 minutes'),
+    ('Santiago','Gandol','96800','jojo','santi.gandol@gmail.com','02',now()+'5 minutes'),
     ('José Ignacio','Sbruzzi','jose','jojo','jose.jose@gmail.com','78',now()+'5 minutes'),
     ('José Ignacio','Sbruzzi','97452','jojo','jose.jose@gmail.com','79',now()+'5 minutes'),
     ('Andorid No. 9','Cell','99999','9','nina.niner@gmail.com','99',now()+'5 minutes'),

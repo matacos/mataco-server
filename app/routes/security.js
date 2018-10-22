@@ -117,6 +117,26 @@ function mountRoutes(app,db,checkSchemas){
         }
 
     })
+    const firebaseTokenSchema={
+        required:[
+            "username",
+            "firebase_token"
+        ]
+    }
+    //Endpoint POST /firebase
+    asyncRouter.post("/firebase",checkSchemas({body:firebaseTokenSchema}),async function(req,res,next){
+        let username=req.body.username;
+        let firebaseToken=req.body.firebase_token;
+        let query=`
+        update users 
+        set firebase_token=$2 
+        where username=$1
+        ;
+        `
+        await db.query(query,[username,firebaseToken])
+        res.sendStatus(201)
+        next()
+    })
 
 
     //AGrego las rutas al roouter que recibí
