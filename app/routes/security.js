@@ -152,9 +152,13 @@ function mountRoutes(app,db,checkSchemas){
         ;
         `
         let result = await db.query(query)
+<<<<<<< HEAD
         let tokens=result.rows.map((r)=>r.firebase_token).filter((r)=>r!=null)
         console.log("VOY A HACER BROADCAST A LOS SGTES TOKENS")
         console.log(tokens)
+=======
+        let tokens=result.rows.map((r)=>r.firebase_token)
+>>>>>>> e5a43d9c5f7f5a825469fd586bcbc749e207a026
         let requestPayload = {
             "data": {
                 "title": "Notificacion",
