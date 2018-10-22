@@ -57,7 +57,7 @@ const singleFinalJsonSchema={required:["exam"],properties:{exam:
 const finalsJsonSchema={required:["exams"],properties:{exams:{
     items:examSchema
 }}}
-describe("Test /exams",()=>{
+describe.only("Test /exams",()=>{
     it("test GET without filter query",async ()=>{
         const response = await requestWithAuth("jose","jojo","GET","/finales")
         expect(response.statusCode).to.equal(400)
@@ -204,5 +204,21 @@ describe("Test /exams",()=>{
         expect(response.statusCode).to.equal(200)
         expect(response.body).to.be.jsonSchema(finalEnrolmentsJsonSchema)
         expect(response.body.exam_enrolments).to.be.lengthOf(1)
+    })
+    it("Delete exam 1",async function(){
+        this.timeout(5000);
+        const response = await requestWithAuth("jose","jojo","DELETE","/finales/1")
+        expect(response.statusCode).to.equal(204)
+    })
+    it("Exam 1 doesn't exist anymore",async ()=>{
+        const response = await requestWithAuth("jose","jojo","GET","/finales?cod_departamento=75&cod_materia=07")
+        
+        expect(response.statusCode).to.equal(200)
+        expect(response.body).to.be.jsonSchema(finalsJsonSchema)
+        let ids=[]
+        for(let exam of response.body.exams){
+            ids.push(exam.id)
+        }
+        expect(ids).not.to.include(1)
     })
 })

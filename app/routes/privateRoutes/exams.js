@@ -4,6 +4,7 @@ const coursesView=fs.readFileSync(__dirname+"/coursesWithData.sql").toString()
 const studentsWithDegreesView=fs.readFileSync(__dirname+"/studentsWithDegrees.sql").toString()
 const examsWithDataView=fs.readFileSync(__dirname+"/examsWithData.sql").toString()
 const examEnrolmentsWithDataView=fs.readFileSync(__dirname+"/examEnrolmentsWithData.sql").toString()
+const request=require("request-promise-native")
 
 function mountRoutes(app,db,schemaValidation){
     const examsQuery={anyOf:[{
@@ -161,6 +162,101 @@ function mountRoutes(app,db,schemaValidation){
         
         res.json({exam:resultGet.rows[0]})
         next()
+    })
+
+    app.delete("/finales/:id",async function(req,res,next){
+        const viewCreation3 = await db.query(studentsWithDegreesView)
+        const viewCreation1 = await db.query(subjectsView)
+        const viewCreation = await db.query(examsWithDataView)
+        
+
+        // ------------ obtener todos los tokens a los que hya que avisarle -----------------
+        const enroledTokensQuery=`
+        select u.firebase_token
+        from users as u,
+            exam_enrolments as ee
+        where
+            ee.exam_id=$1
+        and ee.student_username=u.username
+        ;
+        `
+        const enroledTokensQueryResult=await db.query(enroledTokensQuery,[
+            req.params.id
+        ])
+        console.log("??????????????????????")
+        console.log("??????????????????????")
+        console.log(enroledTokensQueryResult)
+        console.log("??????????????????????")
+        console.log("??????????????????????")
+
+        const notifyTokens=enroledTokensQueryResult.rows
+            .map((r)=>r.firebase_token)
+            .filter((x)=>x!=null)
+        console.log("%%%%%%%%%%%%%%%%%%%%%%")
+        console.log("%%%%%%%%%%%%%%%%%%%%%%")
+        console.log(notifyTokens)
+        console.log("%%%%%%%%%%%%%%%%%%%%%%")
+        console.log("%%%%%%%%%%%%%%%%%%%%%%")
+
+        // ---------------- generar el examen que voy a enviar ----------------------
+
+        const queryExamData = `
+        select * from exams_with_data where id = $1;
+        `
+        const examDataResult = await db.query(queryExamData,[req.params.id])
+        const examData=examDataResult.rows[0]
+        console.log("¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡")
+        console.log("¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡")
+        console.log("¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡")
+        console.log(examData)
+        console.log("¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡")
+        console.log("¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡")
+        console.log("¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡")
+        let message = "Tu examen de "+examData.subject.name+" del día "+examData.exam_date+" fue cancelado"
+
+
+
+        // ---------------- enviarle un mensaje a los tokens esos ------------
+        console.log("VOY A HACER BROADCAST A LOS SGTES TOKENS")
+        console.log(notifyTokens)
+        let requestPayload = {
+            "data": {
+                "title": "Se canceló un examen",
+                "body": message,
+                "click_action": "exam_inscriptions",
+                "channel_id": "exams"
+            },
+            "registration_ids": notifyTokens
+        }
+        const response=await request({
+            uri:"https://"+"f"+"c"+"m"+".go"+"og"+"lea"+"pi"+"s.c"+"om/"+"fc"+"m/s"+"end",
+            method:"POST",
+            headers:{
+                "Content-Type":"application/json",
+                "Authorization":"key=AAAActJi0bE:APA91bFPGJ-zYYcZg-1WcoXPZmmUXEafYSiLbdcHgJFYliWMkGIlL--kBR0BE6C4DTD7J5LmrsfvmyqIGZt0ps0s49Pt-UthdNz9g3WLwVb-Yo5ftnD2gzrCvxkpctBscuWLnCzINnUk"
+            },
+            body:requestPayload,
+            simple:false,
+            resolveWithFullResponse:true,
+            json:true
+        })
+
+
+
+        // --------------------- hacer el DELETE ---------------
+        const query=`
+        delete from exams
+        where id=$1
+        ;
+        `
+        await db.query(query,[
+            req.params.id
+        ])
+
+        res.sendStatus(204)
+        next()
+
+
     })
 }
 
