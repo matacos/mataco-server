@@ -57,7 +57,7 @@ const singleFinalJsonSchema={required:["exam"],properties:{exam:
 const finalsJsonSchema={required:["exams"],properties:{exams:{
     items:examSchema
 }}}
-describe.only("Test /exams",()=>{
+describe("Test /exams",()=>{
     it("test GET without filter query",async ()=>{
         const response = await requestWithAuth("jose","jojo","GET","/finales")
         expect(response.statusCode).to.equal(400)
