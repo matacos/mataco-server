@@ -57,7 +57,7 @@ create table professors(
     foreign key (username) references users(username)
 );
 
-insert into students (username,priority) values ('jose',24),('97452',13),('99999',99);
+insert into students (username,priority) values ('jose',24),('97452',13),('99999',99),('96107',11),('96800',12);
 insert into professors (username) values ('gryn'), ('39287287');
 insert into administrators (username) values ('00000000');
 
