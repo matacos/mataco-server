@@ -55,9 +55,9 @@ class Exam extends Component {
     cancelExam() {
         if (this.state.showCancelModal) {
             // Delete exam
-            //Proxy.deleteExam(this.props.match.params.idExamen)
-            //.then(this.props.history.push('/home'));
-            //this.props.history.push('/home');
+            Proxy.deleteExam(this.props.match.params.idExamen)
+            .then(this.props.history.push('/home'));
+            this.props.history.push('/home');
         }
         this.handleHide();
     }
@@ -102,6 +102,12 @@ class Exam extends Component {
         ];
 
         return (
+            /*
+            <MenuItem eventKey="1">Modificar final</MenuItem>
+            <MenuItem eventKey="2">Descargar listado de alumnos</MenuItem>
+            <MenuItem eventKey="3">Enviar notificación</MenuItem>
+            <MenuItem divider />
+            */
         <div>  
             <div className="jumbotron" style={{backgroundColor: "#C0C0C0"}}>
                 <h1>Sistema de <br/> Gestión Académica</h1>
@@ -115,10 +121,7 @@ class Exam extends Component {
             bsStyle="primary pull-right"
             id="dropdown-menu"
             >
-            <MenuItem eventKey="1">Modificar final</MenuItem>
-            <MenuItem eventKey="2">Descargar listado de alumnos</MenuItem>
-            <MenuItem eventKey="3">Enviar notificación</MenuItem>
-            <MenuItem divider />
+            
             <MenuItem eventKey="4" onClick={this.showCancelModal.bind(this)}><h5 style={{color: "red"}}>Cancelar final</h5></MenuItem>
             </DropdownButton></h4>
             <h4 style={{color: "#696969"}}> {"Sede: " + this.state.data.classroom_campus }</h4>

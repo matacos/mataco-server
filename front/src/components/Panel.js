@@ -156,7 +156,7 @@ class Panel extends Component {
 
     changeDateFormat(oldDate) {
         var date =  new Date(oldDate);
-        return date.getDate() + "/" + (date.getMonth() + 1) + "/" + date.getFullYear();
+        return (date.getDate()+1) + "/" + (date.getMonth() + 1) + "/" + date.getFullYear();
     }
 
     addExam() {
@@ -262,10 +262,14 @@ class Panel extends Component {
             case "administrators":
                 return (
                     <div>
-                        <div><button className="Panel-item" onClick={this.goToHome.bind(this)}><h4 className="text-primary"> Alta de materias</h4> </button></div>
                         <div><button className="Panel-item" onClick={this.goToUpload.bind(this, "estudiantes")}><h4 className="text-primary"> Alta de estudiantes</h4> </button></div>
-                        <div><button className="Panel-item" onClick={this.goToHome.bind(this)}><h4 className="text-primary"> Alta de docentes</h4> </button></div>
+                        
+                        
                     </div>
+                    /*
+                        <div><button className="Panel-item" onClick={this.goToHome.bind(this)}><h4 className="text-primary"> Alta de materias</h4> </button></div>
+                        <div><button className="Panel-item" onClick={this.goToHome.bind(this)}><h4 className="text-primary"> Alta de docentes</h4> </button></div>
+                    */
                 );
             default:
                 console.log("Menu Error: invalid role");
