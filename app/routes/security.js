@@ -127,6 +127,15 @@ function mountRoutes(app,db,checkSchemas){
     asyncRouter.post("/firebase",checkSchemas({body:firebaseTokenSchema}),async function(req,res,next){
         let username=req.body.username;
         let firebaseToken=req.body.firebase_token;
+        console.log("############################")
+        console.log("############################")
+        console.log("############################")
+        console.log("ME LLEGA UN TOKEN")
+        console.log(firebaseToken)
+        console.log(username)
+        console.log("############################")
+        console.log("############################")
+        console.log("############################")
         let query=`
         update users 
         set firebase_token=$2 
