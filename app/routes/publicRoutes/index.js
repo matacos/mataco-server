@@ -73,12 +73,12 @@ function mountRoutes(app,db,schemaValidation){
                     error("El padrón debe tener 5 o 6 caracteres")
                 }
                 if(! new RegExp("^[0-9]+$").test(fields[0])){
-                    error("El padrón tiene únicamente caracteres    numéricos")
+                    error("El padrón tiene únicamente caracteres numéricos")
                 }
 
                 //validar primera contraseña
                 if(fields[1].length>=30){
-                    error("La contraseña debe tener menos de 30     caracteres")
+                    error("La contraseña debe tener menos de 30 caracteres")
                 }
 
                 //validar nombre
@@ -96,11 +96,11 @@ function mountRoutes(app,db,schemaValidation){
                     error("La prioridad no puede estar vacía")
                 }
                 if(! new RegExp("^[0-9]+$").test(fields[4])){
-                    error("El campo 'prioridad' tiene únicamente    caracteres numéricos, debe ser un entero")
+                    error("El campo 'prioridad' tiene únicamente caracteres numéricos, debe ser un entero")
                 }
                 let priority=parseInt(fields[4])
                 if(priority<1 || priority > 300){
-                    error("El campo 'prioridad' debe ser un     entero entre 1 y 300")
+                    error("El campo 'prioridad' debe ser un entero entre 1 y 300")
                 }
 
                 //validar email
@@ -108,7 +108,7 @@ function mountRoutes(app,db,schemaValidation){
                     error("El email no puede estar vacío")
                 }
                 if(fields[5].length>=100){
-                    error("El email debe tener menos de 100     caracteres")
+                    error("El email debe tener menos de 100 caracteres")
                 }
 
                 let splitAt=fields[5].split("@")
@@ -125,15 +125,15 @@ function mountRoutes(app,db,schemaValidation){
 
                 //Validar lista de carreras
                 if(fields[6].length==0){
-                    error("La lista de carreras no puede estar  vacía")
+                    error("La lista de carreras no puede estar vacía")
                 }
                 let degrees=fields[6].split("-")
                 for(let degree of degrees){
                     if(! new RegExp("^[0-9]+$").test(degree)){
-                        error(`"${degree}" no es un número. La  lista de carreras debe ser una lista de  números enteros separados por guiones,   sin espacios`)
+                        error(`"${degree}" no es un número. La lista de carreras debe ser una lista de números enteros separados por guiones, sin espacios`)
                     }
                     if(degrees.indexOf(degree)==-1){
-                        error(`"${degree}" No es un identificador   de carrera`)
+                        error(`"${degree}" No es un identificador de carrera`)
                     }
                 }
             }catch(e){

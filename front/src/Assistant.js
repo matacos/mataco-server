@@ -17,7 +17,7 @@ class Assistant  {
     }
 
     isAdministrator() {
-        return localStorage.getItem("roles").includes("administrator");
+        return localStorage.getItem("roles").includes("administrators");
     }
 
     clearData() {
@@ -37,7 +37,7 @@ class Assistant  {
     }
 
     inAdminMode() {
-        return localStorage.getItem("mode") == "administrator";
+        return localStorage.getItem("mode") == "administrators";
     }
   }
   

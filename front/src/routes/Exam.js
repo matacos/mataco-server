@@ -63,6 +63,11 @@ class Exam extends Component {
         this.setState({showCancelModal: false})
     }
 
+    changeDateFormat(oldDate) {
+        var date =  new Date(oldDate);
+        return date.getDate() + "/" + (date.getMonth() + 1) + "/" + date.getFullYear();
+    }
+
     render() {
 
         const columns = [
@@ -92,14 +97,15 @@ class Exam extends Component {
             sort: true
         }
         ];
-        console.log(this.state.data)
+
         return (
         <div>  
             <div className="jumbotron" style={{backgroundColor: "#C0C0C0"}}>
                 <h1>Sistema de <br/> Gestión Académica</h1>
             </div>
             
-            {this.state.data != null && <div><PageHeader style={{marginBottom: "2em"}}> {"Final " + this.state.data.subject.name } <br /> <span className="text-primary">{this.state.data.exam_date.substring(0, 10)} </span>{/*<button type="button" className="btn btn-danger pull-right" onClick={this.showCancelModal.bind(this)}>Cancelar final</button>*/}</PageHeader>
+            {this.state.data != null && <div><PageHeader style={{marginBottom: "2em"}}> {"Final " + this.state.data.subject.name } <br /> 
+            <span className="text-primary">{this.changeDateFormat(this.state.data.exam_date.substring(0, 10))} </span></PageHeader>
             <div className="well" style={{marginBottom: "2em"}}>
             <h4 style={{color: "#696969"}}> {"Aula: " + this.state.data.classroom_code } <DropdownButton
             title="Opciones"

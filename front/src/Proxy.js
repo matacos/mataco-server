@@ -31,7 +31,12 @@ class Proxy  {
                 Assistant.setField("email", result.user.email);
                 Assistant.setField("department", department);
                 Assistant.setField("roles", result.user.roles.join(","));
-                Assistant.isProfessor() ? Assistant.setField("mode", "professor") : Assistant.setField("mode", "department_admin");
+                if (Assistant.isProfessor()) 
+                  Assistant.setField("mode", "professor")
+                else if (Assistant.isDepartmentAdmin()) 
+                  Assistant.setField("mode", "department_administrator");
+                else
+                  Assistant.setField("mode", "administrators");
                 return result;
              })
             
@@ -122,7 +127,7 @@ class Proxy  {
                       data.estado = inscription.accepted ? "Regular" : "Condicional";
                       data.nombre = inscription.student.name;
                       data.apellido = inscription.student.surname;
-                      data.prioridad = Math.floor(Math.random() * 120) + 1;
+                      data.prioridad = inscription.student.priority;
                       data.id = inscription.student.username;
                       return data;
                   })
@@ -272,7 +277,7 @@ class Proxy  {
                       data.condition = inscription.enrolment_type;
                       data.name = inscription.student.name;
                       data.surname = inscription.student.surname;
-                      data.priority = Math.floor(Math.random() * 120) + 1;
+                      data.priority = inscription.student.priority;
                       data.id = inscription.student.username;
                       return data;
                   })
@@ -297,6 +302,23 @@ class Proxy  {
         Assistant.clearData();
       }
 
+      uploadFile(uri, csv) {
+        let formData = new FormData();
+        formData.append('csv', csv);
+        return fetch(this.url + uri , {
+          method:"POST",
+          headers: {
+            'Authorization': 'bearer ' + Assistant.getField("token"),
+            'Access-Control-Allow-Origin': "http://localhost:3030"
+          },
+          body: formData
+        }).then(res => {
+          if (res.status != 201)
+            return res.json();
+          })
+      }
+
   }
+
   
   export default new Proxy();

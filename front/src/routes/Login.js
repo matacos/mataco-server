@@ -62,7 +62,7 @@ class Login extends Component {
             <form className="form">
                 <fieldset>
                     
-                    <legend className="col-md-offset-3">Bienvenido! </legend>
+                    <legend className="col-md-offset-3" style={{marginBottom: "3em"}}>Bienvenido! </legend>
                     {this.state.credentialsError && <div className="row"> 
                         <div className="alert alert-dismissible alert-danger col-md-6 col-md-offset-3">
                             <button type="button" className="close" data-dismiss="alert" onClick={ e => this.setState({ credentialsError : false })}>&times;</button>
