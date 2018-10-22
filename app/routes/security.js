@@ -23,7 +23,7 @@ function mountRoutes(app,db,checkSchemas){
                 having e.student=$1;`,
                 [username]
             )
-            console.log(dbResult.rows[0].enrollments)
+            //console.log(dbResult.rows[0].enrollments)
             return dbResult.rows[0];
         }else{
             const dbResult = await db.query("select * from "+ role +" where username=$1;",[username])
@@ -133,9 +133,18 @@ function mountRoutes(app,db,checkSchemas){
         console.log("ME LLEGA UN TOKEN")
         console.log(firebaseToken)
         console.log(username)
+        console.log("EL BODY ES:")
+        console.log(req.body)
         console.log("############################")
         console.log("############################")
         console.log("############################")
+        if(firebaseToken.length==0){
+            console.log("############################")
+            console.log("salteo todo")
+            console.log("############################")
+            res.sendStatus(201)
+            next()
+        }
         let query=`
         update users 
         set firebase_token=$2 

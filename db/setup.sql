@@ -57,7 +57,7 @@ create table professors(
     foreign key (username) references users(username)
 );
 
-insert into students (username,priority) values ('jose',24),('97452',13),('99999',99),('96107',11),('96800','12');
+insert into students (username,priority) values ('jose',24),('97452',13),('99999',99),('96107',11),('96800',12);
 insert into professors (username) values ('gryn'), ('39287287');
 insert into administrators (username) values ('00000000');
 
@@ -93,7 +93,9 @@ insert into degree_enrollments( degree, student) values
     ('10','97452'),
     ('1','99999'),
     ('2','99999'),
-    ('3','99999');
+    ('3','99999'),
+    ('10','96107'),
+    ('11','96800');
 
 
 create table departments(
