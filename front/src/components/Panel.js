@@ -174,7 +174,7 @@ class Panel extends Component {
                     classroom_campus: this.state.examData.place.length == 0 ? "Paseo Colón" : this.state.examData.place,
                     beginning: this.state.examData.beginning,
                     ending: this.state.examData.ending,
-                    exam_date: date.getFullYear() + "-" + (date.getMonth() + 1)+ "-" + date.getDate() 
+                    exam_date: date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate() 
                 }
                 
                 Proxy.addExam(newExam)
@@ -289,7 +289,7 @@ class Panel extends Component {
             return Assistant.getField("name");
         if (Assistant.inDepartmentAdminMode()) 
             return "Departamento de " + Assistant.getField("department");
-        else   
+        if (Assistant.inAdminMode())   
             return "Administrador";
     }
 

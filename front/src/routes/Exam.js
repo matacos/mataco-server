@@ -55,6 +55,9 @@ class Exam extends Component {
     cancelExam() {
         if (this.state.showCancelModal) {
             // Delete exam
+            //Proxy.deleteExam(this.props.match.params.idExamen)
+            //.then(this.props.history.push('/home'));
+            //this.props.history.push('/home');
         }
         this.handleHide();
     }

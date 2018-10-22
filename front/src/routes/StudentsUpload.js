@@ -40,7 +40,7 @@ class StudentsUpload extends Component {
                         return (
                             <div key={idx}>
                                 <ul>
-                                    <li><strong>{"Línea " + error.lineNumber + ":"} </strong></li>
+                                    <li><strong>{"Línea " + (error.lineNumber + 1) + ":"} </strong></li>
                                     <ul>
                                         <li><strong>Datos: </strong> {" " + error.line} </li>
                                         <li><strong>Error: </strong> {" " + error.error} </li>

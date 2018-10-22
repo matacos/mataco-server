@@ -153,122 +153,123 @@ function mountRoutes(app,db,schemaValidation){
         }
 
 
-
-        //create table for upload
-        await db.query("drop table if exists students_upload;")
-        await db.query(`
-        create table students_upload (
-            username varchar(10),
-            password varchar(30),
-            name text,
-            surname text,
-            priority decimal,
-            email varchar(100),
-            degrees text
-        );
-        `)
-        async function introduceUploadedStudents(){
-            //insert into the users table
-            const updateUsersWithNoPasswords=`
-            update users as u
-            set
-                email   = su.email, 
-                name    = su.name, 
-                surname = su.surname
-            from students_upload as su
-            where
-                su.username=u.username
-            and su.password is null
-            ;
-            `
-            await db.query(updateUsersWithNoPasswords)
-
-            const updateUsersWithPasswords=`
-            update users as u
-            set
-                email   = su.email, 
-                name    = su.name, 
-                surname = su.surname,
-                password = su.password
-            from students_upload as su
-            where
-                su.username=u.username
-            and su.password is not null
-            ;
-            `
-            await db.query(updateUsersWithPasswords)
-
-            const insertUsersWithPasswords=`
-            insert into users 
-            select 
-                username, 
-                password, 
-                email, 
-                name, 
-                surname, 
-                username as token , 
-                now() as token_expiration 
-            from students_upload
-            where 
-                password is not null
-            on conflict do nothing
-            ;
-            `
-            await db.query(insertUsersWithPasswords)
-
-            //insert into the students table
-            const insertStudents=`
-            insert into students 
-            select su.username, su.priority 
-            from students_upload as su, users as u
-            where su.username=u.username
-            on conflict (username) 
-            do update set priority = excluded.priority
-            ;
-            `
-            await db.query(insertStudents)
-
-            //insert into degree_enrolments table
-            const deleteEnrolments=`
-            delete from degree_enrollments as de 
-            using students_upload as su 
-            where de.student = su.username
-            ;
-            `
-            await db.query(deleteEnrolments)
-
-            const insertEnrolments = `
-            insert into degree_enrollments(degree,student)
-            select 
-                unnest(string_to_array(su.degrees,'-')) as degree,
-                su.username as student
-            from 
-                students_upload as su, 
-                students as s
-            where
-                su.username = s.username
-            ;
-            `
-            await db.query(insertEnrolments)
-
-            ///remove the upload students table
+        else {
+            //create table for upload
             await db.query("drop table if exists students_upload;")
-            
-            return true
-        }
+            await db.query(`
+            create table students_upload (
+                username varchar(10),
+                password varchar(30),
+                name text,
+                surname text,
+                priority decimal,
+                email varchar(100),
+                degrees text
+            );
+            `)
+            async function introduceUploadedStudents(){
+                //insert into the users table
+                const updateUsersWithNoPasswords=`
+                update users as u
+                set
+                    email   = su.email, 
+                    name    = su.name, 
+                    surname = su.surname
+                from students_upload as su
+                where
+                    su.username=u.username
+                and su.password is null
+                ;
+                `
+                await db.query(updateUsersWithNoPasswords)
 
-        const csvStream = new Readable();
-        csvStream.push(fileText)
-        csvStream.push(null)
-        let postgresStream = await db.copyFrom("COPY students_upload FROM STDIN with (format 'csv');")
-        csvStream.on("end",()=>{
-            console.log("LA SUBIDA A POSTGRES TERMINA A LAS: ",new Date())
-            introduceUploadedStudents().then((ret)=>{
-                res.sendStatus(201)
+                const updateUsersWithPasswords=`
+                update users as u
+                set
+                    email   = su.email, 
+                    name    = su.name, 
+                    surname = su.surname,
+                    password = su.password
+                from students_upload as su
+                where
+                    su.username=u.username
+                and su.password is not null
+                ;
+                `
+                await db.query(updateUsersWithPasswords)
+
+                const insertUsersWithPasswords=`
+                insert into users 
+                select 
+                    username, 
+                    password, 
+                    email, 
+                    name, 
+                    surname, 
+                    username as token , 
+                    now() as token_expiration 
+                from students_upload
+                where 
+                    password is not null
+                on conflict do nothing
+                ;
+                `
+                await db.query(insertUsersWithPasswords)
+
+                //insert into the students table
+                const insertStudents=`
+                insert into students 
+                select su.username, su.priority 
+                from students_upload as su, users as u
+                where su.username=u.username
+                on conflict (username) 
+                do update set priority = excluded.priority
+                ;
+                `
+                await db.query(insertStudents)
+
+                //insert into degree_enrolments table
+                const deleteEnrolments=`
+                delete from degree_enrollments as de 
+                using students_upload as su 
+                where de.student = su.username
+                ;
+                `
+                await db.query(deleteEnrolments)
+
+                const insertEnrolments = `
+                insert into degree_enrollments(degree,student)
+                select 
+                    unnest(string_to_array(su.degrees,'-')) as degree,
+                    su.username as student
+                from 
+                    students_upload as su, 
+                    students as s
+                where
+                    su.username = s.username
+                ;
+                `
+                await db.query(insertEnrolments)
+
+                ///remove the upload students table
+                await db.query("drop table if exists students_upload;")
+                
+                return true
+            }
+
+            const csvStream = new Readable();
+            csvStream.push(fileText)
+            csvStream.push(null)
+            let postgresStream = await db.copyFrom("COPY students_upload FROM STDIN with (format 'csv');")
+            csvStream.on("end",()=>{
+                console.log("LA SUBIDA A POSTGRES TERMINA A LAS: ",new Date())
+                introduceUploadedStudents().then((ret)=>{
+                    res.sendStatus(201)
+                })
             })
-        })
-        console.log("LA SUBIDA A POSTGRES EMPIEZA A LAS: ",new Date())
-        csvStream.pipe(postgresStream)
+            console.log("LA SUBIDA A POSTGRES EMPIEZA A LAS: ",new Date())
+            csvStream.pipe(postgresStream)
+    }
     })
     
     

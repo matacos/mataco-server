@@ -35,7 +35,7 @@ class Proxy  {
                   Assistant.setField("mode", "professor")
                 else if (Assistant.isDepartmentAdmin()) 
                   Assistant.setField("mode", "department_administrator");
-                else
+                else if (Assistant.isAdministrator()) 
                   Assistant.setField("mode", "administrators");
                 return result;
              })
@@ -261,6 +261,15 @@ class Proxy  {
         })
       }
 
+      deleteExam(examId){
+        return fetch(this.url + "/finales/" + examId , {
+          method:"DELETE",
+          headers: {
+            'Authorization': 'bearer ' + Assistant.getField("token")
+          }
+        });
+      }
+
       getExamStudents(examId) {
         return fetch(this.url + "/inscripciones_final?id_examen=" + examId , {
                 method: 'GET',
@@ -313,6 +322,7 @@ class Proxy  {
           },
           body: formData
         }).then(res => {
+          console.log(res)
           if (res.status != 201)
             return res.json();
           })
