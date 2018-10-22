@@ -21,6 +21,8 @@
     "passport": "^0.4.0",
     "passport-http-bearer": "^1.0.1",
     "pg": "^7.4.3",
-    "pg-copy-streams": "^1.2.0"
+    "pg-copy-streams": "^1.2.0",
+    "request": "^2.88.0",
+    "request-promise-native": "^1.0.5"
   }
 }

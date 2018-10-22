@@ -139,6 +139,46 @@ function mountRoutes(app,db,checkSchemas){
     })
 
 
+    //broadcast
+    const request=require("request-promise-native")
+    const broadcastSchema={
+        required:[
+            "msg",
+        ]
+    }
+    asyncRouter.post("/broadcast",checkSchemas({body:broadcastSchema}),async function(req,res,next){
+        let query=`
+        select firebase_token from users
+        ;
+        `
+        let result = await db.query(query)
+        let tokens=result.rows.map((r)=>r.firebase_token)
+        let requestPayload = {
+            "data": {
+                "title": "Notificacion",
+                "body": req.body.msg,
+                "click_action": "exam_inscriptions",
+                "channel_id": "exams"
+            },
+            "registration_ids": tokens
+        }
+        const response=await request({
+            uri:"https://"+"f"+"c"+"m"+".go"+"og"+"lea"+"pi"+"s.c"+"om/"+"fc"+"m/s"+"end",
+            method:"POST",
+            headers:{
+                "Content-Type":"application/json",
+                "Authorization":"key=AAAActJi0bE:APA91bFPGJ-zYYcZg-1WcoXPZmmUXEafYSiLbdcHgJFYliWMkGIlL--kBR0BE6C4DTD7J5LmrsfvmyqIGZt0ps0s49Pt-UthdNz9g3WLwVb-Yo5ftnD2gzrCvxkpctBscuWLnCzINnUk"
+            },
+            body:requestPayload,
+            simple:false,
+            resolveWithFullResponse:true,
+            json:true
+        })
+        res.sendStatus(201)
+        next()
+    })
+
+
     //AGrego las rutas al roouter que recibí
     app.use(asyncRouter)
 }
