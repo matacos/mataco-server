@@ -42,7 +42,10 @@ class Panel extends Component {
         let department_code = this.state.currentCourse.department_code;
         let subject_code = this.state.currentCourse.subject_code;
         Proxy.getCourseExams(department_code, subject_code, Assistant.getField("username"))
-        .then(exams => this.setState({exams: exams}));
+        .then(exams => {
+            this.setState({exams: exams});
+            this.props.setUpdate(false);
+        });
     } 
 
     setPanelInformation() {
@@ -74,6 +77,10 @@ class Panel extends Component {
         if (this.state.currentCourse != prevState.currentCourse) {
             this.setExams();
         }
+
+        if (this.props.update != prevProps.update) {
+            this.setExams();
+        }
     }
 
     handleSelectedField(value) {
@@ -83,7 +90,6 @@ class Panel extends Component {
         else {
             this.props.setSelected(value, true);
         }
-        
     }
 
     selectCourse(course) {
@@ -154,9 +160,9 @@ class Panel extends Component {
         return [true, ""];
     }
 
-    changeDateFormat(oldDate) {
-        var date =  new Date(oldDate);
-        return (date.getDate()+1) + "/" + (date.getMonth() + 1) + "/" + date.getFullYear();
+    changeDateFormat(date) {
+        var parts = date.match(/(\d+)/g);
+        return (parts[2] + "/" + parts[1] + "/" + parts[0]);
     }
 
     addExam() {
@@ -211,7 +217,7 @@ class Panel extends Component {
     showMenuByRole(role) {
         switch(role) {
             case "professor":
-                var examsList = this.state.exams.map(exam => <div key={exam.id}>
+                var examsList = this.state.exams.sort((a,b) => (a.exam_date > b.exam_date) ? 1 : ((b.exam_date > a.exam_date) ? -1 : 0)).map(exam => <div key={exam.id}>
                 <button className="text-primary text-left Panel-list-item" onClick={this.goToExam.bind(this, exam.id)}>
                     {this.changeDateFormat(exam.exam_date.substr(0, 10))}
                 </button><hr /></div>);
@@ -262,14 +268,10 @@ class Panel extends Component {
             case "administrators":
                 return (
                     <div>
+                        {/*<div><button className="Panel-item" onClick={this.goToHome.bind(this)}><h4 className="text-primary"> Alta de materias</h4> </button></div>*/}
                         <div><button className="Panel-item" onClick={this.goToUpload.bind(this, "estudiantes")}><h4 className="text-primary"> Alta de estudiantes</h4> </button></div>
-                        
-                        
+                        {/*<div><button className="Panel-item" onClick={this.goToHome.bind(this)}><h4 className="text-primary"> Alta de docentes</h4> </button></div>*/}
                     </div>
-                    /*
-                        <div><button className="Panel-item" onClick={this.goToHome.bind(this)}><h4 className="text-primary"> Alta de materias</h4> </button></div>
-                        <div><button className="Panel-item" onClick={this.goToHome.bind(this)}><h4 className="text-primary"> Alta de docentes</h4> </button></div>
-                    */
                 );
             default:
                 console.log("Menu Error: invalid role");
@@ -283,7 +285,7 @@ class Panel extends Component {
                 <hr />
                 {this.showMenuByRole(mode)}
                 <hr />
-                <p><button className="text-primary Panel-item" onClick={this.logout.bind(this)}><h4 className="text-primary">  Cerrar sesión </h4></button></p>
+                <button className="text-primary Panel-item" onClick={this.logout.bind(this)}><h4 className="text-primary">  Cerrar sesión </h4></button>
             </div>
         );
     }
@@ -367,8 +369,7 @@ class Panel extends Component {
                         }
                     } }/>
                 </div>
-                </div>
-            
+                </div>        
                 
                 <div className="form-group">
                 <label htmlFor="select" className="col-lg-2 control-label">Fecha</label>

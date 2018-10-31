@@ -1,10 +1,11 @@
 import React, { Component } from 'react';
 import '../App.css';
 import Proxy from '../Proxy';
-import { Modal, Button } from 'react-bootstrap';
-import { Glyphicon, Tabs, Tab, PageHeader } from 'react-bootstrap';
+import { Glyphicon, Tabs, Tab, PageHeader, OverlayTrigger, Tooltip, Modal, Button } from 'react-bootstrap';
 import BootstrapTable  from 'react-bootstrap-table-next';
+import ToolkitProvider, { CSVExport } from 'react-bootstrap-table2-toolkit';
 import 'react-bootstrap-table-next/dist/react-bootstrap-table2.min.css';
+import 'react-bootstrap-table2-toolkit/dist/react-bootstrap-table2-toolkit.min.css';
 
 class SubjectStudents extends Component {
     constructor(props) {
@@ -127,6 +128,13 @@ class SubjectStudents extends Component {
             text: ''
         }];
 
+        const tooltip = (
+            <Tooltip id="tooltip">
+              Cantidad de alumnos inscriptos
+            </Tooltip>
+        );
+
+        const { ExportCSVButton } = CSVExport;
 
         return (
         <div>  
@@ -142,12 +150,33 @@ class SubjectStudents extends Component {
                 id="controlled-tab">
             <Tab eventKey={1} title={<h4 className={(this.state.key == 1 && "text-primary") || ""}>Alumnos Regulares</h4>}>
                 <div style={{paddingTop: "1.5em"}}>
-                <h3 style={{paddingBottom: "1em"}}> Listado de alumnos regulares <span className="badge"> {regularStudents.length} </span></h3>
-                <BootstrapTable keyField='idx' striped hover bordered={ false } data={ regularStudents.map(function(student, idx){ 
-                    student.idx = idx + 1;
-                    student.padron = parseInt(student.padron);
-                    student.prioridad = parseInt(student.prioridad);
-                    return student;}, this) } columns={ columns } />
+                <h3> Listado de alumnos regulares
+                    <OverlayTrigger placement="right" overlay={tooltip}>
+                    <span className="badge" style={{marginLeft: "1em"}}> {regularStudents.length} </span>
+                    </OverlayTrigger>
+                </h3>
+
+                <ToolkitProvider 
+                    keyField="idx" 
+                    data={ regularStudents.map(function(student, idx){ 
+                        student.idx = idx + 1;
+                        student.padron = parseInt(student.padron);
+                        student.prioridad = parseInt(student.prioridad);
+                        return student;}, this) }
+                    columns={ columns }
+                    exportCSV={{
+                        fileName: 'alumnos_' + this.props.match.params.idCurso.substr(0, 4) + '.csv'
+                    }}>
+                {
+                    props => (
+                    <div>
+                        <ExportCSVButton { ...props.csvProps } className="btn btn-primary pull-right" style={{marginBottom: "1em"}}>Descargar listado</ExportCSVButton>
+                        <BootstrapTable striped hover bordered={ false } { ...props.baseProps } />
+                    </div>
+                    )
+                }
+                </ToolkitProvider>
+
                 </div>
             </Tab>
 
@@ -155,7 +184,11 @@ class SubjectStudents extends Component {
             <Tab eventKey={2} title={<h4 className={(this.state.key == 2 && "text-primary") || ""}>Alumnos Condicionales</h4>}>
             
             <div style={{paddingTop: "1.5em"}}>
-            <h3 style={{paddingBottom: "1em"}}> Listado de alumnos condicionales <span className="badge"> {conditionalStudents.length} </span></h3>
+            <h3 style={{paddingBottom: "1em"}}> Listado de alumnos condicionales 
+                <OverlayTrigger placement="right" overlay={tooltip}>
+                    <span className="badge" style={{marginLeft: "1em"}}> {conditionalStudents.length} </span>
+                </OverlayTrigger>
+            </h3>
             <BootstrapTable keyField='idx' striped hover bordered={ false } key='idx' data={ conditionalStudents.map(function(student, idx){ 
                     student.idx = idx + 1;
                     student.padron = parseInt(student.padron);
