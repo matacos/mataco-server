@@ -28,7 +28,8 @@ class Panel extends Component {
                 ending: ''
             },
             inputError: false,
-            errorMsg: ''
+            errorMsg: '',
+            listItems: []
         };
 
     }
@@ -61,8 +62,8 @@ class Panel extends Component {
                 }
             });
     
-        if (Assistant.isDepartmentAdmin())
-            Proxy.getDepartmentSubjects().then(subjects => this.setState({subjects: subjects}));
+        if (Assistant.isDepartmentAdmin()) 
+            Proxy.getDepartmentSubjects().then(subjects => this.setState({subjects: subjects, listItems: this.convertToItemList(subjects)}));
     }
 
     componentDidMount() {
@@ -193,6 +194,17 @@ class Panel extends Component {
         }
     }
 
+    search(prefix) {
+        return this.state.subjects.filter(item => item.name.toLowerCase().includes(prefix.toLowerCase()) );
+    }
+
+    convertToItemList(list) {
+        return list.map((d) => <div key={d.department_code + d.code}>
+        <button className="text-primary text-left Panel-list-item" onClick={this.goToSubject.bind(this, d.department_code + d.code, d.name.replace(/ /g, "-"))}>
+            {d.name}
+        </button><div style={{marginLeft: "2em"}}><hr /></div></div>);
+    }
+
     showCourseDropdown(courses) {
         return (
             <ButtonGroup justified>
@@ -224,7 +236,7 @@ class Panel extends Component {
                 return (
                     <div>
                         {this.state.currentCourse != null && <div> {this.showCourseDropdown(this.state.courses)}
-                        <div><button className="Panel-item" style={{paddingTop: "1em"}} onClick={this.goToCourse.bind(this, this.state.currentCourse)}><h4 className="text-primary"> Cursada</h4> </button></div>
+                        <div><button className="Panel-item" style={{marginTop: "1em"}} onClick={this.goToCourse.bind(this, this.state.currentCourse)}><h4 className="text-primary"> Cursada</h4> </button></div>
                         <div className="row" style={{paddingLeft: "1em"}}>
                         </div>
                         <div className="row" style={{paddingLeft: "1em"}}>
@@ -247,11 +259,8 @@ class Panel extends Component {
                 );
 
             case "department_administrator":
-                var listItems = this.state.subjects.map((d) => <div key={d.department_code + d.code}>
-                <button className="text-primary text-left Panel-list-item" onClick={this.goToSubject.bind(this, d.department_code + d.code, d.name.replace(/ /g, "-"))}>
-                    {d.name}
-                    <hr />
-                </button></div>);
+                var totalItems = this.convertToItemList(this.state.subjects);
+
                 return (
                     <div>
                         <button className="Panel-item" onClick={this.handleSelectedField.bind(this, "subjects")}><h4 className="text-primary"> 
@@ -259,8 +268,17 @@ class Panel extends Component {
                         {" Mis Materias"}</h4></button>
                         {(this.props.selected["subjects"]) && 
                         <div style={{marginTop: "1em"}}>
-                            <div style={{marginLeft: "2em"}}><hr /></div>
-                            {listItems}
+                            <hr />
+                            <input type="text" className="form-control" placeholder="Buscar materia" style={{marginBottom: "2em"}} onChange={e => {
+                                if (e.target.value != "") {
+                                    var result = this.convertToItemList(this.search(e.target.value));
+                                    this.setState({listItems: result});
+                                }
+                                else {
+                                    this.setState({listItems: this.convertToItemList(this.state.subjects)});
+                                }
+                            }} />
+                            {this.state.listItems}
                         </div>}
                     </div>
                 );

@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import '../App.css';
 import Proxy from '../Proxy';
-import { Alert, PageHeader } from 'react-bootstrap';
+import { Glyphicon, Alert, PageHeader } from 'react-bootstrap';
 import ReactFileReader from 'react-file-reader';
 
 class StudentsUpload extends Component {
@@ -77,7 +77,7 @@ class StudentsUpload extends Component {
                         <p id="fileInfo" className="text-primary" style={{marginLeft: "-2em", paddingTop: "0.2em"}}> {this.state.selectedFile ? this.state.file.name : "No se seleccionó un archivo."}</p>
                     </div>
                     <div className="col-lg-2">
-                    <button type="button" className="btn btn-primary btn-sm pull-right" style={{marginTop: "-0.2em"}} onClick={this.handleFiles.bind(this)} disabled={!this.state.selectedFile}>Importar alumnos</button>
+                    <button type="button" className="btn btn-primary btn-sm pull-right" style={{marginTop: "-0.2em"}} onClick={this.handleFiles.bind(this)}><Glyphicon glyph="upload" /> Importar alumnos</button>
                     </div>
                 </div>
             </div>

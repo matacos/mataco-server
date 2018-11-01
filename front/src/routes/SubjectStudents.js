@@ -4,8 +4,10 @@ import Proxy from '../Proxy';
 import { Glyphicon, Tabs, Tab, PageHeader, OverlayTrigger, Tooltip, Modal, Button } from 'react-bootstrap';
 import BootstrapTable  from 'react-bootstrap-table-next';
 import ToolkitProvider, { CSVExport } from 'react-bootstrap-table2-toolkit';
+import paginationFactory from 'react-bootstrap-table2-paginator';
 import 'react-bootstrap-table-next/dist/react-bootstrap-table2.min.css';
 import 'react-bootstrap-table2-toolkit/dist/react-bootstrap-table2-toolkit.min.css';
+import 'react-bootstrap-table2-paginator/dist/react-bootstrap-table2-paginator.min.css';
 
 class SubjectStudents extends Component {
     constructor(props) {
@@ -149,11 +151,12 @@ class SubjectStudents extends Component {
                 onSelect={this.handleSelect.bind(this)}
                 id="controlled-tab">
             <Tab eventKey={1} title={<h4 className={(this.state.key == 1 && "text-primary") || ""}>Alumnos Regulares</h4>}>
-                <div style={{paddingTop: "1.5em"}}>
+                <div style={{paddingTop: "1.5em", paddingBottom: "0.25em"}}>
                 <h3> Listado de alumnos regulares
                     <OverlayTrigger placement="right" overlay={tooltip}>
                     <span className="badge" style={{marginLeft: "1em"}}> {regularStudents.length} </span>
                     </OverlayTrigger>
+                    <hr />
                 </h3>
 
                 <ToolkitProvider 
@@ -170,8 +173,8 @@ class SubjectStudents extends Component {
                 {
                     props => (
                     <div>
-                        <ExportCSVButton { ...props.csvProps } className="btn btn-primary pull-right" style={{marginBottom: "1em"}}>Descargar listado</ExportCSVButton>
-                        <BootstrapTable striped hover bordered={ false } { ...props.baseProps } />
+                        <BootstrapTable striped hover bordered={ false } { ...props.baseProps } pagination={ paginationFactory() } />
+                        <ExportCSVButton { ...props.csvProps } className="btn btn-primary pull-right" style={{marginTop: "0.5em"}}> <Glyphicon glyph="download" /> Descargar listado</ExportCSVButton>
                     </div>
                     )
                 }

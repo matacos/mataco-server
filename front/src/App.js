@@ -62,10 +62,10 @@ class App extends Component {
           <Switch>
             <Route path="/login" render={ () => Assistant.isLoggedIn() ? <Redirect to="/home" /> : <Login/> } />
             <Route path="/home" render={ () => Assistant.isLoggedIn() ? <Home changeMode={this.changeMode.bind(this)} /> : <Redirect to="/login" /> } />
-            <Route path="/cursos/:nombreMateria/:idCurso" component={SubjectStudents} />
-            <Route path="/materias/:idMateria/:nombreMateria" component={SubjectCourses} />
-            <Route path="/finales/:idMateria/:idExamen" render={ (props) => Assistant.isLoggedIn() ? <Exam {...props} update={this.setUpdate.bind(this)} /> : <Redirect to="/login" /> }/>
-            <Route path="/estudiantes" component={StudentsUpload} />
+            <Route path="/cursos/:nombreMateria/:idCurso" render={ (props) => Assistant.isRole("professor") ? <SubjectStudents {...props} /> : <Redirect to="/login" /> }/>
+            <Route path="/materias/:idMateria/:nombreMateria" render={ (props) => Assistant.isRole("department_administrator") ? <SubjectCourses {...props} /> : <Redirect to="/login" /> } />
+            <Route path="/finales/:idMateria/:idExamen" render={ (props) => Assistant.isRole("professor") ? <Exam {...props} update={this.setUpdate.bind(this)} /> : <Redirect to="/login" /> }/>
+            <Route path="/estudiantes" render={ (props) => Assistant.isRole("administrators") ? <StudentsUpload {...props} /> : <Redirect to="/login" /> } />
             <Redirect from="/" exact to="/login" />
             <Route component={Error} />
           </Switch>

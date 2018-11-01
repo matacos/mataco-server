@@ -5,8 +5,10 @@ import { Modal, Button } from 'react-bootstrap';
 import { DropdownButton, MenuItem, PageHeader, Tooltip, OverlayTrigger } from 'react-bootstrap';
 import Assistant from "../Assistant";
 import BootstrapTable  from 'react-bootstrap-table-next';
+import paginationFactory from 'react-bootstrap-table2-paginator';
 import 'react-bootstrap-table-next/dist/react-bootstrap-table2.min.css';
 import 'react-bootstrap-table2-toolkit/dist/react-bootstrap-table2-toolkit.min.css';
+import 'react-bootstrap-table2-paginator/dist/react-bootstrap-table2-paginator.min.css';
 
 class Exam extends Component {
     constructor(props) {
@@ -140,17 +142,18 @@ class Exam extends Component {
             </div>}
             
             {!this.state.wait && ((this.state.students.length == 0 && <h3 className="text-primary text-center">No hay alumnos inscriptos en este final </h3>) || <div>
-            <h3 style={{paddingBottom: "1em"}}> Listado de alumnos inscriptos 
+            <h3 style={{paddingBottom: "0.25em"}}> Listado de alumnos inscriptos 
                 <OverlayTrigger placement="right" overlay={tooltip}>
                     <span className="badge" style={{marginLeft: "1em"}}> {this.state.students.length} </span>
                 </OverlayTrigger>
+                <hr />
             </h3>
             <BootstrapTable keyField='idx' striped hover bordered={ false } data={ this.state.students.map(function(student, idx){ 
                 student.idx = idx + 1;
                 student.id = parseInt(student.id);
                 student.priority = parseInt(student.priority);
                 return student;
-                }, this)} columns={ columns } />
+                }, this)} columns={ columns } pagination={ paginationFactory() } />
             </div>)}
             
             {this.state.showCancelModal &&  <Modal
