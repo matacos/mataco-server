@@ -17,7 +17,7 @@ function mountRoutes(app,db,schemaValidation){
         required:["profesor"]
     }]}
     app.get("/cursos",schemaValidation({query:cursosQuery}), async function (req,res,next) {
-        let semester=req.semester
+        let semester=req.semester[0].code
         if("semester" in req.query) {
             if (req.query.semester=="any"){
                 semester="%"

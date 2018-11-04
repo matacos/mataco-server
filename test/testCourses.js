@@ -416,12 +416,15 @@ describe("Test /cursos",()=>{
         it("Filter by semester",async ()=>{
             const response2c2018 = await requestWithAuth("99999","9","GET","/cursos?cod_departamento=75&cod_materia=52&semester=2c2018")
 
+            const responseNow = await requestWithAuth("99999","9","GET","/cursos?cod_departamento=75&cod_materia=52")
+
             const response1c2018 = await requestWithAuth("99999","9","GET","/cursos?cod_departamento=75&cod_materia=52&semester=1c2018")
 
             const response2c2017 = await requestWithAuth("99999","9","GET","/cursos?cod_departamento=75&cod_materia=52&semester=2c2017")
 
             expect(response1c2018.body.courses[0].free_slots).to.equal("118")
             expect(response2c2018.body.courses[0].free_slots).to.equal("218")
+            expect(responseNow.body.courses[0].free_slots).to.equal("218")
             expect(response2c2017.body.courses[0].free_slots).to.equal("217")
         })
 
