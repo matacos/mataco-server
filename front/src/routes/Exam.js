@@ -2,10 +2,13 @@ import React, { Component } from 'react';
 import '../App.css';
 import Proxy from '../Proxy';
 import { Modal, Button } from 'react-bootstrap';
-import { Glyphicon, DropdownButton, MenuItem, PageHeader } from 'react-bootstrap';
+import { DropdownButton, MenuItem, PageHeader, Tooltip, OverlayTrigger } from 'react-bootstrap';
 import Assistant from "../Assistant";
 import BootstrapTable  from 'react-bootstrap-table-next';
+import paginationFactory from 'react-bootstrap-table2-paginator';
 import 'react-bootstrap-table-next/dist/react-bootstrap-table2.min.css';
+import 'react-bootstrap-table2-toolkit/dist/react-bootstrap-table2-toolkit.min.css';
+import 'react-bootstrap-table2-paginator/dist/react-bootstrap-table2-paginator.min.css';
 
 class Exam extends Component {
     constructor(props) {
@@ -56,8 +59,10 @@ class Exam extends Component {
         if (this.state.showCancelModal) {
             // Delete exam
             Proxy.deleteExam(this.props.match.params.idExamen)
-            .then(this.props.history.push('/home'));
-            this.props.history.push('/home');
+            .then(() => {
+                this.props.update(true);
+                this.props.history.push('/home')
+            });
         }
         this.handleHide();
     }
@@ -66,9 +71,9 @@ class Exam extends Component {
         this.setState({showCancelModal: false})
     }
 
-    changeDateFormat(oldDate) {
-        var date =  new Date(oldDate);
-        return date.getDate() + "/" + (date.getMonth() + 1) + "/" + date.getFullYear();
+    changeDateFormat(date) {
+        var parts = date.match(/(\d+)/g);
+        return (parts[2] + "/" + parts[1] + "/" + parts[0]);
     }
 
     render() {
@@ -101,13 +106,13 @@ class Exam extends Component {
         }
         ];
 
+        const tooltip = (
+            <Tooltip id="tooltip">
+              Cantidad de alumnos inscriptos
+            </Tooltip>
+        );
+
         return (
-            /*
-            <MenuItem eventKey="1">Modificar final</MenuItem>
-            <MenuItem eventKey="2">Descargar listado de alumnos</MenuItem>
-            <MenuItem eventKey="3">Enviar notificación</MenuItem>
-            <MenuItem divider />
-            */
         <div>  
             <div className="jumbotron" style={{backgroundColor: "#C0C0C0"}}>
                 <h1>Sistema de <br/> Gestión Académica</h1>
@@ -121,7 +126,12 @@ class Exam extends Component {
             bsStyle="primary pull-right"
             id="dropdown-menu"
             >
-            
+            {/*
+            <MenuItem eventKey="1">Modificar final</MenuItem>
+            <MenuItem eventKey="2">Descargar listado de alumnos</MenuItem>
+            <MenuItem eventKey="3">Enviar notificación</MenuItem>
+            <MenuItem divider />
+            */}
             <MenuItem eventKey="4" onClick={this.showCancelModal.bind(this)}><h5 style={{color: "red"}}>Cancelar final</h5></MenuItem>
             </DropdownButton></h4>
             <h4 style={{color: "#696969"}}> {"Sede: " + this.state.data.classroom_campus }</h4>
@@ -132,13 +142,18 @@ class Exam extends Component {
             </div>}
             
             {!this.state.wait && ((this.state.students.length == 0 && <h3 className="text-primary text-center">No hay alumnos inscriptos en este final </h3>) || <div>
-            <h3 style={{paddingBottom: "1em"}}> Listado de alumnos inscriptos <span className="badge"> {this.state.students.length} </span></h3>
+            <h3 style={{paddingBottom: "0.25em"}}> Listado de alumnos inscriptos 
+                <OverlayTrigger placement="right" overlay={tooltip}>
+                    <span className="badge" style={{marginLeft: "1em"}}> {this.state.students.length} </span>
+                </OverlayTrigger>
+                <hr />
+            </h3>
             <BootstrapTable keyField='idx' striped hover bordered={ false } data={ this.state.students.map(function(student, idx){ 
                 student.idx = idx + 1;
                 student.id = parseInt(student.id);
                 student.priority = parseInt(student.priority);
                 return student;
-                }, this)} columns={ columns } />
+                }, this)} columns={ columns } pagination={ paginationFactory() } />
             </div>)}
             
             {this.state.showCancelModal &&  <Modal

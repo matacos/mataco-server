@@ -28,6 +28,10 @@ class Assistant  {
         return localStorage.length > 0;
     }
 
+    isRole(role) {
+        return this.isLoggedIn() && localStorage.getItem("mode") == role;
+    }
+
     inProfessorMode() {
         return localStorage.getItem("mode") == "professor";
     }

@@ -2,7 +2,7 @@ import Assistant from "./Assistant";
 
 class Proxy  {
     constructor() {
-        this.url = "https://mataco2.herokuapp.com/api"//"http://localhost:3000/api"//
+        this.url = "http://localhost:3000/api" //"https://mataco2.herokuapp.com/api"
        
     }
 
@@ -240,8 +240,7 @@ class Proxy  {
           
           }).then(res => res.json())
           .then(
-            (result) => {       
-                Assistant.setField("token", result.token);
+            (result) => {     
                 return result.exams;
             },
             (error) => {

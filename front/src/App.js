@@ -17,7 +17,8 @@ class App extends Component {
 
     this.state = {
         selected: this.getClearSelection(),
-        mode: Assistant.getField("mode")
+        mode: Assistant.getField("mode"),
+        update: false
     };
 
   }
@@ -36,6 +37,10 @@ class App extends Component {
       this.setState({selected: updatedSelection});
   }
 
+  setUpdate(bool) {
+    this.setState({update: bool});
+  }
+
   changeMode() {
     if (Assistant.inProfessorMode()) {
       this.setState({selected: this.getClearSelection(), mode: "department_administrator"})
@@ -51,16 +56,16 @@ class App extends Component {
     return (
       <BrowserRouter>
       <div className="row">
-      {Assistant.isLoggedIn() && <Panel selected={this.state.selected} setSelected={this.setSelected.bind(this)} mode={this.state.mode}/>}
+      {Assistant.isLoggedIn() && <Panel selected={this.state.selected} setSelected={this.setSelected.bind(this)} mode={this.state.mode} update={this.state.update} setUpdate={this.setUpdate.bind(this)} />}
       <div className={Assistant.isLoggedIn() ? "col-md-9" : "col-md-12"}>
         <div>
           <Switch>
             <Route path="/login" render={ () => Assistant.isLoggedIn() ? <Redirect to="/home" /> : <Login/> } />
             <Route path="/home" render={ () => Assistant.isLoggedIn() ? <Home changeMode={this.changeMode.bind(this)} /> : <Redirect to="/login" /> } />
-            <Route path="/cursos/:nombreMateria/:idCurso" component={SubjectStudents} />
-            <Route path="/materias/:idMateria/:nombreMateria" component={SubjectCourses} />
-            <Route path="/finales/:idMateria/:idExamen" component={Exam} />
-            <Route path="/estudiantes" component={StudentsUpload} />
+            <Route path="/cursos/:nombreMateria/:idCurso" render={ (props) => Assistant.isRole("professor") ? <SubjectStudents {...props} /> : <Redirect to="/login" /> }/>
+            <Route path="/materias/:idMateria/:nombreMateria" render={ (props) => Assistant.isRole("department_administrator") ? <SubjectCourses {...props} /> : <Redirect to="/login" /> } />
+            <Route path="/finales/:idMateria/:idExamen" render={ (props) => Assistant.isRole("professor") ? <Exam {...props} update={this.setUpdate.bind(this)} /> : <Redirect to="/login" /> }/>
+            <Route path="/estudiantes" render={ (props) => Assistant.isRole("administrators") ? <StudentsUpload {...props} /> : <Redirect to="/login" /> } />
             <Redirect from="/" exact to="/login" />
             <Route component={Error} />
           </Switch>

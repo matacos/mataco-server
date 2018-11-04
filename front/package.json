@@ -8,6 +8,8 @@
     "react": "^16.5.2",
     "react-bootstrap": "^0.32.4",
     "react-bootstrap-table-next": "^1.1.4",
+    "react-bootstrap-table2-paginator": "^1.0.3",
+    "react-bootstrap-table2-toolkit": "^1.1.1",
     "react-dom": "^16.5.2",
     "react-file-reader": "^1.1.4",
     "react-router-dom": "^4.3.1",
