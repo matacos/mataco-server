@@ -156,6 +156,14 @@ describe("Test /exams",()=>{
         expect(response.body.exam_enrolments).to.be.lengthOf(3)
     })
 
+    it("test GET inscripciones_final filtering by student and since date",async ()=>{
+        const response = await requestWithAuth("jose","jojo","GET","/inscripciones_final?estudiante=97452&since=2018-05-16")
+
+        expect(response.statusCode).to.equal(200)
+        expect(response.body).to.be.jsonSchema(finalEnrolmentsJsonSchema)
+        expect(response.body.exam_enrolments).to.be.lengthOf(2)
+    })
+
     it("test GET inscripciones_final filtering by exam id",async ()=>{
         const response = await requestWithAuth("jose","jojo","GET","/inscripciones_final?id_examen=1&since=any")
         console.log("############")

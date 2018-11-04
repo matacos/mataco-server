@@ -29,14 +29,6 @@ function mountRoutes(app,db,schemaValidation){
                 since = new Date(req.query.since)
             }
         }
-        const viewCreation3 = await db.query(studentsWithDegreesView)
-        
-        const viewCreation1 = await db.query(subjectsView)
-        const viewCreation = await db.query(examsWithDataView)
-        const viewCreation2 = await db.query(examEnrolmentsWithDataView)
-        const department_code = req.query["cod_departamento"]
-        const subject_code = req.query["cod_materia"]
-
         let dateFilter=""
         if(since=="any"){
             dateFilter=""
@@ -47,6 +39,16 @@ function mountRoutes(app,db,schemaValidation){
             since=req.semester[0].classes_ending_date
             dateFilter="and ed.exam_date > $5"
         }
+        
+        const viewCreation3 = await db.query(studentsWithDegreesView)
+        
+        const viewCreation1 = await db.query(subjectsView)
+        const viewCreation = await db.query(examsWithDataView)
+        const viewCreation2 = await db.query(examEnrolmentsWithDataView)
+        const department_code = req.query["cod_departamento"]
+        const subject_code = req.query["cod_materia"]
+
+        
 
         const query=`
         with

@@ -18,6 +18,30 @@ function mountRoutes(app,db,schemaValidation){
         required:["estudiante"]
     }]}
     app.get("/inscripciones_final",schemaValidation({query:examEnrolmentQuery}),async function(req,res,next){
+        let since=req.now
+        if("since" in req.query){
+            if(isNaN(Date.parse(req.query.since))){
+                since = req.query.since
+            }else{
+                since = new Date(req.query.since)
+            }
+        }
+        if(since=="current"){
+            since=new Date(req.semester[0].classes_ending_date)
+        }
+        /*
+        let dateFilter=""
+        if(since=="any"){
+            dateFilter=""
+        }else{
+            dateFilter="and exams_with_data::json->'exam_date'::date >= $3::date"
+        }
+        if(since=="current"){
+            since=new Date(req.semester[0].classes_ending_date)
+            dateFilter="and (exams_with_data::json->'exam_date')::date >= $3::date"
+        }
+        */
+
         const viewCreation3 = await db.query(studentsWithDegreesView)
         const viewCreation2 = await db.query(subjectsView)
         const viewCreation1 = await db.query(examsWithDataView)
@@ -39,11 +63,18 @@ function mountRoutes(app,db,schemaValidation){
         and cast(student_username as text) like $2
         ;
         `
-        const result = await db.query(query,[
+        let args=[
             examId,
             studentUsername
-        ])
-        res.json({"exam_enrolments":result.rows})
+        ]
+        const result = await db.query(query,args)
+        let rows=result.rows.filter((r)=>{
+            if(since=="any"){
+                return true
+            }
+            return new Date(r.exam.exam_date) >= new Date(since)
+        })
+        res.json({"exam_enrolments":rows})
         next()
     })
 
