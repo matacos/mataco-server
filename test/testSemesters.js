@@ -87,7 +87,9 @@ describe("Test times",()=>{
 
         const serverTime=await sender("/ciclo_lectivo_actual")
         expect(serverTime.body).to.be.jsonSchema(currentSemesterSchema)
-
-
+    })
+    it("GET /ciclos_lectivos has a good format",async()=>{
+        const response = await requestWithAuth("97452","jojo","GET","/ciclos_lectivos")
+        expect(response.body).to.be.jsonSchema(currentSemesterSchema)
     })
 })

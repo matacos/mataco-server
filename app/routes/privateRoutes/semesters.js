@@ -7,6 +7,11 @@ function mountRoutes(app,db,schemaValidation){
         })
         next()
     })
+    app.get("/ciclos_lectivos",async function(req,res,next){
+        const result = await db.query(`select * from semesters`)
+        res.json({"semesters":result.rows})
+        next()
+    })
 
 }
 
