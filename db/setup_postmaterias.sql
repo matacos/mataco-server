@@ -91,9 +91,9 @@ create table courses(
 insert into courses(department_code,subject_code,semester,name,total_slots) values
     ('75','06','1c2018','Organización de Datos',200),
     ('75','07','1c2018','Algoritmos y Programacion III',120),
-    ('75','52','2c2018','Taller Calónico 2c18',218),
-    ('75','52','1c2018','Taller Calónico 1c18',118),
-    ('75','52','2c2017','Taller Calónico 2c17',217);
+    ('75','52','2c2018','Taller Calónico 2c18',219),
+    ('75','52','1c2018','Taller Calónico 1c18',119),
+    ('75','52','2c2017','Taller Calónico 2c17',218);
 create table professors_roles(
     professor varchar(10),
     foreign key (professor) references professors(username) on delete cascade,
@@ -173,7 +173,10 @@ create table course_enrollments(
 insert into course_enrollments(course,student,creation,accepted,grade,grade_date) values
     (1,'99999','2017-06-8','true',9,'2018-01-05'),
     (2,'99999',now(),'true',-1,'2018-01-05'),
-    (1,'97452',now(),'false',-1,'2018-01-05');
+    (1,'97452',now(),'false',-1,'2018-01-05'),
+    (3,'97452',now(),'false',-1,'2018-01-05'),
+    (4,'97452',now(),'false',-1,'2018-01-05'),
+    (5,'97452',now(),'false',-1,'2018-01-05');
 
 
 

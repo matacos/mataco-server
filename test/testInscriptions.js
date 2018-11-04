@@ -23,7 +23,7 @@ async function login(username,password){
 }
 const correctRequestJsonschema={
     required:["courseInscriptions"],
-    properties:{"courseInscriptions":{items:{
+    properties:{"courseInscriptions":{minItems:1,items:{
         properties:{
             "course":{required:[
                 "department_code",
@@ -66,14 +66,21 @@ async function requestWithAuth(username,password,verb,uriPart,body){
 
 }
 describe("Test /inscripciones_cursos",()=>{
+    it("test GET filtering by semester",async ()=>{
+        let response2c2017 = await requestWithAuth("97452","jojo","GET","/inscripciones_cursos?estudiante=97452&semester=2c2017")
+        expect(response2c2017.body.courseInscriptions).lengthOf(1)
+
+        let response1c2018 = await requestWithAuth("97452","jojo","GET","/inscripciones_cursos?estudiante=97452&semester=1c2018")
+        expect(response1c2018.body.courseInscriptions).lengthOf(2)
+
+    })
     it("test GET without filter query",async ()=>{
         const response = await requestWithAuth("jose","jojo","GET","/inscripciones_cursos")
         expect(response.statusCode).to.equal(400)
         //expect(response.body).to.be.jsonSchema(correctRequestJsonschema)
     })
     it("test GET filtering by con_nota",async ()=>{
-        const response = await requestWithAuth("jose","jojo","GET","/inscripciones_cursos?con_nota=true")
-        console.log(response.body)
+        const response = await requestWithAuth("jose","jojo","GET","/inscripciones_cursos?con_nota=true&semester=any")
         expect(response.statusCode).to.equal(200)
         expect(response.body).to.be.jsonSchema(correctRequestJsonschema)
         for(let inscription of response.body.courseInscriptions){
@@ -81,7 +88,7 @@ describe("Test /inscripciones_cursos",()=>{
         }
     })
     it("test GET filtering by aceptadas",async ()=>{
-        const response = await requestWithAuth("jose","jojo","GET","/inscripciones_cursos?aceptadas=true")
+        const response = await requestWithAuth("jose","jojo","GET","/inscripciones_cursos?aceptadas=true&semester=any")
         console.log(response.body)
         expect(response.statusCode).to.equal(200)
         expect(response.body).to.be.jsonSchema(correctRequestJsonschema)
@@ -91,7 +98,7 @@ describe("Test /inscripciones_cursos",()=>{
         }
     })
     it("test GET filtering by student",async ()=>{
-        const response = await requestWithAuth("jose","jojo","GET","/inscripciones_cursos?estudiante=99999")
+        const response = await requestWithAuth("jose","jojo","GET","/inscripciones_cursos?estudiante=99999&semester=any")
         console.log(response.body)
         expect(response.statusCode).to.equal(200)
         expect(response.body).to.be.jsonSchema(correctRequestJsonschema)
@@ -100,7 +107,7 @@ describe("Test /inscripciones_cursos",()=>{
         }
     })
     it("test GET filtering by course",async ()=>{
-        const response = await requestWithAuth("jose","jojo","GET","/inscripciones_cursos?curso=1")
+        const response = await requestWithAuth("jose","jojo","GET","/inscripciones_cursos?curso=1&semester=any")
         expect(response.statusCode).to.equal(200)
         expect(response.body).to.be.jsonSchema(correctRequestJsonschema)
         for(let inscription of response.body.courseInscriptions){
@@ -110,9 +117,9 @@ describe("Test /inscripciones_cursos",()=>{
     
     it("add 97452 to course 2 (he is enrolled in course 1 already), and then remove him from course 1",async ()=>{
         
-        //chequeo que haya 1 inscripción
-        let response = await requestWithAuth("97452","jojo","GET","/inscripciones_cursos?estudiante=97452")
-        expect(response.body.courseInscriptions).to.have.lengthOf(1)
+        //chequeo que haya 4 inscripciones
+        let response = await requestWithAuth("97452","jojo","GET","/inscripciones_cursos?estudiante=97452&semester=any")
+        expect(response.body.courseInscriptions).to.have.lengthOf(4)
         let cursoInicial = response.body.courseInscriptions[0]
 
         //chequeo que esa inscripción aparezca en /materias
@@ -138,9 +145,9 @@ describe("Test /inscripciones_cursos",()=>{
         })
         expect(response.statusCode).to.equal(201)
 
-        //chequeo que haya 2
-        response = await requestWithAuth("97452","jojo","GET","/inscripciones_cursos?estudiante=97452")
-        expect(response.body.courseInscriptions).to.have.lengthOf(2)
+        //chequeo que haya 5
+        response = await requestWithAuth("97452","jojo","GET","/inscripciones_cursos?estudiante=97452&semester=any")
+        expect(response.body.courseInscriptions).to.have.lengthOf(5)
 
 
         //chequeo que esa desinscripción aparezca en /materias
@@ -169,9 +176,9 @@ describe("Test /inscripciones_cursos",()=>{
         response = await requestWithAuth("97452","jojo","DELETE","/cursadas/2-97452")
         expect(response.statusCode).to.equal(204)
 
-        // chequeo que haya 1
-        response = await requestWithAuth("97452","jojo","GET","/inscripciones_cursos?estudiante=97452")
-        expect(response.body.courseInscriptions).to.have.lengthOf(1)
+        // chequeo que haya 4
+        response = await requestWithAuth("97452","jojo","GET","/inscripciones_cursos?estudiante=97452&semester=any")
+        expect(response.body.courseInscriptions).to.have.lengthOf(4)
 
         
 
@@ -185,7 +192,7 @@ describe("Test /inscripciones_cursos",()=>{
         expect(response.statusCode).to.equal(204)
 
         // chequeo que haya cambiado la nota
-        response = await requestWithAuth("97452","jojo","GET","/cursadas?curso=1")
+        response = await requestWithAuth("97452","jojo","GET","/cursadas?curso=1&semester=any")
         expect(response.body.courseInscriptions[0].accepted).to.be.true
         expect(response.body.courseInscriptions[0].grade).to.be.equal("6")
 
@@ -196,14 +203,14 @@ describe("Test /inscripciones_cursos",()=>{
         //inscribo al estudianye al curso ..1??, con el curso de antes
         let newCourse={
             student:cursoInicial.student.username+"",
-            course:cursoInicial.course.course+""
+            course:1+""
         }
         response = await requestWithAuth("97452","jojo","POST","/cursadas/",newCourse)
         expect(response.statusCode).to.equal(201)
 
-        // chequeo que haya 1
-        response = await requestWithAuth("97452","jojo","GET","/inscripciones_cursos?estudiante=97452")
-        expect(response.body.courseInscriptions).to.have.lengthOf(1)
+        // chequeo que haya 4
+        response = await requestWithAuth("97452","jojo","GET","/inscripciones_cursos?estudiante=97452&semester=any")
+        expect(response.body.courseInscriptions).to.have.lengthOf(4)
         //chequeo que esa inscripción aparezca en /materias
         response = await requestWithAuth("97452","jojo","GET","/materias?carrera=10")
         good_subject=null

@@ -4,22 +4,43 @@ const coursesView=fs.readFileSync(__dirname+"/coursesWithData.sql").toString()
 const studentsWithDegreesView=fs.readFileSync(__dirname+"/studentsWithDegrees.sql").toString()
 
 function mountRoutes(app,db,schemaValidation){
+
     const endpoints = ["/inscripciones_cursos","/cursadas"]
 
-    const inscripcionesCursosQuery={anyOf:[{
+    const estudianteOCurso = {anyOf:[{
         required:["estudiante"]
     },{
         required:["curso"]
     },{
-        const:{"aceptadas":"true"}
+        required:["con_nota"]
     },{
-        const:{"aceptadas":"false"}
-    },{
-        const:{"con_nota":"true"}
-    },{
-        const:{"con_nota":"false"}
+        required:["aceptadas"]
     }]}
+
+    const inscripcionesCursosQuery={allOf:[
+        estudianteOCurso,
+        {
+            type:"object",
+            properties:{
+                "aceptadas":{
+                    anyOf:[{const:"true"},{const:"false"}]
+                },
+                "con_nota":{
+                    anyOf:[{const:"true"},{const:"false"}]
+                }
+            }
+        }
+    ]}
     app.get(endpoints, schemaValidation({query:inscripcionesCursosQuery}),async function(req,res,next){
+        let semester=req.semester[0].code
+        if("semester" in req.query) {
+            if (req.query.semester=="any"){
+                semester="%"
+            }else{
+                semester=req.query.semester
+            }
+        }
+    
         await db.query(subjectsView)
         await db.query(coursesView)
         await db.query(studentsWithDegreesView)
@@ -50,12 +71,14 @@ function mountRoutes(app,db,schemaValidation){
         and e.student like $1
         and cast(e.accepted as text) like $2
         and cast(c.course as text) like $3
+        and c.semester like $4
         ${gradedFilter}
         ;`
         const result=await db.query(query,[
             req.query["estudiante"] || "%",
             req.query["aceptadas"] || "%",
             req.query["curso"] || "%",
+            semester
         ])
         res.json({"courseInscriptions":result.rows})
         next()
