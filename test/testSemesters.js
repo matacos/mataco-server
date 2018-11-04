@@ -121,4 +121,9 @@ describe.only("Test times",()=>{
         expect(response.statusCode).to.equal(201)
         expect(response.body).to.be.jsonSchema(oneSemesterSchema)
     })
+    it("GET /ciclos_lectivos has the new semester",async()=>{
+        const response = await requestWithAuth("97452","jojo","GET","/ciclos_lectivos")
+        expect(response.body).to.be.jsonSchema(currentSemesterSchema)
+        expect(response.body.semesters.length).to.equal(4)
+    })
 })
