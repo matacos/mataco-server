@@ -1,8 +1,22 @@
 function mountRoutes(app,db,schemaValidation){
+    app.get("/ciclo_lectivo_actual",async function (req,res,next){
+        console.log("ESTOY EN EL ENDPOINT POSTA")
+        console.log(req.semester)
+        res.json({
+            "semesters":req.semester
+        })
+        next()
+    })
 
 }
 
 async function getSemesterFromDate(db,date){
+    console.log("%%%%%%%%%%%%%%%%%%%%%%")
+    console.log("%%%%%%%%%%%%%%%%%%%%%%")
+    console.log("Me preguntan por el date:")
+    console.log(date)
+    console.log("%%%%%%%%%%%%%%%%%%%%%%")
+    console.log("%%%%%%%%%%%%%%%%%%%%%%")
     const result = await db.query(`
     select * 
     from semesters

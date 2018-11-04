@@ -7,7 +7,7 @@ function mountRoutes(app,db){
 
     app.use(function (req,res,next){
         if(req.query.now){
-            req.now=Date.parse(req.query.now)
+            req.now=new Date(req.query.now)
         }else{
             req.now=new Date()
         }
