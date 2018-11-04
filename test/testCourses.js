@@ -86,7 +86,8 @@ const correctCoursesSchema={
                     "subject_code",
                     "free_slots",
                     "occupied_slots",
-                    "total_slots"
+                    "total_slots",
+                    "semester"
                 ],
                 properties:{
                     "name":{type:"string"},
@@ -120,7 +121,7 @@ const correctCoursesSchema={
 
 describe("Test /cursos",()=>{
     it("happy path (query courses of subject)",async ()=>{
-        const response = await requestWithAuth("99999","9","GET","/cursos?cod_departamento=75&cod_materia=07")
+        const response = await requestWithAuth("99999","9","GET","/cursos?cod_departamento=75&cod_materia=07&semester=any")
 
         console.log(response.body)
 
@@ -129,7 +130,7 @@ describe("Test /cursos",()=>{
     })
 
     it("happy path (query courses of professor)",async ()=>{
-        const response = await requestWithAuth("99999","9","GET","/cursos?profesor=39111222")
+        const response = await requestWithAuth("99999","9","GET","/cursos?profesor=39111222&semester=any")
 
         console.log(response.body)
 
@@ -141,7 +142,7 @@ describe("Test /cursos",()=>{
         const loginResponse=await login("97452","jojo")
         const token=loginResponse.token
         const response=await request({
-            uri:url("/cursos?profesor=39111222"),
+            uri:url("/cursos?profesor=39111222&semester=any"),
             method:"GET",
             headers:{
                 "Authorization":"bearer "+token
@@ -157,7 +158,7 @@ describe("Test /cursos",()=>{
         console.log(response.body)
 
         const response2=await request({
-            uri:url("/cursos?profesor=12345678"),
+            uri:url("/cursos?profesor=12345678&semester=any"),
             method:"GET",
             headers:{
                 "Authorization":"bearer "+token
@@ -184,7 +185,7 @@ describe("Test /cursos",()=>{
     
     it("happy path query post y delete course",async ()=>{
 
-        const responseInit = await requestWithAuth("99999","9","GET","/cursos?cod_departamento=75&cod_materia=06")
+        const responseInit = await requestWithAuth("99999","9","GET","/cursos?cod_departamento=75&cod_materia=06&semester=any")
 
         console.log("Here -1 \n")
         console.log(responseInit.body)
@@ -198,7 +199,8 @@ describe("Test /cursos",()=>{
             "cod_departamento":"75",
             "cod_materia":"06",
             "nombre":"Seminario I",
-            "vacantes_totales":20
+            "vacantes_totales":20,
+            "ciclo_lectivo":"2c2018"
         })
 
         console.log("Here 1 \n")
@@ -207,7 +209,7 @@ describe("Test /cursos",()=>{
 
         expect(response1.statusCode).to.equal(201)
 
-        const response2 = await requestWithAuth("99999","9","GET","/cursos?cod_departamento=75&cod_materia=06")
+        const response2 = await requestWithAuth("99999","9","GET","/cursos?cod_departamento=75&cod_materia=06&semester=any")
 
         console.log("Here 3 \n")
         console.log(response2.body)
@@ -216,7 +218,7 @@ describe("Test /cursos",()=>{
         expect(response2.statusCode).to.equal(200)
         expect(response2.body.courses).to.have.lengthOf(2)
         
-         const response3 = await requestWithAuth("99999","9","DELETE","/cursos/3")
+         const response3 = await requestWithAuth("99999","9","DELETE","/cursos/6")
 
          console.log("Here 5 \n")
          console.log(response3.body)
@@ -224,7 +226,7 @@ describe("Test /cursos",()=>{
 
         expect(response3.statusCode).to.equal(204)
 
-        const response4 = await requestWithAuth("99999","9","GET","/cursos?cod_departamento=75&cod_materia=06")
+        const response4 = await requestWithAuth("99999","9","GET","/cursos?cod_departamento=75&cod_materia=06&semester=any")
 
         console.log("Here 7 \n")
         console.log(response4.body)
@@ -241,10 +243,11 @@ describe("Test /cursos",()=>{
             "cod_departamento":"75",
             "cod_materia":"06",
             "nombre":"Cátedra Peronista",
-            "vacantes_totales":67
+            "vacantes_totales":67,
+            "ciclo_lectivo":"2c2018"
         })
 
-        const response2=await requestWithAuth("99999","9","GET","/cursos?cod_departamento=75&cod_materia=06")
+        const response2=await requestWithAuth("99999","9","GET","/cursos?cod_departamento=75&cod_materia=06&semester=any")
         let course=response2.body.courses.filter((x)=>x.name.includes("Peronista"))[0]
         const courseId=course.course
         const postResponse = await requestWithAuth("99999","9","POST",`/cursos/${courseId}/horarios`,{
@@ -259,7 +262,7 @@ describe("Test /cursos",()=>{
         })
         expect(postResponse.statusCode).to.equal(201)
 
-        const response3=await requestWithAuth("99999","9","GET","/cursos?cod_departamento=75&cod_materia=06")
+        const response3=await requestWithAuth("99999","9","GET","/cursos?cod_departamento=75&cod_materia=06&semester=any")
         let slot =response3.body.courses.filter((x)=>x.name.includes("Peronista"))[0].time_slots[0]
         console.log(slot)
         expect(slot.description).to.equal("yeah")
@@ -269,7 +272,7 @@ describe("Test /cursos",()=>{
 
         expect(response4.statusCode).to.equal(204)
 
-        const response5=await requestWithAuth("99999","9","GET","/cursos?cod_departamento=75&cod_materia=06")
+        const response5=await requestWithAuth("99999","9","GET","/cursos?cod_departamento=75&cod_materia=06&semester=any")
         let courseAgain =response5.body.courses.filter((x)=>x.name.includes("Peronista"))[0]
 
         expect(courseAgain.time_slots).to.be.lengthOf(0)
@@ -301,7 +304,7 @@ describe("Test /cursos",()=>{
 
    it("happy path get docente",async ()=>{
 
-    const responseInit = await requestWithAuth("99999","9","GET","/docente?username=12345678")
+    const responseInit = await requestWithAuth("99999","9","GET","/docente?username=12345678&semester=any")
 
     expect(responseInit.body).to.be.jsonSchema(correctProfessorSchema)
     expect(responseInit.statusCode).to.equal(200)
@@ -309,12 +312,12 @@ describe("Test /cursos",()=>{
     })
 
     it("put de curso",async ()=>{
-        const responseInit = await requestWithAuth("99999","9","GET","/cursos?cod_departamento=75&cod_materia=07")
+        const responseInit = await requestWithAuth("99999","9","GET","/cursos?cod_departamento=75&cod_materia=07&semester=any")
         const course=responseInit.body.courses[0]
         const responsePut=await requestWithAuth("99999","9","PUT",`/cursos/${course.course}`,{
             name:"Algoritmos III Fontela"
         })
-        const responseGetAgain = await requestWithAuth("99999","9","GET","/cursos?cod_departamento=75&cod_materia=07")
+        const responseGetAgain = await requestWithAuth("99999","9","GET","/cursos?cod_departamento=75&cod_materia=07&semester=any")
         const courseAgain=responseGetAgain.body.courses[0]
         expect(courseAgain.name).to.be.equal("Algoritmos III Fontela")
     })
@@ -351,7 +354,7 @@ describe("Test /cursos",()=>{
         
         expect(response1.statusCode).to.equal(201)
         
-        const response2 = await requestWithAuth("99999","9","GET","/cursos?profesor=12345678")
+        const response2 = await requestWithAuth("99999","9","GET","/cursos?profesor=12345678&semester=any")
 
         console.log(response2.body)
     
@@ -384,7 +387,7 @@ describe("Test /cursos",()=>{
         
         expect(response1.statusCode).to.equal(201)
         
-        const response2 = await requestWithAuth("99999","9","GET","/cursos?profesor=39111222")
+        const response2 = await requestWithAuth("99999","9","GET","/cursos?profesor=39111222&semester=any")
 
         console.log(response2.body)
     
@@ -400,7 +403,7 @@ describe("Test /cursos",()=>{
    
            expect(response3.statusCode).to.equal(204)
    
-           const response4 = await requestWithAuth("99999","9","GET","/cursos?profesor=39111222")
+           const response4 = await requestWithAuth("99999","9","GET","/cursos?profesor=39111222&semester=any")
     
            console.log(response4.body)
        
@@ -408,6 +411,18 @@ describe("Test /cursos",()=>{
            expect(response4.body.courses).to.have.lengthOf(1)
            expect(response4.statusCode).to.equal(200)
             
+        })
+
+        it("Filter by semester",async ()=>{
+            const response2c2018 = await requestWithAuth("99999","9","GET","/cursos?cod_departamento=75&cod_materia=52&semester=2c2018")
+
+            const response1c2018 = await requestWithAuth("99999","9","GET","/cursos?cod_departamento=75&cod_materia=52&semester=1c2018")
+
+            const response2c2017 = await requestWithAuth("99999","9","GET","/cursos?cod_departamento=75&cod_materia=52&semester=2c2017")
+
+            expect(response1c2018.body.courses[0].free_slots).to.equal("118")
+            expect(response2c2018.body.courses[0].free_slots).to.equal("218")
+            expect(response2c2017.body.courses[0].free_slots).to.equal("217")
         })
 
 })

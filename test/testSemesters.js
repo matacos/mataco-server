@@ -76,7 +76,7 @@ const oneSemesterSchema={
 
 
 
-describe.only("Test times",()=>{
+describe("Test times",()=>{
     it("current semester with different dates",async ()=>{
         function transform(username,password,verb){
             return function(uriPart){

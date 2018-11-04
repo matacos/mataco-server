@@ -90,7 +90,10 @@ create table courses(
 );
 insert into courses(department_code,subject_code,semester,name,total_slots) values
     ('75','06','1c2018','Organización de Datos',200),
-    ('75','07','1c2018','Algoritmos y Programacion III',120);
+    ('75','07','1c2018','Algoritmos y Programacion III',120),
+    ('75','52','2c2018','Taller Calónico 2c18',218),
+    ('75','52','1c2018','Taller Calónico 1c18',118),
+    ('75','52','2c2017','Taller Calónico 2c17',217);
 create table professors_roles(
     professor varchar(10),
     foreign key (professor) references professors(username) on delete cascade,
