@@ -20,6 +20,15 @@ function mountRoutes(app,db,schemaValidation){
         required:["docente"]
     }]}
     app.get("/finales",schemaValidation({query:examsQuery}),async function(req,res,next){
+        let since=new Date(req.now)
+        since.setHours(since.getHours() + 48)// el filtro inicial es ahora + 48hs
+        if("since" in req.query){
+            if(isNaN(Date.parse(req.query.since))){
+                since = req.query.since
+            }else{
+                since = new Date(req.query.since)
+            }
+        }
         const viewCreation3 = await db.query(studentsWithDegreesView)
         
         const viewCreation1 = await db.query(subjectsView)
@@ -27,6 +36,18 @@ function mountRoutes(app,db,schemaValidation){
         const viewCreation2 = await db.query(examEnrolmentsWithDataView)
         const department_code = req.query["cod_departamento"]
         const subject_code = req.query["cod_materia"]
+
+        let dateFilter=""
+        if(since=="any"){
+            dateFilter=""
+        }else{
+            dateFilter="and ed.exam_date > $5"
+        }
+        if(since=="current"){
+            since=req.semester[0].classes_ending_date
+            dateFilter="and ed.exam_date > $5"
+        }
+
         const query=`
         with
         my_enrolments as (
@@ -64,15 +85,20 @@ function mountRoutes(app,db,schemaValidation){
         and ed.department_code like $2
         and ed.examiner_username like $3
         and er.id=ed.id
+        ${dateFilter}
         
         ;
         `
-        const result = await db.query(query,[
+        let args=[
             subject_code,
             department_code,
             req.query["docente"] || '%',
             req.user["username"]
-        ])
+        ]
+        if(dateFilter!=""){
+            args=args.concat([since])
+        }
+        const result = await db.query(query,args)
         res.json({"exams":result.rows})
         next()
     })

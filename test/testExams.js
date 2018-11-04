@@ -58,19 +58,28 @@ const finalsJsonSchema={required:["exams"],properties:{exams:{
     items:examSchema
 }}}
 describe("Test /exams",()=>{
+    
     it("test GET without filter query",async ()=>{
-        const response = await requestWithAuth("jose","jojo","GET","/finales")
+        const response = await requestWithAuth("jose","jojo","GET","/finales?since=any")
         expect(response.statusCode).to.equal(400)
         //expect(response.body).to.be.jsonSchema(correctRequestJsonschema)
     })
     it("test GET filtering by subject",async ()=>{
-        const response = await requestWithAuth("jose","jojo","GET","/finales?cod_departamento=75&cod_materia=07")
+        const response = await requestWithAuth("jose","jojo","GET","/finales?cod_departamento=75&cod_materia=07&since=any")
         
         expect(response.statusCode).to.equal(200)
         expect(response.body).to.be.jsonSchema(finalsJsonSchema)
+        expect(response.body.exams).lengthOf(5)
+    })
+    it("test GET filter by subject and since", async ()=>{
+        const response = await requestWithAuth("jose","jojo","GET","/finales?cod_departamento=75&cod_materia=07&since=2018-03-31")
+        
+        expect(response.statusCode).to.equal(200)
+        expect(response.body).to.be.jsonSchema(finalsJsonSchema)
+        expect(response.body.exams).lengthOf(2)
     })
     it("now GET for 75.06 returns no exams",async ()=>{
-        const response = await requestWithAuth("jose","jojo","GET","/finales?cod_departamento=75&cod_materia=06")
+        const response = await requestWithAuth("jose","jojo","GET","/finales?cod_departamento=75&cod_materia=06&since=any")
         expect(response.statusCode).to.equal(200)
         expect(response.body).to.be.jsonSchema(finalsJsonSchema)
         expect(response.body.exams).to.be.lengthOf(0)
@@ -95,7 +104,7 @@ describe("Test /exams",()=>{
         expect(response.body).to.be.jsonSchema(singleFinalJsonSchema)
     })
     it("now GET for 75.06 returns an exam",async ()=>{
-        const response = await requestWithAuth("jose","jojo","GET","/finales?cod_departamento=75&cod_materia=06")
+        const response = await requestWithAuth("jose","jojo","GET","/finales?cod_departamento=75&cod_materia=06&since=any")
         expect(response.statusCode).to.equal(200)
         expect(response.body).to.be.jsonSchema(finalsJsonSchema)
         expect(response.body.exams).to.be.lengthOf(1)
@@ -133,7 +142,7 @@ describe("Test /exams",()=>{
         items:examEnrolmentSchema
     }}}
     it("test GET inscripciones_final filtering by student",async ()=>{
-        const response = await requestWithAuth("jose","jojo","GET","/inscripciones_final?estudiante=97452")
+        const response = await requestWithAuth("jose","jojo","GET","/inscripciones_final?estudiante=97452&since=any")
 
         expect(response.statusCode).to.equal(200)
         expect(response.body).to.be.jsonSchema(finalEnrolmentsJsonSchema)
@@ -141,7 +150,7 @@ describe("Test /exams",()=>{
     })
 
     it("test GET inscripciones_final filtering by exam id",async ()=>{
-        const response = await requestWithAuth("jose","jojo","GET","/inscripciones_final?id_examen=1")
+        const response = await requestWithAuth("jose","jojo","GET","/inscripciones_final?id_examen=1&since=any")
         console.log("############")
         console.log("############")
         console.log(response.body)
@@ -155,7 +164,7 @@ describe("Test /exams",()=>{
         expect(response.body.exam_enrolments).to.be.lengthOf(1)
     })
     it("test GET filtering by subject, 99999 is not enroled",async ()=>{
-        const response = await requestWithAuth("99999","9","GET","/finales?cod_departamento=75&cod_materia=07")
+        const response = await requestWithAuth("99999","9","GET","/finales?cod_departamento=75&cod_materia=07&since=any")
         console.log("============")
         console.log("============")
         console.log(response.body.exams[0])
@@ -174,7 +183,7 @@ describe("Test /exams",()=>{
         expect(response.statusCode).to.equal(200)
     })
     it("test GET filtering by subject, 99999 is enroled",async ()=>{
-        const response = await requestWithAuth("99999","9","GET","/finales?cod_departamento=75&cod_materia=07")
+        const response = await requestWithAuth("99999","9","GET","/finales?cod_departamento=75&cod_materia=07&since=any")
         console.log("============")
         console.log("============")
         console.log(response.body.exams[0])
@@ -186,7 +195,7 @@ describe("Test /exams",()=>{
     })
 
     it("test GET inscripciones_final filtering by exam id",async ()=>{
-        const response = await requestWithAuth("jose","jojo","GET","/inscripciones_final?id_examen=1")
+        const response = await requestWithAuth("jose","jojo","GET","/inscripciones_final?id_examen=1&since=any")
 
         expect(response.statusCode).to.equal(200)
         expect(response.body).to.be.jsonSchema(finalEnrolmentsJsonSchema)
@@ -199,7 +208,7 @@ describe("Test /exams",()=>{
     })
 
     it("test GET inscripciones_final filtering by exam id, the DELETE worked OK",async ()=>{
-        const response = await requestWithAuth("jose","jojo","GET","/inscripciones_final?id_examen=1")
+        const response = await requestWithAuth("jose","jojo","GET","/inscripciones_final?id_examen=1&since=any")
 
         expect(response.statusCode).to.equal(200)
         expect(response.body).to.be.jsonSchema(finalEnrolmentsJsonSchema)
@@ -211,7 +220,7 @@ describe("Test /exams",()=>{
         expect(response.statusCode).to.equal(204)
     })
     it("Exam 1 doesn't exist anymore",async ()=>{
-        const response = await requestWithAuth("jose","jojo","GET","/finales?cod_departamento=75&cod_materia=07")
+        const response = await requestWithAuth("jose","jojo","GET","/finales?cod_departamento=75&cod_materia=07&since=any")
         
         expect(response.statusCode).to.equal(200)
         expect(response.body).to.be.jsonSchema(finalsJsonSchema)
