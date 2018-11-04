@@ -14,15 +14,66 @@ insert into classrooms(code,campus) values
     ('L4','Paseo Cólón');
 
 create table semesters(
-    code varchar(10),
-    classes_beginning timestamp,
-    classes_ending timestamp,
+    
+    academic_offer_release_date date,/* 1 */
+    course_enrollment_beginning_date date,/* 2 */
+    course_enrollment_ending_date date,/* 3 */
+    classes_beginning_date date,/* 4 */
+    course_disenrollment_ending_date date,/* 5 */
+    exam_offer_release_date date,/* 6 */
+    classes_ending_date date,/* 7 */
+    exams_ending_date date,/* 8 */
+
+    code varchar(10),/* 9 */
+
     primary key (code)
 );
-insert into semesters(code, classes_beginning,classes_ending) values
-    ('1c2018','2018-01-01','2018-06-01'),
-    ('2c2018','2018-06-02','2019-01-01'),
-    ('2c2017','2018-06-02','2019-01-01');
+insert into semesters(
+    code,
+
+    academic_offer_release_date,
+    course_enrollment_beginning_date,
+    course_enrollment_ending_date,
+    classes_beginning_date,
+    course_disenrollment_ending_date,
+    exam_offer_release_date,
+    classes_ending_date,
+    exams_ending_date
+) values
+    (
+        '1c2018',
+
+        '2018-02-01',
+        '2018-03-01',
+        '2018-03-08',
+        '2018-03-10',
+        '2018-03-17',
+        '2018-05-05',
+        '2018-05-08',
+        '2018-06-08'
+    ),(
+        '2c2018',
+
+        '2018-07-01',
+        '2018-08-01',
+        '2018-08-08',
+        '2018-08-10',
+        '2018-08-17',
+        '2018-10-05',
+        '2018-10-08',
+        '2018-11-08'
+    ),(
+        '2c2017',
+
+        '2017-07-01',
+        '2017-08-01',
+        '2017-08-08',
+        '2017-08-10',
+        '2017-08-17',
+        '2017-10-05',
+        '2017-10-08',
+        '2017-11-08'
+    );
 
 create table courses(
     department_code varchar(10),
