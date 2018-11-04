@@ -71,12 +71,19 @@ describe("Test /exams",()=>{
         expect(response.body).to.be.jsonSchema(finalsJsonSchema)
         expect(response.body.exams).lengthOf(5)
     })
-    it("test GET filter by subject and since", async ()=>{
-        const response = await requestWithAuth("jose","jojo","GET","/finales?cod_departamento=75&cod_materia=07&since=2018-03-31")
+    it("test GET filter by subject and since date", async ()=>{
+        const response = await requestWithAuth("jose","jojo","GET","/finales?cod_departamento=75&cod_materia=07&since=2018-05-16")
         
         expect(response.statusCode).to.equal(200)
         expect(response.body).to.be.jsonSchema(finalsJsonSchema)
-        expect(response.body.exams).lengthOf(2)
+        expect(response.body.exams).lengthOf(3)
+    })
+    it("test GET filter by subject and since date", async ()=>{
+        const response = await requestWithAuth("jose","jojo","GET","/finales?cod_departamento=75&cod_materia=07&since=current&now=2018-03-31")
+        
+        expect(response.statusCode).to.equal(200)
+        expect(response.body).to.be.jsonSchema(finalsJsonSchema)
+        expect(response.body.exams).lengthOf(5)
     })
     it("now GET for 75.06 returns no exams",async ()=>{
         const response = await requestWithAuth("jose","jojo","GET","/finales?cod_departamento=75&cod_materia=06&since=any")
