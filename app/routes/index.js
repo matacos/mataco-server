@@ -14,6 +14,15 @@ function mountRoutes(app,db){
         next()
     })
 
+    app.use(async function (req,res,next){
+        if(req.query.semester){
+            req.semester=req.query.semester
+        }else{
+            req.semester = await privateRoutes.getSemesterFromDate(db,req.now);
+        }
+        next()
+    })
+
     //monto /login y /logout
     security.mountRoutes(app,db,validation.schemaValidationMiddlewares)
 
