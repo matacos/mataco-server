@@ -33,8 +33,10 @@ class Login extends Component {
             Proxy.login(this.state.dni, this.state.password) 
             .then(
                 () => {
-                    //this.props.history.push('/home');
-                    window.location.reload();
+                    Proxy.setSemesterData().then(() => {
+                        window.location.reload();
+                    });
+                    
                 },
                 (error) => {
                     console.log(error)

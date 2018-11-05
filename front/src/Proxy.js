@@ -39,7 +39,6 @@ class Proxy  {
                   Assistant.setField("mode", "administrators");
                 return result;
              })
-            
       }
 
       getDepartmentSubjects() {
@@ -148,7 +147,7 @@ class Proxy  {
             'Authorization': 'bearer ' + Assistant.getField("token")
           },
           body: JSON.stringify(course),
-        })
+        }).then(res => console.log(res))
       }
 
       addProfessor(courseId, professor){
@@ -325,6 +324,37 @@ class Proxy  {
           if (res.status != 201)
             return res.json();
           })
+      }
+
+      getSemesterData() {
+        return fetch(this.url + "/ciclo_lectivo_actual" , {
+          method: 'GET',
+          headers: {
+            'Authorization': 'bearer ' + Assistant.getField("token")
+          },
+          
+          }).then(res => res.json())
+          .then(
+            (result) => {
+                Assistant.setField("token", result.token);     
+                return result.semesters[0];
+            },
+            (error) => {
+                console.log(error)
+            }
+          )  
+      }
+
+      setSemesterData() {
+        return this.getSemesterData()
+        .then(data => {
+          Assistant.setField("code", data.code);
+          Assistant.setField("academic_offer_release_date", data.academic_offer_release_date);
+          Assistant.setField("classes_beginning_date", data.classes_beginning_date);
+          Assistant.setField("exam_offer_release_date", data.exam_offer_release_date);
+          Assistant.setField("classes_ending_date", data.classes_ending_date);
+          Assistant.setField("classes_ending_date", data.classes_ending_date);
+        });
       }
 
   }
