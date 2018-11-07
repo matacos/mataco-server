@@ -195,6 +195,7 @@ function mountRoutes(app,db,schemaValidation){
             )
             updates_values.push(req.body[key])
         }
+
         
         let updates_text=updates_texts.join(",")
         const query=`

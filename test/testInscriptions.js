@@ -230,3 +230,48 @@ describe("Test /inscripciones_cursos",()=>{
     })
 
 })
+
+describe.skip("Academic history",()=>{
+    function get(url){
+        return requestWithAuth("97452","jojo","GET",url)
+    }
+    function post(url,body){
+        return requestWithAuth("97452","jojo","POST",url,body)
+    }
+    function put(url,body){
+        return requestWithAuth("97452","jojo","PUT",url,body)
+    }
+
+    it("pass a course",async()=>{
+        
+        await put("/cursadas/5-97452",{
+            accepted:"true",
+            grade:"8"
+        })
+        const r = await get("/inscripciones_cursos?estudiante=97452&semester=any")
+        /*
+        console.log("#####################")
+        console.log("#####################")
+        console.log(r.body.courseInscriptions.filter((c)=>c.course.course=5)[0])
+        console.log("#####################")
+        console.log("#####################")
+        */
+    })
+
+    it("pass an exam",async()=>{
+        
+        const r = await get("/inscripciones_final?estudiante=97452&since=any")
+        
+        console.log("#####################")
+        console.log("#####################")
+        console.log(r.body.exam_enrolments)
+        console.log("#####################")
+        console.log("#####################")
+        
+    })
+    it("check shape",async ()=>{
+        const response = await requestWithAuth("97452","jojo","GET","/97452/historial_academico")
+        console.log(response.body)
+
+    })
+})

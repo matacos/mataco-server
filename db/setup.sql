@@ -91,11 +91,14 @@ create table degree_enrollments (
 insert into degree_enrollments( degree, student) values 
     ('10','jose'),
     ('10','97452'),
+    ('11','97452'),
+    ('3','97452'),
+    ('2','97452'),
     ('1','99999'),
     ('2','99999'),
     ('3','99999'),
     ('10','96107'),
-    ('11','96800');
+    ('10','96800');
 
 
 create table departments(
