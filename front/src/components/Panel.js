@@ -118,7 +118,7 @@ class Panel extends Component {
 
     logout() {
         Proxy.logout();
-        this.props.history.push('/login');
+        window.location.reload();
     }
 
     goToExam(examId) {
@@ -173,7 +173,7 @@ class Panel extends Component {
             let validationResult = this.validInput();
             if (validationResult[0]) {
                 newExam = {
-                    semester_code: "1c2018",
+                    semester_code: Assistant.getField("code"),
                     department_code: this.state.currentCourse.department_code,
                     subject_code: this.state.currentCourse.subject_code,
                     examiner_username: Assistant.getField("username"),

@@ -4,6 +4,7 @@ import Proxy from '../Proxy';
 import alertSign from '../images/alert-icon.png';
 import { Modal, Button } from 'react-bootstrap';
 import { Glyphicon, PageHeader } from 'react-bootstrap';
+import Assistant from '../Assistant';
 
 class SubjectCourses extends Component {
     constructor(props) {
@@ -334,7 +335,8 @@ class SubjectCourses extends Component {
             cod_departamento: this.state.code.substr(0, 2),
             cod_materia: this.state.code.substr(2, 2),
             nombre: this.state.selectedData.name,
-            vacantes_totales: this.state.selectedData.total_slots
+            vacantes_totales: this.state.selectedData.total_slots,
+            ciclo_lectivo: Assistant.getField("code")
         }
 
         return Proxy.addCourse(newCourse);
