@@ -211,7 +211,7 @@ describe("Test /exams",()=>{
     it("enrol a student to exam 1",async ()=>{
         const response = await requestWithAuth("jose","jojo","POST","/inscripciones_final",{
             "exam_id":1,
-            "enrolment_type":"Regular",
+            "enrolment_type":"regular",
             "student":"99999"
         })
         expect(response.statusCode).to.equal(200)

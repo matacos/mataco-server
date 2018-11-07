@@ -102,7 +102,7 @@ describe("Test times",()=>{
     it("GET /ciclos_lectivos has a good format",async()=>{
         const response = await requestWithAuth("97452","jojo","GET","/ciclos_lectivos")
         expect(response.body).to.be.jsonSchema(currentSemesterSchema)
-        expect(response.body.semesters.length).to.equal(3)
+        expect(response.body.semesters.length).to.equal(4)
     })
     it("POST /ciclos_lectivos",async()=>{
         
@@ -124,6 +124,6 @@ describe("Test times",()=>{
     it("GET /ciclos_lectivos has the new semester",async()=>{
         const response = await requestWithAuth("97452","jojo","GET","/ciclos_lectivos")
         expect(response.body).to.be.jsonSchema(currentSemesterSchema)
-        expect(response.body.semesters.length).to.equal(4)
+        expect(response.body.semesters.length).to.equal(5)
     })
 })

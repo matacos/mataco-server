@@ -85,11 +85,14 @@ function mountRoutes(app,db,schemaValidation){
             let approvalSemester=passedCourses[k]
             let followingSemester=keyedSemesters[approvalSemester].next.code || null
             let nextSemester=keyedSemesters[followingSemester].next.code || null
-            examableSemesters[k]=[
-                approvalSemester,
-                followingSemester,
-                nextSemester
-            ].filter((x)=>x!=null)
+            examableSemesters[k+"-"+approvalSemester]={
+                approvalSemesterDate:keyedSemesters[approvalSemester]["exams_ending_date"],
+                semesters:[
+                    approvalSemester,
+                    followingSemester,
+                    nextSemester
+                ].filter((x)=>x!=null)
+            }
         }
 
         console.log("========================")
@@ -122,12 +125,137 @@ function mountRoutes(app,db,schemaValidation){
         const regularExams=historyItems.filter((h)=>{
             return h.enrolment_type=="regular"
         })
+        console.log("========================")
+        console.log("##### REGULAR EXAMS #############")
+        console.log("========================")
+        console.log(regularExams)
+        console.log("========================")
+        console.log("########################")
+        console.log("========================")
 
-        let historyItemsPerSubject={}
-        for(let item of historyItems){
-            let fullSubjectCode= item.exam.subject.department_code + "." + item.exam.subject.code
-            historyItemsPerSubject[fullSubjectCode] = historyItemsPerSubject[fullSubjectCode] || []
-            historyItemsPerSubject[fullSubjectCode].push(item)
+        // ------- divide regular exams per subject and sort them by date ------------ //
+        
+        let examsPerSubject={}
+        for(let exam of regularExams){
+            let fullSubjectCode = exam.exam.subject.department_code + "." + exam.exam.subject.code
+            
+            examsPerSubject[fullSubjectCode] = examsPerSubject[fullSubjectCode] || []
+            examsPerSubject[fullSubjectCode].push(exam)
+        }
+        for(let subjectCode in examsPerSubject){
+            examsPerSubject[subjectCode].sort((a,b)=>{
+                if(a.exam.exam_date>b.exam.exam_date){
+                    return 1;
+                }
+                if(a.exam.exam_date<b.exam.exam_date){
+                    return -1;
+                }
+                if(a.exam.exam_date==b.exam.exam_date){
+                    return 0;
+                }
+            })
+        }
+        console.log("========================")
+        console.log("##### EXAMS PER SUBJECT #############")
+        console.log("========================")
+        console.log(JSON.stringify(examsPerSubject,null,4))
+        console.log("========================")
+        console.log("########################")
+        console.log("========================")
+
+        // ----- subjects with regular exams ----- //
+        let examableSemestersKeys=Object.keys(examableSemesters)
+        examableSemestersKeys.sort((a,b)=>{
+            let aAsd=examableSemesters[a].approvalSemesterDate
+            let bAsd=examableSemesters[b].approvalSemesterDate
+            if(aAsd>bAsd){
+                return 1;
+            }
+            if(aAsd<bAsd){
+                return -1;
+            }
+            if(aAsd==bAsd){
+                return 0;
+            }
+        })
+        function removerPrimerExamenVigente(semesters,subjectCode){
+            
+            console.log("((((((((((((((((((((((((")
+            console.log("((((((((((((((((((((((((")
+            console.log("((((((((((((((((((((((((")
+            console.log("ME PREGUNTAN EL ULTIMO EXAMEN VIGENTE DE:")
+            console.log(semesters,subjectCode)
+            console.log("((((((((((((((((((((((((")
+            console.log("AHORA TENGO:")
+            console.log(examsPerSubject)
+            console.log("((((((((((((((((((((((((")
+            console.log("((((((((((((((((((((((((")
+            console.log("((((((((((((((((((((((((")
+            if( !examsPerSubject[subjectCode]){
+                return null
+            }
+            let chosenExamIndex=null;
+            for(let i=0; i < examsPerSubject[subjectCode].length; i+=1){
+                let enrolment=examsPerSubject[subjectCode][i]
+                console.log("EL ENROLMENT QUE VOY A ANALIZAR TIENE:")
+                console.log(enrolment.exam.semester_code)
+                console.log(semesters.indexOf(enrolment.exam.semester_code)>=0)
+                console.log(chosenExamIndex)
+
+                if(semesters.indexOf(enrolment.exam.semester_code)>=0 && chosenExamIndex == null){
+                    
+                    chosenExamIndex=i
+                }
+            }
+            console.log("CHOSEN EXAM INDEX")
+            console.log(chosenExamIndex)
+            if(chosenExamIndex==null){
+                //console.log("LES MANDO NULL")
+                return null
+            }
+            let chosenExam=examsPerSubject[subjectCode][chosenExamIndex]
+            examsPerSubject[subjectCode].splice(chosenExamIndex,1)
+            console.log("LES MANDO LO SIGUIENTE:")
+            console.log(chosenExam)
+            return chosenExam
+        }
+        let historyItemsResult=[]
+        for(let courseApproval of examableSemestersKeys){
+            let subjectCode=courseApproval.split("-")[0]
+            let actualExamableSemesters=examableSemesters[courseApproval].semesters
+            let vencida = (actualExamableSemesters.indexOf(req.semester[0].code)==-1)
+            let ultimoExamenVigente=null;
+            let dioTres=true;
+            for(let i=0;i<3;i+=1){
+                let viene = removerPrimerExamenVigente(actualExamableSemesters,subjectCode)
+                console.log("===========")
+                console.log("VIENE:",viene)
+                if(viene == null){
+                    dioTres=false
+                }else{
+                    ultimoExamenVigente=viene
+                }
+            }
+            
+            if(ultimoExamenVigente != null){
+                let ultimoExamenVigenteAprobado=parseInt(ultimoExamenVigente.grade)>=4
+
+                if(ultimoExamenVigenteAprobado){
+                    historyItemsResult.push(ultimoExamenVigente)
+                }else{
+                    if(
+                        dioTres
+                        ||
+                        vencida
+                    ){
+                        historyItemsResult.push(ultimoExamenVigente)
+                    }
+                    
+                }
+                
+            }
+            
+            
         }
 
 
@@ -144,11 +272,11 @@ function mountRoutes(app,db,schemaValidation){
         console.log("========================")
         console.log("###########HISTORY ITEMS#############")
         console.log("========================")
-        console.log(historyItemsPerSubject)
+        console.log(historyItemsResult)
         console.log("========================")
         console.log("########################")
         console.log("========================")
-        res.json({"history_items":historyItems})
+        res.json({"history_items":historyItemsResult.concat(freeExams)})
         next()
     })
 }
