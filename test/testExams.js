@@ -58,6 +58,25 @@ const finalsJsonSchema={required:["exams"],properties:{exams:{
     items:examSchema
 }}}
 describe("Test /exams",()=>{
+
+    it("Change the grade of exam 1 by student 97452",async ()=>{
+        const response = await requestWithAuth("jose","jojo","GET","/inscripciones_final?id_examen=1&since=any")
+        let username = response.body.exam_enrolments[0].student.username
+        let examId=response.body.exam_enrolments[0].exam.id
+
+        let modifications ={
+            grade:9,
+            grade_date:"2018-09-09"
+        }
+        const putResponse = await requestWithAuth("jose","jojo","PUT","/inscripciones_final/"+examId+"-"+username,modifications)
+
+        const responseAgain = await requestWithAuth("jose","jojo","GET","/inscripciones_final?id_examen=1&since=any")
+
+        expect(responseAgain.body).to.be.jsonSchema(finalEnrolmentsJsonSchema)
+        expect(responseAgain.body.exam_enrolments).to.be.lengthOf(1)
+        expect(responseAgain.body.exam_enrolments[0].grade).to.equal("9")
+        expect(responseAgain.body.exam_enrolments[0].grade_date).to.equal("2018-09-09T00:00:00.000Z")
+    })
     
     it("test GET without filter query",async ()=>{
         const response = await requestWithAuth("jose","jojo","GET","/finales?since=any")
@@ -245,4 +264,7 @@ describe("Test /exams",()=>{
         }
         expect(ids).not.to.include(1)
     })
+
+
+    
 })

@@ -258,7 +258,7 @@ describe.skip("Academic history",()=>{
         */
     })
 
-    it("pass an exam",async()=>{
+    it("fail ",async()=>{
         
         const r = await get("/inscripciones_final?estudiante=97452&since=any")
         

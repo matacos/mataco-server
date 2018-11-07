@@ -129,6 +129,65 @@ function mountRoutes(app,db,schemaValidation){
         next()
     })
 
+
+    const examEnrolmentModificationBody={anyOf:[
+        {required:["grade"]},
+        {required:["grade_date"]}
+    ]}
+    
+
+    app.put("/inscripciones_final/:id",schemaValidation({body:examEnrolmentModificationBody}),async function(req,res,next){
+        const partsId = req.params["id"].split("-")
+        const examId=partsId[0]
+        const studentId=partsId[1]
+
+        let updates_texts=[]
+        let updates_values=[]
+        for(let key in req.body){
+            updates_texts.push(
+                " "+key+" = $"+(updates_texts.length+3)+" "
+            )
+            updates_values.push(req.body[key])
+        }
+
+        let updates_text=updates_texts.join(",")
+        
+        const queryInsert=`
+        update exam_enrolments set
+            ${updates_text}
+        where
+            exam_id = $1
+        and student_username = $2;
+        `
+        
+        const insertResult = await db.query(queryInsert,[
+            examId,
+            studentId,
+        ].concat(updates_values))
+
+
+        const querySelect=`
+        select
+            exams_with_data as exam,
+            student,
+            creation,
+            grade,
+            grade_date,
+            enrolment_type
+        from exam_enrolments_with_data
+        where
+            exam_id=$1
+        and student_username=$2
+        ;
+        `
+        const selectResult = await db.query(querySelect,[
+            examId,
+            studentId,
+        ])
+        res.json({"exam_enrolment":selectResult.rows[0]})
+        next()
+    })
+
     app.delete("/inscripciones_final/:id",async function(req,res,next){
         const partsId = req.params["id"].split("-")
         const examId=partsId[0]
