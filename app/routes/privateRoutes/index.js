@@ -46,17 +46,41 @@ function mountRoutes(app,db,schemaValidation){
                         cids.id = me.course
                     )
         ),
+        only_approved_courses as (
+            select course 
+            from course_enrollments 
+            where 
+                student like $3
+            and grade >= 4
+        ),
+        approved_courses as (
+            select id, coalesce(course,0) > 0 as approved_course
+            from
+                course_ids as cids
+                    left outer join only_approved_courses as ac on (
+                        cids.id = ac.course
+                    )
+        ),
         enroled_subjects_part as (
-            select c.department_code, c.subject_code as code, bool_or(ec.enroled) as enroled
+            select 
+                c.department_code, 
+                c.subject_code as code, 
+                bool_or(ec.enroled) as enroled,
+                bool_or(ac.approved_course) as approved_course
             from 
                 courses as c,
-                enroled_courses as ec
+                enroled_courses as ec,
+                approved_courses as ac
             where 
                 c.id=ec.id
             group by c.department_code, c.subject_code
         ),
         enroled_subjects as (
-            select s.department_code, s.code, coalesce(esp.enroled,'f') as enroled
+            select 
+                s.department_code, 
+                s.code, 
+                coalesce(esp.enroled,'f') as enroled,
+                coalesce(esp.approved_course,'f') as approved_course
             from
                 subjects as s
                     left outer join enroled_subjects_part as esp on (
@@ -93,6 +117,7 @@ function mountRoutes(app,db,schemaValidation){
             sd.required_credits,
             sd.required_subjects,
             es.enroled,
+            es.approved_course,
             cast('f' as boolean) as approved
         from
             enroled_subjects as es,

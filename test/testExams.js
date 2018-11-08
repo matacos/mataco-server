@@ -249,7 +249,7 @@ describe("Test /exams",()=>{
         expect(response.body.exam_enrolments).to.be.lengthOf(1)
     })
     it("Delete exam 1",async function(){
-        this.timeout(5000);
+        this.timeout(10000);
         const response = await requestWithAuth("jose","jojo","DELETE","/finales/1")
         expect(response.statusCode).to.equal(204)
     })

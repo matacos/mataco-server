@@ -65,7 +65,7 @@ async function requestWithAuth(username,password,verb,uriPart,body){
     return response
 
 }
-describe("Test /inscripciones_cursos",()=>{
+describe.only("Test /inscripciones_cursos",()=>{
     it("test GET filtering by semester",async ()=>{
         let response2c2017 = await requestWithAuth("97452","jojo","GET","/inscripciones_cursos?estudiante=97452&semester=2c2017")
         expect(response2c2017.body.courseInscriptions).lengthOf(1)
@@ -134,7 +134,8 @@ describe("Test /inscripciones_cursos",()=>{
         expect(good_subject).to.be.jsonSchema({
             required:["enroled"],
             properties:{
-                "enroled":{const:false}
+                "enroled":{const:false},
+                "approved_course":{const:false}
             }
         })
 
@@ -166,7 +167,35 @@ describe("Test /inscripciones_cursos",()=>{
         expect(good_subject).to.be.jsonSchema({
             required:["enroled"],
             properties:{
-                "enroled":{const:true}
+                "enroled":{const:true},
+                "approved_course":{const:false}
+            }
+        })
+
+
+        //apruebo esa cursada
+        response = await requestWithAuth("97452","jojo","PUT","/cursadas/2-97452",{
+            "grade":9
+        })
+
+        //chequeo que esa aprobación aparezca en /materias
+        response = await requestWithAuth("97452","jojo","GET","/materias?carrera=10")
+        good_subject=null
+        for(let s of response.body.subjects){
+            if(s.department_code=='75' && s.code=='07'){
+                good_subject=s
+            }
+        }
+        console.log("========")
+        console.log(good_subject)
+        console.log("========")
+        console.log("========")
+        expect(good_subject).to.not.be.null
+        expect(good_subject).to.be.jsonSchema({
+            required:["enroled"],
+            properties:{
+                "enroled":{const:true},
+                "approved_course":{const:true}
             }
         })
 
