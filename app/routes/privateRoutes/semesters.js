@@ -13,6 +13,12 @@ function mountRoutes(app,db,schemaValidation){
         next()
     })
 
+    app.delete("/ciclos_lectivos/:code",async function(req,res,next){
+        const result = await db.query(`delete from semesters where code=$1;`,[req.params.code])
+        res.sendStatus(204)
+        next()
+    })
+
     const semesterBody={
         type:"object",
         required:[

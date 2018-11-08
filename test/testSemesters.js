@@ -76,7 +76,7 @@ const oneSemesterSchema={
 
 
 
-describe("Test times",()=>{
+describe.only("Test times",()=>{
     it("current semester with different dates",async ()=>{
         function transform(username,password,verb){
             return function(uriPart){
@@ -125,5 +125,19 @@ describe("Test times",()=>{
         const response = await requestWithAuth("97452","jojo","GET","/ciclos_lectivos")
         expect(response.body).to.be.jsonSchema(currentSemesterSchema)
         expect(response.body.semesters.length).to.equal(5)
+        let semester1c2017 = response.body.semesters.filter((s)=>s.code=="1c2017")[0]
+        expect(semester1c2017.academic_offer_release_date.includes("2018-02-01")).to.be.true
+    })
+    it("Modify that semester",async()=>{
+        
+    })
+    it("DELETE that semester",async()=>{
+        const response = await requestWithAuth("97452","jojo","DELETE","/ciclos_lectivos/1c2017")
+        expect(response.statusCode).to.equal(204)
+    })
+    it("GET /ciclos_lectivos has the new semester",async()=>{
+        const response = await requestWithAuth("97452","jojo","GET","/ciclos_lectivos")
+        expect(response.body).to.be.jsonSchema(currentSemesterSchema)
+        expect(response.body.semesters.length).to.equal(4)
     })
 })
