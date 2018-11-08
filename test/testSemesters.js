@@ -76,7 +76,7 @@ const oneSemesterSchema={
 
 
 
-describe.only("Test times",()=>{
+describe("Test times",()=>{
     it("current semester with different dates",async ()=>{
         function transform(username,password,verb){
             return function(uriPart){
@@ -129,7 +129,26 @@ describe.only("Test times",()=>{
         expect(semester1c2017.academic_offer_release_date.includes("2018-02-01")).to.be.true
     })
     it("Modify that semester",async()=>{
-        
+        let modification = {
+            code:"1c2017",
+            academic_offer_release_date:'2018-02-02',
+            course_enrollment_beginning_date:'2018-03-01',
+            course_enrollment_ending_date:'2018-03-08',
+            classes_beginning_date:'2018-03-10',
+            course_disenrollment_ending_date:'2018-03-17',
+            exam_offer_release_date:'2018-05-05',
+            classes_ending_date:'2018-05-08',
+            exams_ending_date:'2018-06-08'
+        }
+        const response = await requestWithAuth("97452","jojo","PUT","/ciclos_lectivos/1c2017",modification)
+        expect(response.statusCode).to.equal(201)
+    })
+    it("GET /ciclos_lectivos 1c2017 has been modified",async()=>{
+        const response = await requestWithAuth("97452","jojo","GET","/ciclos_lectivos")
+        expect(response.body).to.be.jsonSchema(currentSemesterSchema)
+        expect(response.body.semesters.length).to.equal(5)
+        let semester1c2017 = response.body.semesters.filter((s)=>s.code=="1c2017")[0]
+        expect(semester1c2017.academic_offer_release_date.includes("2018-02-02")).to.be.true
     })
     it("DELETE that semester",async()=>{
         const response = await requestWithAuth("97452","jojo","DELETE","/ciclos_lectivos/1c2017")
