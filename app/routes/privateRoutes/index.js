@@ -75,19 +75,36 @@ function mountRoutes(app,db,schemaValidation){
                 c.id=ec.id
             group by c.department_code, c.subject_code
         ),
+        approved_subjects_only as (
+            select department_code as department_code, subject_code as code, bool_or(enr.grade>=4) as approved_exam
+            from exams as ex
+                left outer join exam_enrolments as enr on (
+                    ex.id = enr.exam_id
+                )
+            where student_username like $3
+            group by department_code, subject_code
+        ),
         enroled_subjects as (
             select 
                 s.department_code, 
                 s.code, 
                 coalesce(esp.enroled,'f') as enroled,
-                coalesce(esp.approved_course,'f') as approved_course
+                coalesce(esp.approved_course,'f') as approved_course,
+                coalesce(aso.approved_exam,'f') as approved_exam
             from
                 subjects as s
                     left outer join enroled_subjects_part as esp on (
                             s.department_code = esp.department_code
                         and s.code = esp.code
                     )
+                    left outer join approved_subjects_only as aso on (
+                            s.department_code = aso.department_code
+                        and s.code = aso.code
+                    )
         ),
+        
+
+        
         `
         
         const query = `
@@ -118,7 +135,7 @@ function mountRoutes(app,db,schemaValidation){
             sd.required_subjects,
             es.enroled,
             es.approved_course,
-            cast('f' as boolean) as approved
+            es.approved_exam as approved
         from
             enroled_subjects as es,
             subjects_with_data as sd,

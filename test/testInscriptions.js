@@ -65,7 +65,7 @@ async function requestWithAuth(username,password,verb,uriPart,body){
     return response
 
 }
-describe.only("Test /inscripciones_cursos",()=>{
+describe("Test /inscripciones_cursos",()=>{
     it("test GET filtering by semester",async ()=>{
         let response2c2017 = await requestWithAuth("97452","jojo","GET","/inscripciones_cursos?estudiante=97452&semester=2c2017")
         expect(response2c2017.body.courseInscriptions).lengthOf(1)

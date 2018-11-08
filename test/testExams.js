@@ -59,6 +59,28 @@ const finalsJsonSchema={required:["exams"],properties:{exams:{
 }}}
 describe("Test /exams",()=>{
 
+    it("75 07 is not approved in /materias",async()=>{
+        //chequeo que esa aprobación aparezca en /materias
+        response = await requestWithAuth("97452","jojo","GET","/materias?carrera=10")
+        good_subject=null
+        for(let s of response.body.subjects){
+            if(s.department_code=='75' && s.code=='07'){
+                good_subject=s
+            }
+        }
+        console.log("========")
+        console.log(good_subject)
+        console.log("========")
+        console.log("========")
+        expect(good_subject).to.not.be.null
+        expect(good_subject).to.be.jsonSchema({
+            required:["approved"],
+            properties:{
+                "approved":{const:false}
+            }
+        })
+    })
+
     it("Change the grade of exam 1 by student 97452",async ()=>{
         const response = await requestWithAuth("jose","jojo","GET","/inscripciones_final?id_examen=1&since=any")
         let username = response.body.exam_enrolments[0].student.username
@@ -76,6 +98,28 @@ describe("Test /exams",()=>{
         expect(responseAgain.body.exam_enrolments).to.be.lengthOf(1)
         expect(responseAgain.body.exam_enrolments[0].grade).to.equal("9")
         expect(responseAgain.body.exam_enrolments[0].grade_date).to.equal("2018-09-09T00:00:00.000Z")
+    })
+
+    it("75 07 is approved in /materias",async()=>{
+        //chequeo que esa aprobación aparezca en /materias
+        response = await requestWithAuth("97452","jojo","GET","/materias?carrera=10")
+        good_subject=null
+        for(let s of response.body.subjects){
+            if(s.department_code=='75' && s.code=='07'){
+                good_subject=s
+            }
+        }
+        console.log("========")
+        console.log(good_subject)
+        console.log("========")
+        console.log("========")
+        expect(good_subject).to.not.be.null
+        expect(good_subject).to.be.jsonSchema({
+            required:["approved"],
+            properties:{
+                "approved":{const:true}
+            }
+        })
     })
     
     it("test GET without filter query",async ()=>{
