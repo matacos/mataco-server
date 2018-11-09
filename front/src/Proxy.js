@@ -61,6 +61,7 @@ class Proxy  {
 
       removeDuplicates(subjects) {
         var i;
+        subjects.sort((a,b) => (a.name > b.name) ? 1 : ((b.name > a.name) ? -1 : 0));
         var uniqueSubjects = [subjects[0]];
         var first = subjects[0];
         for (i = 1; i < subjects.length; i++) {
@@ -69,12 +70,11 @@ class Proxy  {
                 first = subjects[i];
             }
         }
-        uniqueSubjects.sort((a,b) => (a.name > b.name) ? 1 : ((b.name > a.name) ? -1 : 0));
         return uniqueSubjects;
     }
 
       getProfessorCourses() {
-        return fetch(this.url + "/cursos?profesor=" + Assistant.getField("username"), {
+        return fetch(this.url + "/cursos?profesor=" + Assistant.getField("username") + "&semester=any", {
                 method: 'GET',
                 headers: {
                   'Authorization': 'bearer ' + Assistant.getField("token")
@@ -112,7 +112,7 @@ class Proxy  {
       }
 
       getCourseStudents(courseId) {
-        return fetch(this.url + "/cursadas?curso=" + courseId , {
+        return fetch(this.url + "/cursadas?curso=" + courseId + "&semester=any", {
                 method: 'GET',
                 headers: {
                   'Authorization': 'bearer ' + Assistant.getField("token")
@@ -128,6 +128,7 @@ class Proxy  {
                       data.apellido = inscription.student.surname;
                       data.prioridad = inscription.student.priority;
                       data.id = inscription.student.username;
+                      data.nota = inscription.grade != "-1" ? inscription.grade : "-";
                       return data;
                   })
                   Assistant.setField("token", result.token);
@@ -147,7 +148,7 @@ class Proxy  {
             'Authorization': 'bearer ' + Assistant.getField("token")
           },
           body: JSON.stringify(course),
-        }).then(res => console.log(res))
+        })
       }
 
       addProfessor(courseId, professor){
@@ -230,8 +231,22 @@ class Proxy  {
           ) 
       }
 
+      putStudentCourseGrade(course, username, grade) {
+        return fetch(this.url + "/cursadas/" + course + '-' + username, {
+                method: 'PUT',
+                headers: {
+                  'Accept': 'application/json',
+                  'Content-Type': 'application/json',
+                  'Authorization': 'bearer ' + Assistant.getField("token")
+                },
+                body: JSON.stringify({
+                  grade: grade == "-" ? "-1" : grade
+                }),
+             })
+      }
+
       getCourseExams(department_code, subject_code, professor) {
-        return fetch(this.url + "/finales?cod_departamento=" + department_code + "&cod_materia=" + subject_code + "&docente=" + professor , {
+        return fetch(this.url + "/finales?cod_departamento=" + department_code + "&cod_materia=" + subject_code + "&docente=" + professor + "&since=current" , {
           method: 'GET',
           headers: {
             'Authorization': 'bearer ' + Assistant.getField("token")
@@ -239,7 +254,7 @@ class Proxy  {
           
           }).then(res => res.json())
           .then(
-            (result) => {     
+            (result) => {
                 return result.exams;
             },
             (error) => {
@@ -286,6 +301,7 @@ class Proxy  {
                       data.surname = inscription.student.surname;
                       data.priority = inscription.student.priority;
                       data.id = inscription.student.username;
+                      data.grade = inscription.grade != "-1" ? inscription.grade : "-";
                       return data;
                   })
                   Assistant.setField("token", result.token);
@@ -295,6 +311,21 @@ class Proxy  {
                   console.log(error)
               }
           ) 
+      }
+
+      putStudentExamGrade(examId, username, grade, date) {
+        return fetch(this.url + "/inscripciones_final/" + examId + '-' + username, {
+                method: 'PUT',
+                headers: {
+                  'Accept': 'application/json',
+                  'Content-Type': 'application/json',
+                  'Authorization': 'bearer ' + Assistant.getField("token")
+                },
+                body: JSON.stringify({
+                  grade: grade == "-" ? "-1" : grade,
+                  grade_date: date
+                }),
+             })
       }
 
       getExamData(department_code, subject_code, professor, examId) {
@@ -320,7 +351,6 @@ class Proxy  {
           },
           body: formData
         }).then(res => {
-          console.log(res)
           if (res.status != 201)
             return res.json();
           })

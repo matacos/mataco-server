@@ -141,9 +141,12 @@ class Panel extends Component {
     }
 
     validTime(beginningHour, beginningMinutes, endingHour, endingMinutes) {
-        if (beginningHour.length > 0 && beginningMinutes.length > 0 && endingHour.length > 0 && endingMinutes.length > 0)
-            if ((beginningHour < endingHour) || ((beginningHour == endingHour) && (beginningMinutes < endingMinutes)))
+        if (beginningHour.length > 0 && beginningMinutes.length > 0 && endingHour.length > 0 && endingMinutes.length > 0) 
+            if ((beginningHour < endingHour) || ((beginningHour == endingHour) && (beginningMinutes < endingMinutes))) {
+                if (parseInt(beginningHour) < 7 || parseInt(endingHour) > 23 || (parseInt(endingHour) == 23 && parseInt(endingMinutes) != 0))
+                    return [false, "Recuerde que el horario debe ser entre las 7 hs y las 23 hs"];
                 return [true, ""];
+            }
             else
                 return [false, "Recuerde que el horario de finalización debe ser posterior al horario de inicio"];
         return [false, "Debe completar todos los campos para agregar un examen"];
@@ -342,7 +345,7 @@ class Panel extends Component {
                 <h3 className="text-center" style={{color: "#696969"}}>{this.setTitle()}</h3>
             </div>
 
-            <div className="panel-body" style={this.props.selected["subjects"] ? {height: "auto"} : {height: "100vh"}}>
+            <div className="panel-body" style={(this.props.selected["subjects"] || this.props.selected["exams"])? {height: "auto"} : {height: "100vh"}}>
                 {this.showMenu(this.props.mode)}
             </div>
 
