@@ -81,11 +81,6 @@ describe("File uploads to /estudiantes/csv",()=>{
     })
 })
 
-/*
-    (5,'99999',now(),'false',-1,'2018-01-05'),
-    (5,'96107',now(),'false',-1,'2018-01-05'),
-    (5,'96800',now(),'false',-1,'2018-01-05');
-    */
 describe("File uploads to /inscripciones_cursos/5/csv_notas",()=>{
     it("upload with errors",async ()=>{
         const file =`99999,9.4\nperon,8`
@@ -107,13 +102,6 @@ describe("File uploads to /inscripciones_cursos/5/csv_notas",()=>{
         const response = await uploadWithAuth("jose","jojo","POST","/inscripciones_cursos/5/csv_notas",file)
 
         const reqEnrolmentsAfter=await requestWithAuth("jose","jojo","GET","/inscripciones_cursos?curso=5&semester=any")
-        console.log("====================")
-        console.log("====================")
-        console.log("====================")
-        console.log(reqEnrolmentsBefore.body)
-        console.log("====================")
-        console.log("====================")
-        console.log("====================")
         for(let e of reqEnrolmentsAfter.body.courseInscriptions){
             if(e.student.username=="96800"){
                 expect(e.grade).to.equal("-1")
@@ -128,3 +116,49 @@ describe("File uploads to /inscripciones_cursos/5/csv_notas",()=>{
         }
     })
 })
+
+
+describe("File uploads to /inscripciones_final/5/csv_notas",()=>{
+    it("upload with errors",async ()=>{
+        const file =`99999,9.4\nperon,8`
+        const response = await uploadWithAuth("jose","jojo","POST","/inscripciones_final/5/csv_notas",file)
+        
+        expect(response.body.errors).to.lengthOf(2)
+    })
+
+    it("upload good file",async ()=>{
+        const reqEnrolmentsBefore=await requestWithAuth("jose","jojo","GET","/inscripciones_final?id_examen=5&since=any")
+
+        console.log("============================")
+        console.log("============================")
+        console.log("============================")
+        console.log(reqEnrolmentsBefore.body)
+        console.log("============================")
+        console.log("============================")
+        console.log("============================")
+        
+        for(let e of reqEnrolmentsBefore.body.exam_enrolments){
+            if(e.student.username!="97452"){
+                expect(e.grade).to.equal("-1")
+            }
+            
+        }
+        const file =`99999,10\n96107,-`
+        const response = await uploadWithAuth("jose","jojo","POST","/inscripciones_final/5/csv_notas",file)
+
+        const reqEnrolmentsAfter=await requestWithAuth("jose","jojo","GET","/inscripciones_final?id_examen=5&since=any")
+        for(let e of reqEnrolmentsAfter.body.exam_enrolments){
+            if(e.student.username=="96800"){
+                expect(e.grade).to.equal("-1")
+            }
+            if(e.student.username=="96107"){
+                expect(e.grade).to.equal("-1")
+            }
+            if(e.student.username=="99999"){
+                expect(e.grade).to.equal("10")
+            }
+            
+        }
+    })
+})
+

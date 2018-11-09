@@ -263,4 +263,8 @@ create table exam_enrolments(
 insert into exam_enrolments (exam_id,student_username,creation,grade,grade_date,enrolment_type) values
     (1,'97452',NOW(),-1,NOW(),'regular'),
     (2,'97452',NOW(),-1,NOW(),'libre'),
-    (3,'97452',NOW(),-1,NOW(),'libre');
+    (3,'97452',NOW(),-1,NOW(),'libre'),
+
+    (5,'99999',NOW(),-1,NOW(),'regular'),
+    (5,'96107',NOW(),-1,NOW(),'regular'),
+    (5,'96800',NOW(),-1,NOW(),'regular');
