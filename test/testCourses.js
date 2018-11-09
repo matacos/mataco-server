@@ -425,7 +425,7 @@ describe("Test /cursos",()=>{
             expect(response1c2018.body.courses[0].free_slots).to.equal("118")
             expect(response2c2018.body.courses[0].free_slots).to.equal("218")
             expect(responseNow.body.courses[0].free_slots).to.equal("218")
-            expect(response2c2017.body.courses[0].free_slots).to.equal("217")
+            expect(response2c2017.body.courses[0].free_slots).to.equal("214")
         })
 
 })

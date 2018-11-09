@@ -187,9 +187,10 @@ insert into course_enrollments(course,student,creation,accepted,grade,grade_date
     (1,'97452',now(),'false',-1,'2018-01-05'),
     (3,'97452',now(),'false',-1,'2018-01-05'),
     (4,'97452',now(),'false',-1,'2018-01-05'),
-    (5,'97452',now(),'false',-1,'2018-01-05');
-
-
+    (5,'97452',now(),'false',-1,'2018-01-05'),
+    (5,'99999',now(),'false',-1,'2018-01-05'),
+    (5,'96107',now(),'false',-1,'2018-01-05'),
+    (5,'96800',now(),'false',-1,'2018-01-05');
 
 
 
