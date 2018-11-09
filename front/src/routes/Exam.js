@@ -6,6 +6,7 @@ import { DropdownButton, MenuItem, PageHeader, Tooltip, OverlayTrigger } from 'r
 import Assistant from "../Assistant";
 import BootstrapTable  from 'react-bootstrap-table-next';
 import paginationFactory from 'react-bootstrap-table2-paginator';
+import cellEditFactory from 'react-bootstrap-table2-editor';
 import 'react-bootstrap-table-next/dist/react-bootstrap-table2.min.css';
 import 'react-bootstrap-table2-toolkit/dist/react-bootstrap-table2-toolkit.min.css';
 import 'react-bootstrap-table2-paginator/dist/react-bootstrap-table2-paginator.min.css';
@@ -75,6 +76,13 @@ class Exam extends Component {
         var parts = date.match(/(\d+)/g);
         return (parts[2] + "/" + parts[1] + "/" + parts[0]);
     }
+    
+    assignGrade(student, grade) {
+        let examId = this.props.match.params.idExamen;
+        let now = new Date();
+        let date = now.getFullYear() + "-" + (now.getMonth() + 1) + "-" + now.getDate();
+        Proxy.putStudentExamGrade(examId, student.id, grade, date);
+    }
 
     render() {
 
@@ -82,27 +90,53 @@ class Exam extends Component {
         {
             dataField: 'id',
             text: 'Padrón',
-            sort: true
+            sort: true,
+            editable: false
         },
         {
             dataField: 'surname',
             text: 'Apellido',
-            sort: true
+            sort: true,
+            editable: false
         },
         {
             dataField: 'name',
             text: 'Nombre',
-            sort: true
+            sort: true,
+            editable: false
         },
         {
             dataField: 'condition',
             text: 'Condición',
-            sort: true
+            sort: true,
+            editable: false
         },
         {
             dataField: 'priority',
             text: 'Prioridad',
-            sort: true
+            sort: true,
+            editable: false
+        },
+        {
+            dataField: 'grade',
+            text: 'Nota de cursada',
+            validator: (newValue, row, column) => {
+                if (newValue == "-")
+                    return true;
+                if (isNaN(newValue)) {
+                  return {
+                    valid: false,
+                    message: 'La nota debe ser un número o "-" en caso de no existir'
+                  };
+                }
+                if (newValue < 1 || newValue > 10) {
+                  return {
+                    valid: false,
+                    message: 'La nota debe ser un valor entre 1 y 10'
+                  };
+                }
+                return true;
+            }
         }
         ];
 
@@ -111,6 +145,11 @@ class Exam extends Component {
               Cantidad de alumnos inscriptos
             </Tooltip>
         );
+        const cellEdit = cellEditFactory({ 
+            mode: 'click', 
+            blurToSave: true,
+            beforeSaveCell: (oldValue, newValue, row, column) => { this.assignGrade(row, newValue) }
+        });
 
         return (
         <div>  
@@ -158,7 +197,7 @@ class Exam extends Component {
                 student.id = parseInt(student.id);
                 student.priority = parseInt(student.priority);
                 return student;
-                }, this)} columns={ columns } pagination={ paginationFactory() } />
+                }, this)} columns={ columns } cellEdit={ cellEdit } pagination={ paginationFactory() } />
             </div>)}
             
             {this.state.showCancelModal &&  <Modal

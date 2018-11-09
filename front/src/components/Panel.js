@@ -345,7 +345,7 @@ class Panel extends Component {
                 <h3 className="text-center" style={{color: "#696969"}}>{this.setTitle()}</h3>
             </div>
 
-            <div className="panel-body" style={this.props.selected["subjects"] ? {height: "auto"} : {height: "100vh"}}>
+            <div className="panel-body" style={(this.props.selected["subjects"] || this.props.selected["exams"])? {height: "auto"} : {height: "100vh"}}>
                 {this.showMenu(this.props.mode)}
             </div>
 

@@ -240,13 +240,13 @@ class Proxy  {
                   'Authorization': 'bearer ' + Assistant.getField("token")
                 },
                 body: JSON.stringify({
-                  grade: grade
+                  grade: grade == "-" ? "-1" : grade
                 }),
              })
       }
 
       getCourseExams(department_code, subject_code, professor) {
-        return fetch(this.url + "/finales?cod_departamento=" + department_code + "&cod_materia=" + subject_code + "&docente=" + professor + "&since=any" , {
+        return fetch(this.url + "/finales?cod_departamento=" + department_code + "&cod_materia=" + subject_code + "&docente=" + professor + "&since=current" , {
           method: 'GET',
           headers: {
             'Authorization': 'bearer ' + Assistant.getField("token")
@@ -254,7 +254,7 @@ class Proxy  {
           
           }).then(res => res.json())
           .then(
-            (result) => {     
+            (result) => {
                 return result.exams;
             },
             (error) => {
@@ -301,6 +301,7 @@ class Proxy  {
                       data.surname = inscription.student.surname;
                       data.priority = inscription.student.priority;
                       data.id = inscription.student.username;
+                      data.grade = inscription.grade != "-1" ? inscription.grade : "-";
                       return data;
                   })
                   Assistant.setField("token", result.token);
@@ -310,6 +311,21 @@ class Proxy  {
                   console.log(error)
               }
           ) 
+      }
+
+      putStudentExamGrade(examId, username, grade, date) {
+        return fetch(this.url + "/inscripciones_final/" + examId + '-' + username, {
+                method: 'PUT',
+                headers: {
+                  'Accept': 'application/json',
+                  'Content-Type': 'application/json',
+                  'Authorization': 'bearer ' + Assistant.getField("token")
+                },
+                body: JSON.stringify({
+                  grade: grade == "-" ? "-1" : grade,
+                  grade_date: date
+                }),
+             })
       }
 
       getExamData(department_code, subject_code, professor, examId) {
