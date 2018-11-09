@@ -179,6 +179,44 @@ describe("Test /exams",()=>{
         expect(response.body).to.be.jsonSchema(finalsJsonSchema)
         expect(response.body.exams).to.be.lengthOf(1)
     })
+    it("Get that exam and change it",async()=>{
+        const response = await requestWithAuth("jose","jojo","GET","/finales?cod_departamento=75&cod_materia=06&since=any")
+        let exam = response.body.exams[0]
+        expect(exam.ending).to.equal("19:00:00")
+
+        
+        
+
+        console.log("777777777777777777777777777777")
+        console.log("777777777777777777777777777777")
+        console.log("777777777777777777777777777777")
+        console.log(exam)
+        console.log("777777777777777777777777777777")
+        console.log("777777777777777777777777777777")
+        console.log("777777777777777777777777777777")
+        exam.ending="20:00"
+        exam.subject_code=exam.subject.code;
+        exam.department_code=exam.subject.department_code;
+        exam.examiner_username=exam.examiner.username;
+
+        
+        console.log(exam)
+        console.log("888888888888888888888888888888")
+        console.log("888888888888888888888888888888")
+        console.log("888888888888888888888888888888")
+        const putResponse = await requestWithAuth("jose","jojo","PUT","/finales/"+exam.id,exam)
+        console.log(putResponse.body)
+        console.log("888888888888888888888888888888")
+        console.log("888888888888888888888888888888")
+        console.log("888888888888888888888888888888")
+
+
+
+        const response2 = await requestWithAuth("jose","jojo","GET","/finales?cod_departamento=75&cod_materia=06&since=any")
+        let examAgain = response2.body.exams[0]
+        expect(examAgain.ending).to.equal("20:00:00")
+        
+    })
 
     const examEnrolmentSchema={
         required:[

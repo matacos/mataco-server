@@ -135,17 +135,6 @@ function mountRoutes(app,db,schemaValidation){
     app.post("/finales",schemaValidation({body:examBody}),async function(req,res,next){
         const viewCreation1 = await db.query(subjectsView)
         const viewCreation = await db.query(examsWithDataView)
-        console.log("#####")
-        console.log("#####")
-        console.log("#####")
-        console.log("#####")
-        console.log("#####")
-        console.log(req.body)
-        console.log("#####")
-        console.log("#####")
-        console.log("#####")
-        console.log("#####")
-        console.log("#####")
         const query=`
         insert into exams(semester_code,department_code,subject_code,examiner_username,classroom_code,classroom_campus,beginning,ending,exam_date) 
         values
@@ -190,6 +179,82 @@ function mountRoutes(app,db,schemaValidation){
         
         res.json({exam:resultGet.rows[0]})
         next()
+    })
+
+    app.put("/finales/:id",schemaValidation({body:examBody}),async function(req,res,next){
+        console.log("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%")
+        console.log("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%")
+        console.log("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%")
+        console.log("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%")
+        
+        const viewCreation1 = await db.query(subjectsView)
+        const viewCreation = await db.query(examsWithDataView)
+        console.log("#####")
+        console.log("#####")
+        console.log("#####")
+        console.log("#####")
+        console.log("###?##")
+        console.log(req.body)
+        console.log("#####")
+        console.log("#####")
+        console.log("#####")
+        console.log("#####")
+        console.log("#####")
+        const query=`
+        update exams
+        set 
+            semester_code = $2,
+            department_code = $3,
+            subject_code = $4,
+            examiner_username = $5,
+            classroom_code = $6,
+            classroom_campus = $7,
+            beginning = $8,
+            ending = $9,
+            exam_date = $10
+        where
+            id = $1
+        returning *
+        ;
+        `
+        let {
+            semester_code,
+            department_code,
+            subject_code,
+            examiner_username,
+            classroom_code,
+            classroom_campus,
+            beginning,
+            ending,
+            exam_date
+        }=req.body
+        let params=[semester_code,department_code,subject_code,examiner_username,classroom_code,classroom_campus,beginning,ending,exam_date]
+
+        let result=await db.query(query,[req.params.id].concat(params))
+        console.log(result.rows[0])
+
+        const queryGet=`
+        select
+            id,
+            semester_code,
+            classroom_code,
+            classroom_campus,
+            beginning,
+            ending,
+            exam_date,
+            subject,
+            examiner,
+            cast('f' as boolean) as enroled
+        from exams_with_data
+        where 
+            id = $1
+        ;
+        `
+        let resultGet=await db.query(queryGet,[result.rows[0].id])
+        
+        res.json({exam:resultGet.rows[0]})
+        next()
+        
     })
 
     app.delete("/finales/:id",async function(req,res,next){
