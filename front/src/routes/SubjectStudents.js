@@ -4,6 +4,7 @@ import Proxy from '../Proxy';
 import { Glyphicon, Tabs, Tab, PageHeader, OverlayTrigger, Tooltip, Modal, Button } from 'react-bootstrap';
 import BootstrapTable  from 'react-bootstrap-table-next';
 import ToolkitProvider, { CSVExport } from 'react-bootstrap-table2-toolkit';
+import cellEditFactory from 'react-bootstrap-table2-editor';
 import paginationFactory from 'react-bootstrap-table2-paginator';
 import 'react-bootstrap-table-next/dist/react-bootstrap-table2.min.css';
 import 'react-bootstrap-table2-toolkit/dist/react-bootstrap-table2-toolkit.min.css';
@@ -57,6 +58,11 @@ class SubjectStudents extends Component {
         this.handleHide();
     }
 
+    assignGrade(student, grade) {
+        let courseId = this.props.match.params.idCurso.substr(4);
+        Proxy.putStudentCourseGrade(courseId, student.id, grade);
+    }
+
     handleHide() {
         this.setState({conditional: null})
     }
@@ -78,26 +84,52 @@ class SubjectStudents extends Component {
         {
             dataField: 'id',
             text: 'Padrón',
-            sort: true
+            sort: true,
+            editable: false
         },
         {
             dataField: 'apellido',
             text: 'Apellido',
-            sort: true
+            sort: true,
+            editable: false
         },
         {
             dataField: 'nombre',
             text: 'Nombre',
-            sort: true
+            sort: true,
+            editable: false
         },
         {
             dataField: 'estado',
-            text: 'Estado'
+            text: 'Estado',
+            editable: false
         },
         {
             dataField: 'prioridad',
             text: 'Prioridad',
-            sort: true
+            sort: true,
+            editable: false
+        },
+        {
+            dataField: 'nota',
+            text: 'Nota de cursada',
+            validator: (newValue, row, column) => {
+                if (newValue == "-")
+                    return true;
+                if (isNaN(newValue)) {
+                  return {
+                    valid: false,
+                    message: 'La nota debe ser un número o "-" en caso de no existir'
+                  };
+                }
+                if (newValue < 1 || newValue > 10) {
+                  return {
+                    valid: false,
+                    message: 'La nota debe ser un valor entre 1 y 10'
+                  };
+                }
+                return true;
+            }
         }
         ];
         const conditionalColumns = [
@@ -137,6 +169,11 @@ class SubjectStudents extends Component {
         );
 
         const { ExportCSVButton } = CSVExport;
+        const cellEdit = cellEditFactory({ 
+            mode: 'click', 
+            blurToSave: true,
+            beforeSaveCell: (oldValue, newValue, row, column) => { this.assignGrade(row, newValue) }
+        });
 
         return (
         <div>  
@@ -169,11 +206,11 @@ class SubjectStudents extends Component {
                     columns={ columns }
                     exportCSV={{
                         fileName: 'alumnos_' + this.props.match.params.idCurso.substr(0, 4) + '.csv'
-                    }}>
+                    }} >
                 {
                     props => (
                     <div>
-                        <BootstrapTable striped hover bordered={ false } { ...props.baseProps } pagination={ paginationFactory() } />
+                        <BootstrapTable striped hover bordered={ false } { ...props.baseProps } cellEdit={ cellEdit } pagination={ paginationFactory() } />
                         <ExportCSVButton { ...props.csvProps } className="btn btn-primary pull-right" style={{marginTop: "0.5em"}}> <Glyphicon glyph="download" /> Descargar listado</ExportCSVButton>
                     </div>
                     )
