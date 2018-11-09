@@ -121,23 +121,28 @@ class Exam extends Component {
             {this.state.data != null && <div><PageHeader style={{marginBottom: "2em"}}> {"Final " + this.state.data.subject.name } <br /> 
             <span className="text-primary">{this.changeDateFormat(this.state.data.exam_date.substring(0, 10))} </span></PageHeader>
             <div className="well" style={{marginBottom: "2em"}}>
-            <h4 style={{color: "#696969"}}> {"Aula: " + this.state.data.classroom_code } <DropdownButton
-            title="Opciones"
-            bsStyle="primary pull-right"
-            id="dropdown-menu"
-            >
-            {/*
-            <MenuItem eventKey="1">Modificar final</MenuItem>
-            <MenuItem eventKey="2">Descargar listado de alumnos</MenuItem>
-            <MenuItem eventKey="3">Enviar notificación</MenuItem>
-            <MenuItem divider />
-            */}
-            <MenuItem eventKey="4" onClick={this.showCancelModal.bind(this)}><h5 style={{color: "red"}}>Cancelar final</h5></MenuItem>
-            </DropdownButton></h4>
-            <h4 style={{color: "#696969"}}> {"Sede: " + this.state.data.classroom_campus }</h4>
-            <h4 style={{color: "#696969"}}> {"Inicio: " + this.state.data.beginning.substring(0, 5) }</h4>
-            <h4 style={{color: "#696969"}}> {"Finalización: " + this.state.data.ending.substring(0, 5) }</h4>
-            <h4 style={{color: "#696969"}}> {"Cuatrimestre: " + this.state.data.semester_code }</h4>
+                <div className="row">
+                <div className="col-md-3" style={{borderRight: "0.5px solid #cccccc"}}>
+                    <h4 style={{color: "#696969"}}> {"Aula: " + this.state.data.classroom_code } </h4>
+                    <h4 style={{color: "#696969"}}> {"Sede: " + this.state.data.classroom_campus }</h4>
+                </div>
+                <div className="col-md-9" style={{paddingLeft: "2.5em"}}>
+                    <h4 style={{color: "#696969"}}> {"Horario: " + this.state.data.beginning.substring(0, 5) + " a " + this.state.data.ending.substring(0, 5) } <DropdownButton
+                    title="Opciones"
+                    bsStyle="primary pull-right"
+                    id="dropdown-menu"
+                    >
+                    {/*
+                    <MenuItem eventKey="1">Modificar final</MenuItem>
+                    <MenuItem eventKey="2">Descargar listado de alumnos</MenuItem>
+                    <MenuItem eventKey="3">Enviar notificación</MenuItem>
+                    <MenuItem divider />
+                    */}
+                    <MenuItem eventKey="4" onClick={this.showCancelModal.bind(this)}><h5 style={{color: "red"}}>Cancelar final</h5></MenuItem>
+                    </DropdownButton></h4>
+                    <h4 style={{color: "#696969"}}> {"Cuatrimestre: " + this.state.data.semester_code }</h4>
+                </div>
+                </div>
             </div>
             </div>}
             
