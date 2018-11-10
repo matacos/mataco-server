@@ -127,7 +127,7 @@ function mountRoutes(app,db,schemaValidation){
                 return true
             }
 
-            let goodFileText=fileText.split("\n").filter((l)=>!l.includes(",-")).join("\n")
+            let goodFileText=fileText.split("\n").map((l)=>l.replace(",-",",-1")).join("\n")
 
             const csvStream = new Readable();
             csvStream.push(goodFileText)
