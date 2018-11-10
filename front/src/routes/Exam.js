@@ -115,7 +115,8 @@ class Exam extends Component {
             dataField: 'priority',
             text: 'Prioridad',
             sort: true,
-            editable: false
+            editable: false,
+            csvType: Number
         },
         {
             dataField: 'grade',
@@ -136,7 +137,8 @@ class Exam extends Component {
                   };
                 }
                 return true;
-            }
+            },
+            csvType: Number
         }
         ];
 
