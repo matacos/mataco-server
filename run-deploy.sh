@@ -1,3 +1,6 @@
+cd front
+npm run build
+cd ..
 cd app
 heroku login
 heroku container:login
