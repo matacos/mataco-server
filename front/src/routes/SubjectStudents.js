@@ -96,7 +96,6 @@ class SubjectStudents extends Component {
         var reader = new FileReader();
             reader.onload = function(e) {
                 // Use reader.result
-                alert(reader.result);
                 console.log(files[0]);
             }
         reader.readAsText(files[0]);
@@ -249,12 +248,7 @@ class SubjectStudents extends Component {
                 id="controlled-tab">
             <Tab eventKey={1} title={<h4 className={(this.state.key == 1 && "text-primary") || ""}>Alumnos Regulares</h4>}>
                 <div style={{paddingTop: "1.5em", paddingBottom: "0.25em"}}>
-                <h3> Listado de alumnos regulares
-                    <OverlayTrigger placement="right" overlay={tooltip}>
-                    <span className="badge" style={{marginLeft: "1em"}}> {regularStudents.length} </span>
-                    </OverlayTrigger>
-                    <hr />
-                </h3>
+                
                 
                 <ToolkitProvider 
                     keyField="idx" 
@@ -271,8 +265,14 @@ class SubjectStudents extends Component {
                     props => (
                         
                     <div>
-                        <button type="button" className="btn btn-primary pull-right" style={{marginBlockStart: "0.5em", marginInlineStart: "0.5em"}} onClick={this.showImportModal.bind(this)}><Glyphicon glyph="upload" /> Subir archivo de notas</button>
-                        <ExportCSVButton { ...props.csvProps } type="button" className="btn btn-primary pull-right" style={{marginTop: "0.5em", marginBottom: "2em"}}> <Glyphicon glyph="download" /> Descargar listado de alumnos</ExportCSVButton>                    
+                        <button type="button" className="btn btn-primary pull-right" style={{marginBlockStart: "-0.2em", marginInlineStart: "0.5em"}} onClick={this.showImportModal.bind(this)}><Glyphicon glyph="upload" /> Subir archivo de notas</button>
+                        <ExportCSVButton { ...props.csvProps } type="button" className="btn btn-primary pull-right" style={{marginTop: "-0.2em"}}> <Glyphicon glyph="download" /> Descargar listado de alumnos</ExportCSVButton>                    
+                        <h3> Listado de alumnos regulares 
+                            <OverlayTrigger placement="right" overlay={tooltip}>
+                            <span className="badge" style={{marginLeft: "1em"}}> {regularStudents.length} </span>
+                            </OverlayTrigger>
+                        </h3>
+                        <hr />
                         <BootstrapTable striped hover bordered={ false } { ...props.baseProps } cellEdit={ cellEdit } pagination={ paginationFactory() } />
                     </div>
                     )
