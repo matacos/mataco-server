@@ -6,6 +6,7 @@ import { Glyphicon, Alert, DropdownButton, MenuItem, PageHeader, Tooltip, Overla
 import Assistant from "../Assistant";
 import ReactFileReader from 'react-file-reader';
 import BootstrapTable  from 'react-bootstrap-table-next';
+import ToolkitProvider, { CSVExport } from 'react-bootstrap-table2-toolkit';
 import paginationFactory from 'react-bootstrap-table2-paginator';
 import cellEditFactory from 'react-bootstrap-table2-editor';
 import 'react-bootstrap-table-next/dist/react-bootstrap-table2.min.css';
@@ -86,9 +87,9 @@ class Exam extends Component {
         }
     }
 
-    changeDateFormat(date) {
+    changeDateFormat(date, separator = "/") {
         var parts = date.match(/(\d+)/g);
-        return (parts[2] + "/" + parts[1] + "/" + parts[0]);
+        return (parts[2] + separator + parts[1] + separator + parts[0]);
     }
     
     assignGrade(student, grade) {
@@ -103,7 +104,6 @@ class Exam extends Component {
         var reader = new FileReader();
             reader.onload = function(e) {
                 // Use reader.result
-                alert(reader.result);
                 console.log(files[0]);
             }
         reader.readAsText(files[0]);
@@ -204,6 +204,8 @@ class Exam extends Component {
               Cantidad de alumnos inscriptos
             </Tooltip>
         );
+
+        const { ExportCSVButton } = CSVExport;
         const cellEdit = cellEditFactory({ 
             mode: 'click', 
             blurToSave: true,
@@ -245,19 +247,37 @@ class Exam extends Component {
             </div>}
             
             {!this.state.wait && ((this.state.students.length == 0 && <h3 className="text-primary text-center">No hay alumnos inscriptos en este final </h3>) || <div>
-            <h3 style={{paddingBottom: "0.25em"}}> Listado de alumnos inscriptos 
-                <OverlayTrigger placement="right" overlay={tooltip}>
-                    <span className="badge" style={{marginLeft: "1em"}}> {this.state.students.length} </span>
-                </OverlayTrigger>
-                <hr />
-            </h3>
-            <button type="button" className="btn btn-primary pull-right" style={{marginBlockStart: "0.5em", marginInlineStart: "0.5em"}} onClick={this.showImportModal.bind(this)}><Glyphicon glyph="upload" /> Subir archivo de notas</button>
-            <BootstrapTable keyField='idx' striped hover bordered={ false } data={ this.state.students.map(function(student, idx){ 
-                student.idx = idx + 1;
-                student.id = parseInt(student.id);
-                student.priority = parseInt(student.priority);
-                return student;
-                }, this)} columns={ columns } cellEdit={ cellEdit } pagination={ paginationFactory() } />
+        
+            <ToolkitProvider 
+                    keyField="idx" 
+                    data={ this.state.students.map(function(student, idx){ 
+                        student.idx = idx + 1;
+                        student.id = parseInt(student.id);
+                        student.priority = parseInt(student.priority);
+                        return student;
+                        }, this) }
+                    columns={ columns }
+                    exportCSV={{
+                        fileName: 'alumnos_final_' + (this.state.data ? this.changeDateFormat(this.state.data.exam_date.substring(0, 10), "-") : this.props.match.params.idMateria) + '.csv'
+                    }} >
+                {
+                    props => (
+                        
+                    <div>
+                        <button type="button" className="btn btn-primary pull-right" style={{marginBlockStart: "-0.2em", marginInlineStart: "0.5em"}} onClick={this.showImportModal.bind(this)}><Glyphicon glyph="upload" /> Subir archivo de notas</button>
+                        <ExportCSVButton { ...props.csvProps } type="button" className="btn btn-primary pull-right" style={{marginTop: "-0.2em"}}> <Glyphicon glyph="download" /> Descargar listado de alumnos</ExportCSVButton>                    
+                        
+                        <h3> Listado de alumnos inscriptos
+                            <OverlayTrigger placement="right" overlay={tooltip}>
+                            <span className="badge" style={{marginLeft: "1em"}}> {this.state.students.length} </span>
+                            </OverlayTrigger>
+                        </h3>
+                        <hr />
+                        <BootstrapTable striped hover bordered={ false } { ...props.baseProps } cellEdit={ cellEdit } pagination={ paginationFactory() } />
+                    </div>
+                    )
+                }
+                </ToolkitProvider>
             </div>)}
             
             {this.state.showCancelModal &&  <Modal
