@@ -1,11 +1,12 @@
 import React, { Component } from 'react';
 import '../App.css';
 import Proxy from '../Proxy';
-import { Glyphicon, Tabs, Tab, PageHeader, OverlayTrigger, Tooltip, Modal, Button } from 'react-bootstrap';
+import { Alert, Glyphicon, Tabs, Tab, PageHeader, OverlayTrigger, Tooltip, Modal, Button } from 'react-bootstrap';
 import BootstrapTable  from 'react-bootstrap-table-next';
 import ToolkitProvider, { CSVExport } from 'react-bootstrap-table2-toolkit';
 import cellEditFactory from 'react-bootstrap-table2-editor';
 import paginationFactory from 'react-bootstrap-table2-paginator';
+import ReactFileReader from 'react-file-reader';
 import 'react-bootstrap-table-next/dist/react-bootstrap-table2.min.css';
 import 'react-bootstrap-table2-toolkit/dist/react-bootstrap-table2-toolkit.min.css';
 import 'react-bootstrap-table2-paginator/dist/react-bootstrap-table2-paginator.min.css';
@@ -19,7 +20,12 @@ class SubjectStudents extends Component {
             columns: [],
             conditional: null,
             key: 1,
-            wait: true
+            wait: true,
+            selectedFile: false,
+            file: null,
+            errors: null,
+            ok: false,
+            showImportModal: false
         };
     }
 
@@ -46,7 +52,11 @@ class SubjectStudents extends Component {
     }
 
     showConditionalModal(student) {
-        this.setState({conditional: student})
+        this.setState({conditional: student});
+    }
+
+    showImportModal() {
+        this.setState({showImportModal: true});
     }
 
     acceptConditional() {
@@ -55,7 +65,7 @@ class SubjectStudents extends Component {
             Proxy.putAcceptConditionalStudent(courseId, this.state.conditional.id)
             .then(students => this.setState({students: students}));
         }
-        this.handleHide();
+        this.handleHide("conditional");
     }
 
     assignGrade(student, grade) {
@@ -63,8 +73,13 @@ class SubjectStudents extends Component {
         Proxy.putStudentCourseGrade(courseId, student.id, grade);
     }
 
-    handleHide() {
-        this.setState({conditional: null})
+    handleHide(modal) {
+        if (modal == "conditional") 
+            this.setState({conditional: null});
+        else {
+            this.setState({showImportModal: false, selectedFile: false, file: null, errors: null, ok: false});
+        }
+
     }
 
     handleSelect() {
@@ -75,6 +90,49 @@ class SubjectStudents extends Component {
             this.setState({key: 1})
         }
     }
+
+    selectFiles(files) {
+        this.setState({selectedFile: true, file: files[0], errors: null, ok: false});
+        var reader = new FileReader();
+            reader.onload = function(e) {
+                // Use reader.result
+                alert(reader.result);
+                console.log(files[0]);
+            }
+        reader.readAsText(files[0]);
+    }
+
+    handleFiles() {
+        this.setState({errors: null, ok: false});
+        if (!this.state.selectedFile) {
+            alert("Debe seleccionar un archivo para poder importar alumnos");
+        }
+        else {
+            let courseId = this.props.match.params.idCurso.substr(4);
+            Proxy.uploadFile("/inscripciones_cursos/" + courseId + "/csv_notas", this.state.file)
+            .then(res => {
+                if (res) {
+                    console.log(res)
+                    let errors = res.errors.map((error, idx) => {
+                        return (
+                            <div key={idx}>
+                                <ul>
+                                    <li><strong>{"Línea " + (error.lineNumber + 1) + ":"} </strong></li>
+                                    <ul>
+                                        <li><strong>Datos: </strong> {" " + error.line} </li>
+                                        <li><strong>Error: </strong> {" " + error.error} </li>
+                                    </ul>
+                                </ul>
+                            </div>);
+                    });
+                    this.setState({errors: errors});
+                }
+                else {
+                    this.setState({ok: true});
+                }
+            });
+        }
+      }
 
     render() {
         var conditionalStudents = this.state.students.filter(student => student.estado == "Condicional");
@@ -108,7 +166,8 @@ class SubjectStudents extends Component {
             dataField: 'prioridad',
             text: 'Prioridad',
             sort: true,
-            editable: false
+            editable: false,
+            csvType: Number
         },
         {
             dataField: 'nota',
@@ -129,7 +188,8 @@ class SubjectStudents extends Component {
                   };
                 }
                 return true;
-            }
+            },
+            csvType: Number
         }
         ];
         const conditionalColumns = [
@@ -195,7 +255,7 @@ class SubjectStudents extends Component {
                     </OverlayTrigger>
                     <hr />
                 </h3>
-
+                
                 <ToolkitProvider 
                     keyField="idx" 
                     data={ regularStudents.map(function(student, idx){ 
@@ -209,9 +269,11 @@ class SubjectStudents extends Component {
                     }} >
                 {
                     props => (
+                        
                     <div>
+                        <button type="button" className="btn btn-primary pull-right" style={{marginBlockStart: "0.5em", marginInlineStart: "0.5em"}} onClick={this.showImportModal.bind(this)}><Glyphicon glyph="upload" /> Subir archivo de notas</button>
+                        <ExportCSVButton { ...props.csvProps } type="button" className="btn btn-primary pull-right" style={{marginTop: "0.5em", marginBottom: "2em"}}> <Glyphicon glyph="download" /> Descargar listado de alumnos</ExportCSVButton>                    
                         <BootstrapTable striped hover bordered={ false } { ...props.baseProps } cellEdit={ cellEdit } pagination={ paginationFactory() } />
-                        <ExportCSVButton { ...props.csvProps } className="btn btn-primary pull-right" style={{marginTop: "0.5em"}}> <Glyphicon glyph="download" /> Descargar listado</ExportCSVButton>
                     </div>
                     )
                 }
@@ -242,7 +304,7 @@ class SubjectStudents extends Component {
             
             {(this.state.conditional != null) &&  <Modal
             show={this.state.conditional != null}
-            onHide={this.handleHide.bind(this)}
+            onHide={this.handleHide.bind(this, "conditional")}
             container={this}
             aria-labelledby="contained-modal-title"
             >
@@ -255,8 +317,45 @@ class SubjectStudents extends Component {
                 ¿Estás seguro que deseas aceptar a este alumno?
             </Modal.Body>
             <Modal.Footer>
-                <Button onClick={this.handleHide.bind(this)}>Cancelar</Button>
+                <Button onClick={this.handleHide.bind(this, "conditional")}>Cancelar</Button>
                 <Button bsStyle="primary" onClick={this.acceptConditional.bind(this)}>Aceptar</Button>
+            </Modal.Footer>
+            </Modal>}
+
+            {this.state.showImportModal &&  <Modal
+            show={this.state.showImportModal}
+            onHide={this.handleHide.bind(this, "import")}
+            container={this}
+            aria-labelledby="contained-modal-title"
+            >
+            <Modal.Header>
+                <Modal.Title id="contained-modal-title">
+                Importar notas de cursada
+                </Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+                <div className="row" style={{paddingTop: "0.7em"}}>
+                    <div className="col-lg-3">
+                        <ReactFileReader handleFiles={this.selectFiles.bind(this)} fileTypes={'.csv'}>
+                            <button id="exampleInputFile" className="form-control-file" aria-describedby="file" style={{color: "black"}}> Examinar... </button>
+                        </ReactFileReader>
+                    </div>
+                    <div className="col-lg-9">
+                        <p id="fileInfo" className="text-primary" style={{marginLeft: "-2em", paddingTop: "0.2em"}}> {this.state.selectedFile ? this.state.file.name : "No se seleccionó un archivo."}</p>
+                    </div>
+                </div>
+                {(this.state.errors != null) && <Alert bsStyle="danger" style={{marginTop: "2em"}}>
+                <h3 className="text-danger" style={{paddingBottom: "1em"}}> Errores encontrados </h3>
+                {this.state.errors}
+                </Alert>}
+
+                {this.state.ok && <Alert bsStyle="success" style={{marginTop: "2em"}}>
+                    <p className="text-center">Las notas fueron importadas exitosamente!</p>
+                </Alert>}
+            </Modal.Body>
+            <Modal.Footer>
+                <Button onClick={this.handleHide.bind(this)}>Volver</Button>
+                <Button bsStyle="primary" onClick={this.handleFiles.bind(this)}><Glyphicon glyph="upload" /> Importar notas</Button>
             </Modal.Footer>
             </Modal>}
 
