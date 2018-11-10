@@ -330,7 +330,7 @@ class SubjectStudents extends Component {
             >
             <Modal.Header>
                 <Modal.Title id="contained-modal-title">
-                Importar notas
+                Importar notas de cursada
                 </Modal.Title>
             </Modal.Header>
             <Modal.Body>

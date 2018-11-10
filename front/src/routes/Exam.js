@@ -2,8 +2,9 @@ import React, { Component } from 'react';
 import '../App.css';
 import Proxy from '../Proxy';
 import { Modal, Button } from 'react-bootstrap';
-import { DropdownButton, MenuItem, PageHeader, Tooltip, OverlayTrigger } from 'react-bootstrap';
+import { Glyphicon, Alert, DropdownButton, MenuItem, PageHeader, Tooltip, OverlayTrigger } from 'react-bootstrap';
 import Assistant from "../Assistant";
+import ReactFileReader from 'react-file-reader';
 import BootstrapTable  from 'react-bootstrap-table-next';
 import paginationFactory from 'react-bootstrap-table2-paginator';
 import cellEditFactory from 'react-bootstrap-table2-editor';
@@ -20,7 +21,12 @@ class Exam extends Component {
             columns: [],
             data: null,
             wait: true,
-            showCancelModal: false
+            showCancelModal: false,
+            showImportModal: false,
+            selectedFile: false,
+            file: null,
+            errors: null,
+            ok: false
         };
     }
 
@@ -56,6 +62,10 @@ class Exam extends Component {
         this.setState({showCancelModal: true})
     }
 
+    showImportModal() {
+        this.setState({showImportModal: true})
+    }
+
     cancelExam() {
         if (this.state.showCancelModal) {
             // Delete exam
@@ -68,8 +78,12 @@ class Exam extends Component {
         this.handleHide();
     }
 
-    handleHide() {
-        this.setState({showCancelModal: false})
+    handleHide(modal) {
+        if (modal == "cancel") 
+            this.setState({cancel: false});
+        else {
+            this.setState({showImportModal: false, selectedFile: false, file: null, errors: null, ok: false});
+        }
     }
 
     changeDateFormat(date) {
@@ -83,6 +97,49 @@ class Exam extends Component {
         let date = now.getFullYear() + "-" + (now.getMonth() + 1) + "-" + now.getDate();
         Proxy.putStudentExamGrade(examId, student.id, grade, date);
     }
+
+    selectFiles(files) {
+        this.setState({selectedFile: true, file: files[0], errors: null, ok: false});
+        var reader = new FileReader();
+            reader.onload = function(e) {
+                // Use reader.result
+                alert(reader.result);
+                console.log(files[0]);
+            }
+        reader.readAsText(files[0]);
+    }
+
+    handleFiles() {
+        this.setState({errors: null, ok: false});
+        if (!this.state.selectedFile) {
+            alert("Debe seleccionar un archivo para poder importar alumnos");
+        }
+        else {
+            let examId = this.props.match.params.idExamen;
+            Proxy.uploadFile("/inscripciones_final/" + examId + "/csv_notas", this.state.file)
+            .then(res => {
+                if (res) {
+                    console.log(res)
+                    let errors = res.errors.map((error, idx) => {
+                        return (
+                            <div key={idx}>
+                                <ul>
+                                    <li><strong>{"Línea " + (error.lineNumber + 1) + ":"} </strong></li>
+                                    <ul>
+                                        <li><strong>Datos: </strong> {" " + error.line} </li>
+                                        <li><strong>Error: </strong> {" " + error.error} </li>
+                                    </ul>
+                                </ul>
+                            </div>);
+                    });
+                    this.setState({errors: errors});
+                }
+                else {
+                    this.setState({ok: true});
+                }
+            });
+        }
+      }
 
     render() {
 
@@ -194,6 +251,7 @@ class Exam extends Component {
                 </OverlayTrigger>
                 <hr />
             </h3>
+            <button type="button" className="btn btn-primary pull-right" style={{marginBlockStart: "0.5em", marginInlineStart: "0.5em"}} onClick={this.showImportModal.bind(this)}><Glyphicon glyph="upload" /> Subir archivo de notas</button>
             <BootstrapTable keyField='idx' striped hover bordered={ false } data={ this.state.students.map(function(student, idx){ 
                 student.idx = idx + 1;
                 student.id = parseInt(student.id);
@@ -220,6 +278,43 @@ class Exam extends Component {
             <Modal.Footer>
                 <Button onClick={this.handleHide.bind(this)}>Cancelar</Button>
                 <Button bsStyle="primary" onClick={this.cancelExam.bind(this)}>Aceptar</Button>
+            </Modal.Footer>
+            </Modal>}
+
+            {this.state.showImportModal &&  <Modal
+            show={this.state.showImportModal}
+            onHide={this.handleHide.bind(this, "import")}
+            container={this}
+            aria-labelledby="contained-modal-title"
+            >
+            <Modal.Header>
+                <Modal.Title id="contained-modal-title">
+                Importar notas de final
+                </Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+                <div className="row" style={{paddingTop: "0.7em"}}>
+                    <div className="col-lg-3">
+                        <ReactFileReader handleFiles={this.selectFiles.bind(this)} fileTypes={'.csv'}>
+                            <button id="exampleInputFile" className="form-control-file" aria-describedby="file" style={{color: "black"}}> Examinar... </button>
+                        </ReactFileReader>
+                    </div>
+                    <div className="col-lg-9">
+                        <p id="fileInfo" className="text-primary" style={{marginLeft: "-2em", paddingTop: "0.2em"}}> {this.state.selectedFile ? this.state.file.name : "No se seleccionó un archivo."}</p>
+                    </div>
+                </div>
+                {(this.state.errors != null) && <Alert bsStyle="danger" style={{marginTop: "2em"}}>
+                <h3 className="text-danger" style={{paddingBottom: "1em"}}> Errores encontrados </h3>
+                {this.state.errors}
+                </Alert>}
+
+                {this.state.ok && <Alert bsStyle="success" style={{marginTop: "2em"}}>
+                    <p className="text-center">Las notas fueron importadas exitosamente!</p>
+                </Alert>}
+            </Modal.Body>
+            <Modal.Footer>
+                <Button onClick={this.handleHide.bind(this)}>Volver</Button>
+                <Button bsStyle="primary" onClick={this.handleFiles.bind(this)}><Glyphicon glyph="upload" /> Importar notas</Button>
             </Modal.Footer>
             </Modal>}
                 
