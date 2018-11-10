@@ -1,7 +1,5 @@
 function mountRoutes(app,db,schemaValidation){
     app.get("/ciclo_lectivo_actual",async function (req,res,next){
-        console.log("ESTOY EN EL ENDPOINT POSTA")
-        console.log(req.semester)
         res.json({
             "semesters":req.semester
         })
