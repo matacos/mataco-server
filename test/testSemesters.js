@@ -85,6 +85,13 @@ describe("Test times",()=>{
         }
         const sender=transform("97452","jojo","GET")
         const october2018=await sender("/ciclo_lectivo_actual?now=2018-10-10")
+        console.log("8888888888888888")
+        console.log("8888888888888888")
+        console.log("8888888888888888")
+        console.log(october2018.body)
+        console.log("8888888888888888")
+        console.log("8888888888888888")
+        console.log("8888888888888888")
         expect(october2018.body.semesters[0].code).to.equal("2c2018")
         expect(october2018.body).to.be.jsonSchema(currentSemesterSchema)
 

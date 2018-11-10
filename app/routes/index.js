@@ -4,12 +4,25 @@ const publicRoutes=require("./publicRoutes")
 const privateRoutes=require("./privateRoutes")
 
 function mountRoutes(app,db){
+    let customDate=null;
+    app.post("/set_now",function(req,res){
+        if(req.query.now){
+            customDate=new Date(req.query.now)
+        }else{
+            customDate=null;
+        }
+        res.sendStatus(201)
+    })
 
     app.use(function (req,res,next){
-        if(req.query.now){
-            req.now=new Date(req.query.now)
+        if(customDate==null){
+            if(req.query.now){
+                req.now=new Date(req.query.now)
+            }else{
+                req.now=new Date()
+            }
         }else{
-            req.now=new Date()
+            req.now=customDate
         }
         next()
     })
