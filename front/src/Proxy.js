@@ -387,6 +387,36 @@ class Proxy  {
         });
       }
 
+    addSemester(periodInfo) {
+        return fetch(this.url + "/ciclos_lectivos", {
+            method:"POST",
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'bearer ' + Assistant.getField("token")
+            },
+            body: JSON.stringify(periodInfo),
+        })
+    }
+
+    getSemesters() {
+        return fetch(this.url + "/ciclos_lectivos" , {
+            method: 'GET',
+            headers: {
+                'Authorization': 'bearer ' + Assistant.getField("token")
+            },
+
+        }).then(res => res.json())
+            .then(
+                (result) => {
+                    Assistant.setField("token", result.token);
+                    return result.semesters[0];
+                },
+                (error) => {
+                    console.log(error)
+                }
+            )
+    }
+
   }
 
   
