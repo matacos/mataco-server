@@ -25,6 +25,16 @@ function mountRoutes(app,db,schemaValidation){
                 semester=req.query.semester
             }
         }
+
+        console.log("==============================")
+        console.log("==============================")
+        console.log("==============================")
+        console.log(semester)
+
+        console.log("==============================")
+        console.log("==============================")
+        console.log("==============================")
+
         
         let filterProfessors= ("profesor" in req.query)
 

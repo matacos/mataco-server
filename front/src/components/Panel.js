@@ -164,12 +164,16 @@ class Panel extends Component {
     validDate(inputDate) {
         let date = new Date(inputDate);
         let currentDate = new Date();
+        if (date.getDay() == 0)
+            return [false, "No es posible seleccionar un domingo"];
         if (date.getFullYear() < currentDate.getFullYear())
             return [false, "La fecha no puede ser de un año anterior al actual"];
         if ((date.getFullYear() == currentDate.getFullYear()) && (date.getMonth() < currentDate.getMonth()))
             return [false, "La fecha no puede ser de un mes que ya pasó"];
         if ((date.getMonth() == currentDate.getMonth()) && (date.getDate() < currentDate.getDate()))
             return [false, "La fecha no puede ser de un día que ya pasó"];
+        if ((date.getMonth() == currentDate.getMonth()) && (date.getDate() < currentDate.getDate() + 2))
+            return [false, "No es posible seleccionar una fecha con menos de 48 hs de anticipación"];
         return [true, ""];
     }
 
@@ -184,7 +188,6 @@ class Panel extends Component {
             if (!dateValidation[0])
                 return dateValidation;
         }
-
         return [true, ""];
     }
 
@@ -410,7 +413,7 @@ class Panel extends Component {
             ending: ''
         };
 
-        this.setState({showAddExam: false, examData: clearData});
+        this.setState({showAddExam: false, examData: clearData, errorMsg: '', inputError: false});
     }
 
     handleHideSemesters() {
