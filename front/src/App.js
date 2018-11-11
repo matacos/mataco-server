@@ -26,7 +26,8 @@ class App extends Component {
   getClearSelection() {
     return {
         "subjects": false,
-        "exams": false
+        "exams": false,
+        "semesters": false
     };
   }
 
