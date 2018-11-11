@@ -274,6 +274,18 @@ class Proxy  {
         })
       }
 
+      modifyExam(examId, body) {
+        return fetch(this.url + "/finales/" + examId, {
+          method: 'PUT',
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+            'Authorization': 'bearer ' + Assistant.getField("token")
+          },
+          body: JSON.stringify(body),
+       });
+      }
+
       deleteExam(examId){
         return fetch(this.url + "/finales/" + examId , {
           method:"DELETE",
