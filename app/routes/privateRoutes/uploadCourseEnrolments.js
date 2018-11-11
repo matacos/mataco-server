@@ -134,7 +134,7 @@ function mountRoutes(app,db,schemaValidation){
         //validate text file
         const lines=fileText.split("\n")
         console.log(lines[0])
-        const formatoCompatible = (lines[0].includes('"Padrón","Apellido","Nombre","Estado","Prioridad","Nota'))
+        const formatoCompatible = (lines[0].includes('"Padrón","Apellido","Nombre",'))
         let errors=[]
         if(formatoCompatible){
             errors = erroresArchivoDescargado(lines)

@@ -21,7 +21,11 @@ function erroresArchivoDescargado(lines){
             continue
         }
 
-        let currentLine=lines[i]
+        console.log("LINEA CON COMILLAS")
+        console.log(lines[i])
+        let currentLine=lines[i].replace(/"/g,'')
+        console.log("LINEA SIN COMILLAS")
+        console.log(currentLine)
         let fields=currentLine.split(",")
         function error(description){
             errors.push({
@@ -72,8 +76,12 @@ function erroresArchivoNormal(lines){
         if(lines.length-1==i && lines[i].length==0){ //salteo la última línea porque está vacía, pero eso no es un error gralmente
             continue
         }
-
+        console.log("LINEA CON COMILLAS")
+        console.log(lines[i])
         let currentLine=lines[i].replace(/"/g,'')
+        console.log("LINEA SIN COMILLAS")
+        console.log(currentLine)
+        
         let fields=currentLine.split(",")
         function error(description){
             errors.push({
@@ -141,7 +149,12 @@ function mountRoutes(app,db,schemaValidation){
         
         const lines=fileText.split("\n")
         console.log(lines[0])
-        const formatoCompatible = (lines[0].includes('"Padrón","Apellido","Nombre","Estado","Prioridad","Nota'))
+        const formatoCompatible = (lines[0].includes('"Padrón","Apellido","Nombre"'))
+        console.log("###################")
+        console.log("###################")
+        console.log(formatoCompatible)
+        console.log("###################")
+        console.log("###################")
         let errors=[]
         if(formatoCompatible){
             errors = erroresArchivoDescargado(lines)
