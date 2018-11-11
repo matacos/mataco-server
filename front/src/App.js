@@ -10,6 +10,7 @@ import Exam from "./routes/Exam";
 import StudentsUpload from "./routes/StudentsUpload";
 import Error from "./routes/Error";
 import Assistant from './Assistant';
+import Semesters from "./routes/Semesters";
 
 class App extends Component {
   constructor(props) {
@@ -67,6 +68,7 @@ class App extends Component {
             <Route path="/materias/:idMateria/:nombreMateria" render={ (props) => Assistant.isRole("department_administrator") ? <SubjectCourses {...props} /> : <Redirect to="/login" /> } />
             <Route path="/finales/:idMateria/:idExamen" render={ (props) => Assistant.isRole("professor") ? <Exam {...props} update={this.setUpdate.bind(this)} /> : <Redirect to="/login" /> }/>
             <Route path="/estudiantes" render={ (props) => Assistant.isRole("administrators") ? <StudentsUpload {...props} /> : <Redirect to="/login" /> } />
+            <Route path="/periodos" render={ (props) => Assistant.isRole("administrators") ? <Semesters {...props} /> : <Redirect to="/login" /> } />
             <Redirect from="/" exact to="/login" />
             <Route component={Error} />
           </Switch>
