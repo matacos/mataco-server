@@ -130,6 +130,10 @@ class Panel extends Component {
         this.props.history.push('/finales/' + this.state.currentCourse.department_code + this.state.currentCourse.subject_code + '/' + examId);
     }
 
+    goToSemesters(){
+        this.props.history.push('/periodos');
+    }
+
     validInput() {
         var errorMsg = "Debe completar todos los campos para agregar un examen";
         var begin = this.state.examData.beginning.split(":");
@@ -161,11 +165,11 @@ class Panel extends Component {
         let date = new Date(inputDate);
         let currentDate = new Date();
         if (date.getFullYear() < currentDate.getFullYear())
-            return [false, "La fecha no pueden ser de un año anterior al actual"];
+            return [false, "La fecha no puede ser de un año anterior al actual"];
         if ((date.getFullYear() == currentDate.getFullYear()) && (date.getMonth() < currentDate.getMonth()))
-            return [false, "La fecha no pueden ser de un mes que ya pasó"];
+            return [false, "La fecha no puede ser de un mes que ya pasó"];
         if ((date.getMonth() == currentDate.getMonth()) && (date.getDate() < currentDate.getDate()))
-            return [false, "La fecha no pueden ser de un día que ya pasó"];
+            return [false, "La fecha no puede ser de un día que ya pasó"];
         return [true, ""];
     }
 
@@ -346,20 +350,21 @@ class Panel extends Component {
                         {/*<div><button className="Panel-item" onClick={this.goToHome.bind(this)}><h4 className="text-primary"> Alta de materias</h4> </button></div>*/}
                         <div><button className="Panel-item" onClick={this.goToUpload.bind(this, "estudiantes")}><h4 className="text-primary"> Alta de estudiantes</h4> </button></div>
                         {/*<div><button className="Panel-item" onClick={this.goToHome.bind(this)}><h4 className="text-primary"> Alta de docentes</h4> </button></div>*/}
-                        <div className="row" style={{paddingLeft: "1em"}}>
-                            <button className="Panel-item" onClick={this.handleSelectedField.bind(this, "semesters")}><h4 className="text-primary">
-                                {((this.props.selected["semesters"]) && <Glyphicon style={{fontSize:"0.75em"}} glyph="minus" />) || <Glyphicon style={{fontSize:"0.75em"}} glyph="plus" />}
-                                {" Períodos Lectivos"}
-                            </h4></button>
-                            {(this.props.selected["semesters"]) &&
-                            <div style={{marginTop: "1em"}}>
-                                <hr />
-                                {<div key="Add-semester">
-                                    <button className="text-primary text-left Panel-list-item" onClick={this.showAddSemesterModal.bind(this)}>
-                                        Agregar período
-                                    </button></div>}
-                            </div>}
-                        </div>
+                        {/*<div className="row" style={{paddingLeft: "1em"}}>*/}
+                            {/*<button className="Panel-item" onClick={this.handleSelectedField.bind(this, "semesters")}><h4 className="text-primary">*/}
+                                {/*{((this.props.selected["semesters"]) && <Glyphicon style={{fontSize:"0.75em"}} glyph="minus" />) || <Glyphicon style={{fontSize:"0.75em"}} glyph="plus" />}*/}
+                                {/*{" Períodos Lectivos"}*/}
+                            {/*</h4></button>*/}
+                            {/*{(this.props.selected["semesters"]) &&*/}
+                            {/*<div style={{marginTop: "1em"}}>*/}
+                                {/*<hr />*/}
+                                {/*{<div key="Add-semester">*/}
+                                    {/*<button className="text-primary text-left Panel-list-item" onClick={this.showAddSemesterModal.bind(this)}>*/}
+                                        {/*Agregar período*/}
+                                    {/*</button></div>}*/}
+                            {/*</div>}*/}
+                        {/*</div>*/}
+                        <div><button className="Panel-item" style={{marginTop: "1em"}} onClick={this.goToSemesters.bind(this)}><h4 className="text-primary"> Períodos Lectivos</h4> </button></div>
                     </div>
                 );
             default:
@@ -522,169 +527,6 @@ class Panel extends Component {
                 <Button onClick={this.handleHide.bind(this)}>Cancelar</Button>
                 <Button bsStyle="primary" onClick={this.addExam.bind(this)}>Aceptar</Button>
             </Modal.Footer>
-            </Modal>}
-
-            {this.state.showAddSemester &&  <Modal
-                show={this.state.showAddSemester}
-                onHide={this.handleHideSemesters.bind(this)}
-                container={this}
-                aria-labelledby="contained-modal-title"
-            >
-                <Modal.Header>
-                    <Modal.Title id="contained-modal-title">
-                        Agregar período
-                    </Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                    <form className="form-horizontal">
-                        <fieldset>
-                            <div className="form-group">
-                                <label htmlFor="select" className="col-lg-2 control-label">Publicación de la oferta académica</label>
-                                <div className="col-lg-3">
-                                    <DatePickerInput
-                                        onChange={value => {
-                                            var newData = this.state.semesterData;
-                                            newData.dates[0] = value;
-                                            this.setState({ semesterData : newData });
-                                        }}
-                                        value={this.state.semesterData.dates[0]}
-                                        className='my-custom-datepicker-component'
-                                    />
-                                </div>
-                            </div>
-
-                            <div className="form-group">
-                                <label htmlFor="select" className="col-lg-2 control-label">Inicio de la inscripción a cursos</label>
-                                <div className="col-lg-3">
-                                    <DatePickerInput
-                                        onChange={value => {
-                                            var newData = this.state.semesterData;
-                                            newData.dates[1] = value;
-                                            this.setState({ semesterData : newData });
-                                        }}
-                                        value={this.state.semesterData.dates[1]}
-                                        className='my-custom-datepicker-component'
-                                    />
-                                </div>
-                            </div>
-
-                            <div className="form-group">
-                                <label htmlFor="select" className="col-lg-2 control-label">Fin de la inscripción a cursos</label>
-                                <div className="col-lg-3">
-                                    <DatePickerInput
-                                        onChange={value => {
-                                            var newData = this.state.semesterData;
-                                            newData.dates[2] = value;
-                                            this.setState({ semesterData : newData });
-                                        }}
-                                        value={this.state.semesterData.dates[2]}
-                                        className='my-custom-datepicker-component'
-                                    />
-                                </div>
-                            </div>
-
-                            <div className="form-group">
-                                <label htmlFor="select" className="col-lg-2 control-label">Inicio de la cursada</label>
-                                <div className="col-lg-3">
-                                    <DatePickerInput
-                                        onChange={value => {
-                                            var newData = this.state.semesterData;
-                                            newData.dates[3] = value;
-                                            this.setState({ semesterData : newData });
-                                        }}
-                                        value={this.state.semesterData.dates[3]}
-                                        className='my-custom-datepicker-component'
-                                    />
-                                </div>
-                            </div>
-
-                            <div className="form-group">
-                                <label htmlFor="select" className="col-lg-2 control-label">Fin de desincripción a cursos</label>
-                                <div className="col-lg-3">
-                                    <DatePickerInput
-                                        onChange={value => {
-                                            var newData = this.state.semesterData;
-                                            newData.dates[4] = value;
-                                            this.setState({ semesterData : newData });
-                                        }}
-                                        value={this.state.semesterData.dates[4]}
-                                        className='my-custom-datepicker-component'
-                                    />
-                                </div>
-                            </div>
-
-                            <div className="form-group">
-                                <label htmlFor="select" className="col-lg-2 control-label">Publicación de la oferta de finales</label>
-                                <div className="col-lg-3">
-                                    <DatePickerInput
-                                        onChange={value => {
-                                            var newData = this.state.semesterData;
-                                            newData.dates[5] = value;
-                                            this.setState({ semesterData : newData });
-                                        }}
-                                        value={this.state.semesterData.dates[5]}
-                                        className='my-custom-datepicker-component'
-                                    />
-                                </div>
-                            </div>
-
-                            <div className="form-group">
-                                <label htmlFor="select" className="col-lg-2 control-label">Fin de la cursada</label>
-                                <div className="col-lg-3">
-                                    <DatePickerInput
-                                        onChange={value => {
-                                            var newData = this.state.semesterData;
-                                            newData.dates[6] = value;
-                                            this.setState({ semesterData : newData });
-                                        }}
-                                        value={this.state.semesterData.dates[6]}
-                                        className='my-custom-datepicker-component'
-                                    />
-                                </div>
-                            </div>
-
-                            <div className="form-group">
-                                <label htmlFor="select" className="col-lg-2 control-label">Fin del período de finales</label>
-                                <div className="col-lg-3">
-                                    <DatePickerInput
-                                        onChange={value => {
-                                            var newData = this.state.semesterData;
-                                            newData.dates[7] = value;
-                                            this.setState({ semesterData : newData });
-                                        }}
-                                        value={this.state.semesterData.dates[7]}
-                                        className='my-custom-datepicker-component'
-                                    />
-                                </div>
-                            </div>
-
-                            <div className="form-group">
-                                <label htmlFor="inputCuatrimestre" className="col-lg-2 control-label">Código del cuatrimestre</label>
-                                <div className="col-lg-3">
-                                    <input type="text" value={this.state.semesterData.code} className="form-control" id="inputCuatrimestre" onChange={ e => {
-                                        const re = /^[a-zA-Z0-9]+$/;
-
-                                        if ((e.target.value == "" || re.test(e.target.value)) && (e.target.value.length < 100)) {
-                                            var newData = this.state.semesterData;
-                                            newData.code = e.target.value;
-                                            this.setState({semesterData: newData});
-                                        }
-                                    } }/>
-                                </div>
-                            </div>
-
-                        </fieldset>
-                    </form>
-                    {this.state.inputError &&
-                    <div className="alert alert-dismissible alert-danger" >
-                        <button type="button" className="close" data-dismiss="alert" onClick={ e => this.setState({ inputError : false }) }>&times;</button>
-                        <a href="#" className="alert-link"/>{this.state.errorMsg}
-                    </div>}
-                </Modal.Body>
-                <Modal.Footer>
-                    <Button onClick={this.handleHideSemesters.bind(this)}>Cancelar</Button>
-                    <Button bsStyle="primary" onClick={this.addSemester.bind(this)}>Aceptar</Button>
-                </Modal.Footer>
             </Modal>}
             </div>}
             </div>
