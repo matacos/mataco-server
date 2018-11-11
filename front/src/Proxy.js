@@ -409,12 +409,34 @@ class Proxy  {
             .then(
                 (result) => {
                     Assistant.setField("token", result.token);
-                    return result.semesters[0];
+                    console.log(result.semesters)
+                    return result.semesters;
                 },
                 (error) => {
                     console.log(error)
                 }
             )
+    }
+
+    modifySemester(courseId, body) {
+        return fetch(this.url + "/ciclos_lectivos/" + courseId, {
+            method: 'PUT',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'Authorization': 'bearer ' + Assistant.getField("token")
+            },
+            body: JSON.stringify(body),
+        });
+    }
+
+    deleteSemester(semesterId){
+        return fetch(this.url + "/ciclos_lectivos/" + semesterId , {
+            method:"DELETE",
+            headers: {
+                'Authorization': 'bearer ' + Assistant.getField("token")
+            }
+        });
     }
 
   }
