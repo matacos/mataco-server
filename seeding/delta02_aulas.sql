@@ -1,0 +1,35 @@
+insert into classrooms(code,campus)
+values
+('101','Paseo Colón'),
+('102','Paseo Colón'),
+('103','Paseo Colón'),
+('104','Paseo Colón'),
+('105','Paseo Colón'),
+('201','Paseo Colón'),
+('202','Paseo Colón'),
+('203','Paseo Colón'),
+('204','Paseo Colón'),
+('205','Paseo Colón'),
+('301','Paseo Colón'),
+('302','Paseo Colón'),
+('303','Paseo Colón'),
+('304','Paseo Colón'),
+('305','Paseo Colón'),
+
+('101','Las Heras'),
+('102','Las Heras'),
+('103','Las Heras'),
+('104','Las Heras'),
+('105','Las Heras'),
+('201','Las Heras'),
+('202','Las Heras'),
+('203','Las Heras'),
+('204','Las Heras'),
+('205','Las Heras'),
+('301','Las Heras'),
+('302','Las Heras'),
+('303','Las Heras'),
+('304','Las Heras'),
+('305','Las Heras')
+
+;
