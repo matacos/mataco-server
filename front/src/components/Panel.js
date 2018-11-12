@@ -129,6 +129,17 @@ class Panel extends Component {
         this.props.history.push('/periodos');
     }
 
+    handleHide() {
+        let clearData = {
+            classroom: '',
+            place: '',
+            date: this.getDate(),
+            beginning: '',
+            ending: ''
+        };
+         this.setState({showAddExam: false, examData: clearData, errorMsg: '', inputError: false});
+    }
+
     validInput() {
         var errorMsg = "Debe completar todos los campos para agregar un examen";
         var begin = this.state.examData.beginning.split(":");

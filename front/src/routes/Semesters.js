@@ -257,18 +257,18 @@ class Semesters extends Component {
                         return (<div key={idx} className="well">
                             <div className="row">
                                 <div className="col-md-12" >
-                                    <h3 style={{paddingBottom: "0.5em"}}> Período: {semester.code} <button type="button" className="btn btn-danger pull-right" onClick={this.showModal.bind(this, "remove_semester", semester)}><Glyphicon glyph="minus" /> Eliminar período</button></h3>
+                                    <h3 style={{paddingBottom: "0.5em"}}> Período: {semester.code} <button type="button" className="btn btn-danger pull-right" style={{paddingInlineStart: "1.4em"}} onClick={this.showModal.bind(this, "remove_semester", semester)}><Glyphicon glyph="minus" /> Eliminar período</button></h3>
                                     <button type="button" className="btn btn-primary pull-right" onClick={this.showModal.bind(this, "modify_semester", semester)}><Glyphicon glyph="plus" /> Modificar período</button>
                                 </div>
                             </div>
-                            <h6 className="text-primary" style={{paddingBottom: "1em"}}> Publicación de la oferta académica: {this.changeDateFormat(semester.academic_offer_release_date.substring(0, 10))} </h6>
-                            <h6 className="text-primary" style={{paddingBottom: "1em"}}> Inicio de la inscripción a cursos: {this.changeDateFormat(semester.course_enrollment_beginning_date.substring(0, 10))} </h6>
-                            <h6 className="text-primary" style={{paddingBottom: "1em"}}> Fin de la inscripción a cursos: {this.changeDateFormat(semester.course_enrollment_ending_date.substring(0, 10))} </h6>
-                            <h6 className="text-primary" style={{paddingBottom: "1em"}}> Inicio de la cursada: {this.changeDateFormat(semester.classes_beginning_date.substring(0, 10))} </h6>
-                            <h6 className="text-primary" style={{paddingBottom: "1em"}}> Fin de desincripción a cursos: {this.changeDateFormat(semester.course_disenrollment_ending_date.substring(0, 10))} </h6>
-                            <h6 className="text-primary" style={{paddingBottom: "1em"}}> Publicación de la oferta de finales: {this.changeDateFormat(semester.exam_offer_release_date.substring(0, 10))} </h6>
-                            <h6 className="text-primary" style={{paddingBottom: "1em"}}> Fin de la cursada: {this.changeDateFormat(semester.classes_ending_date.substring(0, 10))} </h6>
-                            <h6 className="text-primary" style={{paddingBottom: "1em"}}> Fin del período de finales: {this.changeDateFormat(semester.exams_ending_date.substring(0, 10))} </h6>
+                            <h6 className="text-primary" style={{paddingBottom: "1em"}}> Publicación de la oferta académica: <span style={{color: "#696969"}}>{this.changeDateFormat(semester.academic_offer_release_date.substring(0, 10))} </span></h6>
+                            <h6 className="text-primary" style={{paddingBottom: "1em"}}> Inicio de la inscripción a cursos: <span style={{color: "#696969"}}>{this.changeDateFormat(semester.course_enrollment_beginning_date.substring(0, 10))} </span></h6>
+                            <h6 className="text-primary" style={{paddingBottom: "1em"}}> Fin de la inscripción a cursos: <span style={{color: "#696969"}}>{this.changeDateFormat(semester.course_enrollment_ending_date.substring(0, 10))} </span></h6>
+                            <h6 className="text-primary" style={{paddingBottom: "1em"}}> Inicio de la cursada: <span style={{color: "#696969"}}>{this.changeDateFormat(semester.classes_beginning_date.substring(0, 10))} </span></h6>
+                            <h6 className="text-primary" style={{paddingBottom: "1em"}}> Fin de desincripción a cursos: <span style={{color: "#696969"}}>{this.changeDateFormat(semester.course_disenrollment_ending_date.substring(0, 10))} </span></h6>
+                            <h6 className="text-primary" style={{paddingBottom: "1em"}}> Publicación de la oferta de finales: <span style={{color: "#696969"}}>{this.changeDateFormat(semester.exam_offer_release_date.substring(0, 10))} </span></h6>
+                            <h6 className="text-primary" style={{paddingBottom: "1em"}}> Fin de la cursada: <span style={{color: "#696969"}}>{this.changeDateFormat(semester.classes_ending_date.substring(0, 10))} </span></h6>
+                            <h6 className="text-primary" style={{paddingBottom: "1em"}}> Fin del período de finales: <span style={{color: "#696969"}}>{this.changeDateFormat(semester.exams_ending_date.substring(0, 10))} </span></h6>
 
                         </div>)
                     }, this)}
@@ -309,7 +309,7 @@ class Semesters extends Component {
                         <form className="form-horizontal">
                             <fieldset>
                                 <div className="form-group">
-                                    <label htmlFor="select" className="col-lg-2 control-label">Publicación de la oferta académica</label>
+                                    <label htmlFor="select" className="col-lg-6 control-label">Publicación de la oferta académica</label>
                                     <div className="col-lg-3">
                                         <DatePickerInput
                                             onChange={value => {
@@ -324,7 +324,7 @@ class Semesters extends Component {
                                 </div>
 
                                 <div className="form-group">
-                                    <label htmlFor="select" className="col-lg-2 control-label">Inicio de la inscripción a cursos</label>
+                                    <label htmlFor="select" className="col-lg-6 control-label">Inicio de la inscripción a cursos</label>
                                     <div className="col-lg-3">
                                         <DatePickerInput
                                             onChange={value => {
@@ -339,7 +339,7 @@ class Semesters extends Component {
                                 </div>
 
                                 <div className="form-group">
-                                    <label htmlFor="select" className="col-lg-2 control-label">Fin de la inscripción a cursos</label>
+                                    <label htmlFor="select" className="col-lg-6 control-label">Fin de la inscripción a cursos</label>
                                     <div className="col-lg-3">
                                         <DatePickerInput
                                             onChange={value => {
@@ -354,7 +354,7 @@ class Semesters extends Component {
                                 </div>
 
                                 <div className="form-group">
-                                    <label htmlFor="select" className="col-lg-2 control-label">Inicio de la cursada</label>
+                                    <label htmlFor="select" className="col-lg-6 control-label">Inicio de la cursada</label>
                                     <div className="col-lg-3">
                                         <DatePickerInput
                                             onChange={value => {
@@ -369,7 +369,7 @@ class Semesters extends Component {
                                 </div>
 
                                 <div className="form-group">
-                                    <label htmlFor="select" className="col-lg-2 control-label">Fin de desincripción a cursos</label>
+                                    <label htmlFor="select" className="col-lg-6 control-label">Fin de desincripción a cursos</label>
                                     <div className="col-lg-3">
                                         <DatePickerInput
                                             onChange={value => {
@@ -384,7 +384,7 @@ class Semesters extends Component {
                                 </div>
 
                                 <div className="form-group">
-                                    <label htmlFor="select" className="col-lg-2 control-label">Publicación de la oferta de finales</label>
+                                    <label htmlFor="select" className="col-lg-6 control-label">Publicación de la oferta de finales</label>
                                     <div className="col-lg-3">
                                         <DatePickerInput
                                             onChange={value => {
@@ -399,7 +399,7 @@ class Semesters extends Component {
                                 </div>
 
                                 <div className="form-group">
-                                    <label htmlFor="select" className="col-lg-2 control-label">Fin de la cursada</label>
+                                    <label htmlFor="select" className="col-lg-6 control-label">Fin de la cursada</label>
                                     <div className="col-lg-3">
                                         <DatePickerInput
                                             onChange={value => {
@@ -414,7 +414,7 @@ class Semesters extends Component {
                                 </div>
 
                                 <div className="form-group">
-                                    <label htmlFor="select" className="col-lg-5 control-label">Fin del período de finales</label>
+                                    <label htmlFor="select" className="col-lg-6 control-label">Fin del período de finales</label>
                                     <div className="col-lg-3">
                                         <DatePickerInput
                                             onChange={value => {
@@ -429,7 +429,7 @@ class Semesters extends Component {
                                 </div>
 
                                 <div className="form-group">
-                                    <label htmlFor="inputCuatrimestre" className="col-lg-2 control-label">Código del cuatrimestre</label>
+                                    <label htmlFor="inputCuatrimestre" className="col-lg-6 control-label">Código del cuatrimestre</label>
                                     <div className="col-lg-3">
                                         <input type="text" value={this.state.semesterData.code} className="form-control" id="inputCuatrimestre" onChange={ e => {
                                             const re = /^[a-zA-Z0-9]+$/;
@@ -472,7 +472,7 @@ class Semesters extends Component {
                         <form className="form-horizontal">
                             <fieldset>
                                 <div className="form-group">
-                                    <label htmlFor="select" className="col-lg-2 control-label">Publicación de la oferta académica</label>
+                                    <label htmlFor="select" className="col-lg-6 control-label">Publicación de la oferta académica</label>
                                     <div className="col-lg-3">
                                         {!this.state.showModifyDate[0] &&
                                         <DatePickerInput
@@ -494,7 +494,7 @@ class Semesters extends Component {
                                 </div>
 
                                 <div className="form-group">
-                                    <label htmlFor="select" className="col-lg-2 control-label">Inicio de la inscripción a cursos</label>
+                                    <label htmlFor="select" className="col-lg-6 control-label">Inicio de la inscripción a cursos</label>
                                     <div className="col-lg-3">
                                         {!this.state.showModifyDate[1] &&
                                         <DatePickerInput
@@ -516,7 +516,7 @@ class Semesters extends Component {
                                 </div>
 
                                 <div className="form-group">
-                                    <label htmlFor="select" className="col-lg-2 control-label">Fin de la inscripción a cursos</label>
+                                    <label htmlFor="select" className="col-lg-6 control-label">Fin de la inscripción a cursos</label>
                                     <div className="col-lg-3">
                                         {!this.state.showModifyDate[2] &&
                                         <DatePickerInput
@@ -538,7 +538,7 @@ class Semesters extends Component {
                                 </div>
 
                                 <div className="form-group">
-                                    <label htmlFor="select" className="col-lg-2 control-label">Inicio de la cursada</label>
+                                    <label htmlFor="select" className="col-lg-6 control-label">Inicio de la cursada</label>
                                     <div className="col-lg-3">
                                         {!this.state.showModifyDate[3] &&
                                         <DatePickerInput
@@ -560,7 +560,7 @@ class Semesters extends Component {
                                 </div>
 
                                 <div className="form-group">
-                                    <label htmlFor="select" className="col-lg-2 control-label">Fin de desincripción a cursos</label>
+                                    <label htmlFor="select" className="col-lg-6 control-label">Fin de desincripción a cursos</label>
                                     <div className="col-lg-3">
                                         {!this.state.showModifyDate[4] &&
                                         <DatePickerInput
@@ -582,7 +582,7 @@ class Semesters extends Component {
                                 </div>
 
                                 <div className="form-group">
-                                    <label htmlFor="select" className="col-lg-2 control-label">Publicación de la oferta de finales</label>
+                                    <label htmlFor="select" className="col-lg-6 control-label">Publicación de la oferta de finales</label>
                                     <div className="col-lg-3">
                                         {!this.state.showModifyDate[5] &&
                                         <DatePickerInput
@@ -604,7 +604,7 @@ class Semesters extends Component {
                                 </div>
 
                                 <div className="form-group">
-                                    <label htmlFor="select" className="col-lg-2 control-label">Fin de la cursada</label>
+                                    <label htmlFor="select" className="col-lg-6 control-label">Fin de la cursada</label>
                                     <div className="col-lg-3">
                                         {!this.state.showModifyDate[6] &&
                                         <DatePickerInput
@@ -626,7 +626,7 @@ class Semesters extends Component {
                                 </div>
 
                                 <div className="form-group">
-                                    <label htmlFor="select" className="col-lg-4 control-label">Fin del período de finales</label>
+                                    <label htmlFor="select" className="col-lg-6 control-label">Fin del período de finales</label>
                                     <div className="col-lg-3">
                                         {!this.state.showModifyDate[7] &&
                                         <DatePickerInput
