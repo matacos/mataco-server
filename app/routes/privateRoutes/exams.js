@@ -305,7 +305,12 @@ function mountRoutes(app,db,schemaValidation){
         console.log("¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡")
         console.log("¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡")
         console.log("¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡")
-        let message = "Tu examen de "+examData.subject.name+" del día "+examData.exam_date+" fue cancelado"
+        let dateTime = examData.exam_date
+        let month = dateTime.getMonth() + 1;
+        let day = dateTime.getDate();
+        let year = dateTime.getFullYear();
+        let dateStr = day + "/" + month + "/" + year;
+        let message = "Tu examen de "+examData.subject.name+" del día "+dateStr+" fue cancelado"
 
 
 

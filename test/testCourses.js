@@ -121,12 +121,13 @@ const correctCoursesSchema={
 
 describe("Test /cursos",()=>{
     it("happy path (query courses of subject)",async ()=>{
-        const response = await requestWithAuth("99999","9","GET","/cursos?cod_departamento=75&cod_materia=07&semester=any")
+        const response = await requestWithAuth("99999","9","GET","/cursos?cod_departamento=75&cod_materia=52&now=2017-08-11")
 
         console.log(response.body)
 
         expect(response.body).to.be.jsonSchema(correctCoursesSchema)
         expect(response.statusCode).to.equal(200)
+        expect(response.body.courses).length.to.be.at.least(1)
     })
 
     it("happy path (query courses of professor)",async ()=>{
