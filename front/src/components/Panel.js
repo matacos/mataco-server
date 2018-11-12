@@ -27,11 +27,6 @@ class Panel extends Component {
                 beginning: '',
                 ending: ''
             },
-            showAddSemester: false,
-            semesterData: {
-                code: '',
-                dates: Array(8).fill(this.getDate())
-            },
             inputError: false,
             errorMsg: '',
             listItems: []
@@ -177,20 +172,6 @@ class Panel extends Component {
         return [true, ""];
     }
 
-    validSemesterInput() {
-        var errorMsg = "Debe completar todos los campos para agregar un período";
-
-        if (this.state.semesterData.code.length === 0)
-            return [false, errorMsg];
-
-        for(let i = 0; i < this.state.semesterData.dates.length; i++) {
-            let dateValidation = this.validDate(this.state.semesterData.dates[i]);
-            if (!dateValidation[0])
-                return dateValidation;
-        }
-        return [true, ""];
-    }
-
     changeDateFormat(date) {
         var parts = date.match(/(\d+)/g);
         return (parts[2] + "/" + parts[1] + "/" + parts[0]);
@@ -221,34 +202,6 @@ class Panel extends Component {
                 Proxy.addExam(newExam)
                 .then(this.setExams());
                 this.handleHide();
-            }
-            else {
-                this.setState({inputError: true, errorMsg: validationResult[1]})
-            }
-        }
-    }
-
-    addSemester() {
-        if (this.state.showAddSemester) {
-            var newSemester = null;
-            const dates = this.state.semesterData.dates.map(date => new Date(date));
-            let validationResult = this.validSemesterInput();
-            if (validationResult[0]) {
-                newSemester = {
-                    code: this.state.semesterData.code,
-                    academic_offer_release_date: this.formatDateForServer(dates[0]),
-                    course_enrollment_beginning_date: this.formatDateForServer(dates[1]),
-                    course_enrollment_ending_date: this.formatDateForServer(dates[2]),
-                    classes_beginning_date: this.formatDateForServer(dates[3]),
-                    course_disenrollment_ending_date: this.formatDateForServer(dates[4]),
-                    exam_offer_release_date: this.formatDateForServer(dates[5]),
-                    classes_ending_date: this.formatDateForServer(dates[6]),
-                    exams_ending_date: this.formatDateForServer(dates[7]),
-                }
-
-                Proxy.addSemester(newSemester);
-                    // .then(this.setExams()); TODO: Setear todos los periodos
-                this.handleHideSemesters();
             }
             else {
                 this.setState({inputError: true, errorMsg: validationResult[1]})
@@ -353,20 +306,6 @@ class Panel extends Component {
                         {/*<div><button className="Panel-item" onClick={this.goToHome.bind(this)}><h4 className="text-primary"> Alta de materias</h4> </button></div>*/}
                         <div><button className="Panel-item" onClick={this.goToUpload.bind(this, "estudiantes")}><h4 className="text-primary"> Alta de estudiantes</h4> </button></div>
                         {/*<div><button className="Panel-item" onClick={this.goToHome.bind(this)}><h4 className="text-primary"> Alta de docentes</h4> </button></div>*/}
-                        {/*<div className="row" style={{paddingLeft: "1em"}}>*/}
-                            {/*<button className="Panel-item" onClick={this.handleSelectedField.bind(this, "semesters")}><h4 className="text-primary">*/}
-                                {/*{((this.props.selected["semesters"]) && <Glyphicon style={{fontSize:"0.75em"}} glyph="minus" />) || <Glyphicon style={{fontSize:"0.75em"}} glyph="plus" />}*/}
-                                {/*{" Períodos Lectivos"}*/}
-                            {/*</h4></button>*/}
-                            {/*{(this.props.selected["semesters"]) &&*/}
-                            {/*<div style={{marginTop: "1em"}}>*/}
-                                {/*<hr />*/}
-                                {/*{<div key="Add-semester">*/}
-                                    {/*<button className="text-primary text-left Panel-list-item" onClick={this.showAddSemesterModal.bind(this)}>*/}
-                                        {/*Agregar período*/}
-                                    {/*</button></div>}*/}
-                            {/*</div>}*/}
-                        {/*</div>*/}
                         <div><button className="Panel-item" style={{marginTop: "1em"}} onClick={this.goToSemesters.bind(this)}><h4 className="text-primary"> Períodos Lectivos</h4> </button></div>
                     </div>
                 );
@@ -398,31 +337,6 @@ class Panel extends Component {
 
     showAddExamModal() {
         this.setState({showAddExam: true})
-    }
-
-    showAddSemesterModal() {
-        this.setState({showAddSemester: true})
-    }
-
-    handleHide() {
-        let clearData = {
-            classroom: '',
-            place: '',
-            date: this.getDate(),
-            beginning: '',
-            ending: ''
-        };
-
-        this.setState({showAddExam: false, examData: clearData, errorMsg: '', inputError: false});
-    }
-
-    handleHideSemesters() {
-        let clearData = {
-            code: '',
-            dates: Array(8).fill(this.getDate())
-        };
-
-        this.setState({showAddSemester: false, semesterData: clearData});
     }
 
     render() {

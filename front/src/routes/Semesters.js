@@ -1,10 +1,8 @@
 import React, { Component } from 'react';
 import '../App.css';
 import Proxy from '../Proxy';
-import alertSign from '../images/alert-icon.png';
 import { Modal, Button } from 'react-bootstrap';
 import { Glyphicon, PageHeader } from 'react-bootstrap';
-import Assistant from '../Assistant';
 import {DatePickerInput} from "rc-datepicker";
 
 class Semesters extends Component {
@@ -21,6 +19,7 @@ class Semesters extends Component {
             showAddSemester: false,
             showRemoveSemester: false,
             showModifySemester: false,
+            showModifyDate: [],
             inputError: false,
             errorMsg: ''
         };
@@ -45,15 +44,23 @@ class Semesters extends Component {
         return new Date(parts[0], parts[1] - 1, parts[2]);
     }
 
-    validDate(inputDate) {
+    periodHasEnded(ending){
+        return new Date > new Date(ending);
+    }
+
+    periodIsTakingPlaceNow(beginning, ending){
+        let today = new Date();
+        return new Date(beginning) < today && today < new Date(ending);
+    }
+
+    validDate(previous, inputDate) {
+        let previousDate = new Date(previous);
         let date = new Date(inputDate);
         let currentDate = new Date();
-        if (date.getFullYear() < currentDate.getFullYear())
-            return [false, "La fecha no puede ser de un año anterior al actual"];
-        if ((date.getFullYear() == currentDate.getFullYear()) && (date.getMonth() < currentDate.getMonth()))
-            return [false, "La fecha no puede ser de un mes que ya pasó"];
-        if ((date.getMonth() == currentDate.getMonth()) && (date.getDate() < currentDate.getDate()))
+        if (date < currentDate)
             return [false, "La fecha no puede ser de un día que ya pasó"];
+        if (previousDate > date)
+            return [false, "La fecha a crear debe ser posterior o igual a la fecha anterior"];
         return [true, ""];
     }
 
@@ -81,7 +88,12 @@ class Semesters extends Component {
                 this.setState({showRemoveSemester: true})
                 break;
             case "modify_semester":
-                let newDates = []
+                if (this.periodHasEnded(data.exams_ending_date)){
+                    alert("No es posible modificar un período lectivo terminado")
+                    break;
+                }
+                let showDates = [];
+                let newDates = [];
                 newDates[0] = this.formatDateForCalendar(data.academic_offer_release_date);
                 newDates[1] = this.formatDateForCalendar(data.course_enrollment_beginning_date);
                 newDates[2] = this.formatDateForCalendar(data.course_enrollment_ending_date);
@@ -94,7 +106,9 @@ class Semesters extends Component {
                     code: data.code,
                     dates: newDates
                 };
-                this.setState({showModifySemester: true, semesterData: newSemesterData})
+                newDates.map( (newDate, i) => newDate < new Date() ? showDates[i] = false : showDates[i] = true );
+                console.log(showDates);
+                this.setState({showModifySemester: true, semesterData: newSemesterData, showModifyDate: showDates})
                 break;
         }
     }
@@ -125,9 +139,12 @@ class Semesters extends Component {
 
         if (this.state.semesterData.code.length === 0)
             return [false, errorMsg];
+        if (this.state.semesterData.code.length > 10)
+            return [false, "El código no puede tener más de 10 caracteres"];
 
+        let previousDate = this.state.semesterData.dates[0];
         for(let i = 0; i < this.state.semesterData.dates.length; i++) {
-            let dateValidation = this.validDate(this.state.semesterData.dates[i]);
+            let dateValidation = this.validDate(previousDate, this.state.semesterData.dates[i]);
             if (!dateValidation[0])
                 return dateValidation;
         }
@@ -136,10 +153,9 @@ class Semesters extends Component {
     }
 
     validSemesterModificationInput() {
-        var errorMsg = "Debe completar todos los campos";
-
+        let previousDate = this.state.semesterData.dates[0];
         for(let i = 0; i < this.state.semesterData.dates.length; i++) {
-            let dateValidation = this.validDate(this.state.semesterData.dates[i]);
+            let dateValidation = this.validDate(previousDate, this.state.semesterData.dates[i]);
             if (!dateValidation[0])
                 return dateValidation;
         }
@@ -204,9 +220,18 @@ class Semesters extends Component {
     }
 
     removeSemester() {
-        Proxy.deleteSemester(this.state.selectedData.code)
-            .then(this.setSemestersInformation());
-        this.handleHide("remove_semester");
+        let beginning = this.state.selectedData.academic_offer_release_date;
+        let ending = this.state.selectedData.exams_ending_date;
+
+        if (this.periodHasEnded(ending)){
+            alert("No es posible eliminar un período lectivo terminado");
+        } else if(this.periodIsTakingPlaceNow(beginning, ending)){
+            alert("No es posible eliminar un período lectivo en curso");
+        } else {
+            Proxy.deleteSemester(this.state.selectedData.code)
+                .then(this.setSemestersInformation());
+            this.handleHide("remove_semester");
+        }
     }
 
     render() {
@@ -449,6 +474,13 @@ class Semesters extends Component {
                                 <div className="form-group">
                                     <label htmlFor="select" className="col-lg-2 control-label">Publicación de la oferta académica</label>
                                     <div className="col-lg-3">
+                                        {!this.state.showModifyDate[0] &&
+                                        <DatePickerInput
+                                            value={this.state.semesterData.dates[0]}
+                                            disabled={true}
+                                            className='my-custom-datepicker-component'
+                                        />}
+                                        {this.state.showModifyDate[0] &&
                                         <DatePickerInput
                                             onChange={value => {
                                                 var newData = this.state.semesterData;
@@ -457,13 +489,20 @@ class Semesters extends Component {
                                             }}
                                             value={this.state.semesterData.dates[0]}
                                             className='my-custom-datepicker-component'
-                                        />
+                                        />}
                                     </div>
                                 </div>
 
                                 <div className="form-group">
                                     <label htmlFor="select" className="col-lg-2 control-label">Inicio de la inscripción a cursos</label>
                                     <div className="col-lg-3">
+                                        {!this.state.showModifyDate[1] &&
+                                        <DatePickerInput
+                                            value={this.state.semesterData.dates[1]}
+                                            disabled={true}
+                                            className='my-custom-datepicker-component'
+                                        />}
+                                        {this.state.showModifyDate[1] &&
                                         <DatePickerInput
                                             onChange={value => {
                                                 var newData = this.state.semesterData;
@@ -472,13 +511,20 @@ class Semesters extends Component {
                                             }}
                                             value={this.state.semesterData.dates[1]}
                                             className='my-custom-datepicker-component'
-                                        />
+                                        />}
                                     </div>
                                 </div>
 
                                 <div className="form-group">
                                     <label htmlFor="select" className="col-lg-2 control-label">Fin de la inscripción a cursos</label>
                                     <div className="col-lg-3">
+                                        {!this.state.showModifyDate[2] &&
+                                        <DatePickerInput
+                                            value={this.state.semesterData.dates[2]}
+                                            disabled={true}
+                                            className='my-custom-datepicker-component'
+                                        />}
+                                        {this.state.showModifyDate[2] &&
                                         <DatePickerInput
                                             onChange={value => {
                                                 var newData = this.state.semesterData;
@@ -487,13 +533,20 @@ class Semesters extends Component {
                                             }}
                                             value={this.state.semesterData.dates[2]}
                                             className='my-custom-datepicker-component'
-                                        />
+                                        />}
                                     </div>
                                 </div>
 
                                 <div className="form-group">
                                     <label htmlFor="select" className="col-lg-2 control-label">Inicio de la cursada</label>
                                     <div className="col-lg-3">
+                                        {!this.state.showModifyDate[3] &&
+                                        <DatePickerInput
+                                            value={this.state.semesterData.dates[3]}
+                                            disabled={true}
+                                            className='my-custom-datepicker-component'
+                                        />}
+                                        {this.state.showModifyDate[3] &&
                                         <DatePickerInput
                                             onChange={value => {
                                                 var newData = this.state.semesterData;
@@ -502,13 +555,20 @@ class Semesters extends Component {
                                             }}
                                             value={this.state.semesterData.dates[3]}
                                             className='my-custom-datepicker-component'
-                                        />
+                                        />}
                                     </div>
                                 </div>
 
                                 <div className="form-group">
                                     <label htmlFor="select" className="col-lg-2 control-label">Fin de desincripción a cursos</label>
                                     <div className="col-lg-3">
+                                        {!this.state.showModifyDate[4] &&
+                                        <DatePickerInput
+                                            value={this.state.semesterData.dates[4]}
+                                            disabled={true}
+                                            className='my-custom-datepicker-component'
+                                        />}
+                                        {this.state.showModifyDate[4] &&
                                         <DatePickerInput
                                             onChange={value => {
                                                 var newData = this.state.semesterData;
@@ -517,13 +577,20 @@ class Semesters extends Component {
                                             }}
                                             value={this.state.semesterData.dates[4]}
                                             className='my-custom-datepicker-component'
-                                        />
+                                        />}
                                     </div>
                                 </div>
 
                                 <div className="form-group">
                                     <label htmlFor="select" className="col-lg-2 control-label">Publicación de la oferta de finales</label>
                                     <div className="col-lg-3">
+                                        {!this.state.showModifyDate[5] &&
+                                        <DatePickerInput
+                                            value={this.state.semesterData.dates[5]}
+                                            disabled={true}
+                                            className='my-custom-datepicker-component'
+                                        />}
+                                        {this.state.showModifyDate[5] &&
                                         <DatePickerInput
                                             onChange={value => {
                                                 var newData = this.state.semesterData;
@@ -532,13 +599,20 @@ class Semesters extends Component {
                                             }}
                                             value={this.state.semesterData.dates[5]}
                                             className='my-custom-datepicker-component'
-                                        />
+                                        />}
                                     </div>
                                 </div>
 
                                 <div className="form-group">
                                     <label htmlFor="select" className="col-lg-2 control-label">Fin de la cursada</label>
                                     <div className="col-lg-3">
+                                        {!this.state.showModifyDate[6] &&
+                                        <DatePickerInput
+                                            value={this.state.semesterData.dates[6]}
+                                            disabled={true}
+                                            className='my-custom-datepicker-component'
+                                        />}
+                                        {this.state.showModifyDate[6] &&
                                         <DatePickerInput
                                             onChange={value => {
                                                 var newData = this.state.semesterData;
@@ -547,13 +621,20 @@ class Semesters extends Component {
                                             }}
                                             value={this.state.semesterData.dates[6]}
                                             className='my-custom-datepicker-component'
-                                        />
+                                        />}
                                     </div>
                                 </div>
 
                                 <div className="form-group">
                                     <label htmlFor="select" className="col-lg-4 control-label">Fin del período de finales</label>
                                     <div className="col-lg-3">
+                                        {!this.state.showModifyDate[7] &&
+                                        <DatePickerInput
+                                            value={this.state.semesterData.dates[7]}
+                                            disabled={true}
+                                            className='my-custom-datepicker-component'
+                                        />}
+                                        {this.state.showModifyDate[7] &&
                                         <DatePickerInput
                                             onChange={value => {
                                                 var newData = this.state.semesterData;
@@ -562,7 +643,7 @@ class Semesters extends Component {
                                             }}
                                             value={this.state.semesterData.dates[7]}
                                             className='my-custom-datepicker-component'
-                                        />
+                                        />}
                                     </div>
                                 </div>
 
