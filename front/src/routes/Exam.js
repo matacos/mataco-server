@@ -9,9 +9,11 @@ import BootstrapTable  from 'react-bootstrap-table-next';
 import ToolkitProvider, { CSVExport } from 'react-bootstrap-table2-toolkit';
 import paginationFactory from 'react-bootstrap-table2-paginator';
 import cellEditFactory from 'react-bootstrap-table2-editor';
+import { DatePickerInput } from 'rc-datepicker';
 import 'react-bootstrap-table-next/dist/react-bootstrap-table2.min.css';
 import 'react-bootstrap-table2-toolkit/dist/react-bootstrap-table2-toolkit.min.css';
 import 'react-bootstrap-table2-paginator/dist/react-bootstrap-table2-paginator.min.css';
+import 'moment/locale/es.js';
 
 class Exam extends Component {
     constructor(props) {
@@ -24,10 +26,14 @@ class Exam extends Component {
             wait: true,
             showCancelModal: false,
             showImportModal: false,
+            showModifyExam: false,
             selectedFile: false,
             file: null,
             errors: null,
-            ok: false
+            ok: false,
+            examData: null,
+            inputError: false,
+            errorMsg: '',
         };
     }
 
@@ -42,9 +48,22 @@ class Exam extends Component {
         let departmentCode = subject.slice(0,2);
         let subjectCode = subject.slice(2,4);
         let examId = this.props.match.params.idExamen;
-        
+
         return Proxy.getExamData(departmentCode, subjectCode, Assistant.getField("username"), examId)
-        .then(result => this.setState({data: result}))
+        .then(result => {
+            let parts = result.exam_date.substring(0, 10).match(/(\d+)/g);
+            let date = new Date(parts[0], parts[1] - 1, parts[2]);
+
+            let examData = {
+                classroom: result.classroom_code,
+                place: result.classroom_campus,
+                date: date,
+                beginning: result.beginning.substring(0, 5),
+                ending: result.ending.substring(0, 5)
+            };
+
+            this.setState({data: result, examData: examData});
+        });
     }
 
     componentDidMount() {
@@ -59,12 +78,13 @@ class Exam extends Component {
         }
     }
 
-    showCancelModal() {
-        this.setState({showCancelModal: true})
-    }
-
-    showImportModal() {
-        this.setState({showImportModal: true})
+    showModal(modal) {
+        if (modal == "cancel")
+            this.setState({showCancelModal: true});
+        else if (modal == "import")
+            this.setState({showImportModal: true});
+        else
+            this.setState({showModifyExam: true})
     }
 
     cancelExam() {
@@ -76,15 +96,33 @@ class Exam extends Component {
                 this.props.history.push('/home')
             });
         }
-        this.handleHide();
+        this.handleHide("cancel");
     }
 
     handleHide(modal) {
         if (modal == "cancel") 
-            this.setState({cancel: false});
-        else {
+            this.setState({showCancelModal: false});
+        else if (modal == "import")  {
             this.setState({showImportModal: false, selectedFile: false, file: null, errors: null, ok: false});
         }
+        else {
+            let parts = this.state.data.exam_date.substring(0, 10).match(/(\d+)/g);
+            let date = new Date(parts[0], parts[1] - 1, parts[2]);
+            let clearData = {
+                classroom: this.state.data.classroom_code,
+                place: this.state.data.classroom_campus,
+                date: date,
+                beginning: this.state.data.beginning.substring(0, 5),
+                ending: this.state.data.ending.substring(0, 5)
+            };
+    
+            this.setState({showModifyExam: false, examData: clearData, errorMsg: '', inputError: false});
+        }
+    }
+
+    getDate() {
+        var date = new Date();
+        return date.getFullYear() + "/" + (date.getMonth() + 1) + "/" + date.getDate();
     }
 
     changeDateFormat(date, separator = "/") {
@@ -119,7 +157,6 @@ class Exam extends Component {
             Proxy.uploadFile("/inscripciones_final/" + examId + "/csv_notas", this.state.file)
             .then(res => {
                 if (res) {
-                    console.log(res)
                     let errors = res.errors.map((error, idx) => {
                         return (
                             <div key={idx}>
@@ -141,8 +178,104 @@ class Exam extends Component {
         }
       }
 
-    render() {
+    validInput() {
+        var errorMsg = "Debe completar todos los campos para modificar un examen";
+        var begin = this.state.examData.beginning.split(":");
+        var end = this.state.examData.ending.split(":");
 
+        if (this.state.examData.classroom.length == 0)
+            return [false, errorMsg];
+
+        let dateValidation = this.validDate();
+        if (!dateValidation[0])
+            return dateValidation;
+
+        return this.validTime(begin[0], begin[1], end[0], end[1]);
+    }
+
+    validTime(beginningHour, beginningMinutes, endingHour, endingMinutes) {
+        if (beginningHour.length > 0 && beginningMinutes.length > 0 && endingHour.length > 0 && endingMinutes.length > 0) 
+            if ((beginningHour < endingHour) || ((beginningHour == endingHour) && (beginningMinutes < endingMinutes))) {
+                if (parseInt(beginningHour) < 7 || parseInt(endingHour) > 23 || (parseInt(endingHour) == 23 && parseInt(endingMinutes) != 0))
+                    return [false, "Recuerde que el horario debe ser entre las 7 hs y las 23 hs"];
+                return [true, ""];
+            }
+            else
+                return [false, "Recuerde que el horario de finalización debe ser posterior al horario de inicio"];
+        return [false, "Debe completar todos los campos para agregar un examen"];
+    }
+
+    validDate() {
+        let date = new Date(this.state.examData.date);
+        console.log(date.getDate())
+        let currentDate = new Date();
+        if (date.getDay() == 0)
+            return [false, "No es posible crear un examen para un domingo"];
+        if (date.getFullYear() < currentDate.getFullYear())
+            return [false, "No es posible crear un examen para un año anterior al actual"];
+        if ((date.getFullYear() == currentDate.getFullYear()) && (date.getMonth() < currentDate.getMonth()))
+            return [false, "No es posible crear un examen para un mes que ya pasó"];
+        if ((date.getMonth() == currentDate.getMonth()) && (date.getDate() < currentDate.getDate()))
+            return [false, "No es posible crear un examen para un día que ya pasó"];
+        if ((date.getMonth() == currentDate.getMonth()) && (date.getDate() < currentDate.getDate() + 2))
+            return [false, "No es posible crear un examen con menos de 48 hs de anticipación"];
+        return [true, ""];
+    }
+
+    modifyExam() {
+        if (this.state.showModifyExam) {
+            var newExam = null;
+            var date = new Date(this.state.examData.date);
+            let validationResult = this.validInput();
+            if (validationResult[0]) {
+                let subject = this.props.match.params.idMateria;
+                let departmentCode = subject.slice(0,2);
+                let subjectCode = subject.slice(2,4);
+                let examId = this.props.match.params.idExamen;
+                newExam = {
+                    semester_code: Assistant.getField("code"),
+                    department_code: departmentCode,
+                    subject_code: subjectCode,
+                    examiner_username: Assistant.getField("username"),
+                    classroom_code: this.state.examData.classroom,
+                    classroom_campus: this.state.examData.place.length == 0 ? "Paseo Colón" : this.state.examData.place,
+                    beginning: this.state.examData.beginning,
+                    ending: this.state.examData.ending,
+                    exam_date: date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate() 
+                }
+                
+                Proxy.modifyExam(examId, newExam)
+                .then(this.getExamData());
+                this.handleHide("modify");
+                this.props.update(true);
+            }
+            else {
+                this.setState({inputError: true, errorMsg: validationResult[1]})
+            }
+        }
+    }
+
+    canPutGrades() {
+        let date = new Date();
+        if (this.state.data != null) {
+            let parts = this.state.data.exam_date.substring(0, 10).match(/(\d+)/g);
+            let examDate = new Date(parts[0], parts[1] - 1, parts[2]);
+            let examEnd = this.state.examData.ending.split(":");
+            if (date > examDate)
+                return true;
+            else if ((date.getFullYear() == examDate.getFullYear()) && (date.getMonth() == examDate.getMonth()) && (date.getDate() == examDate.getDate())) {
+                if (date.getHours() > examEnd[0])
+                    return true;
+                if ((date.getHours() == examEnd[0]) && (date.getMinutes() > examEnd[1]))
+                    return true;
+            }
+            return false;  
+        }
+        else 
+            return false;  
+    }
+
+    render() {
         const columns = [
         {
             dataField: 'id',
@@ -177,7 +310,8 @@ class Exam extends Component {
         },
         {
             dataField: 'grade',
-            text: 'Nota de cursada',
+            text: 'Nota de final',
+            editable: this.canPutGrades(),   
             validator: (newValue, row, column) => {
                 if (newValue == "-")
                     return true;
@@ -206,6 +340,7 @@ class Exam extends Component {
         );
 
         const { ExportCSVButton } = CSVExport;
+
         const cellEdit = cellEditFactory({ 
             mode: 'click', 
             blurToSave: true,
@@ -234,11 +369,10 @@ class Exam extends Component {
                     >
                     {/*
                     <MenuItem eventKey="1">Modificar final</MenuItem>
-                    <MenuItem eventKey="2">Descargar listado de alumnos</MenuItem>
-                    <MenuItem eventKey="3">Enviar notificación</MenuItem>
+                    <MenuItem eventKey="2">Descargar listado de alumnos</MenuItem>*/}
+                    <MenuItem eventKey="1" onClick={this.showModal.bind(this, "modify")}>Modificar final</MenuItem>
                     <MenuItem divider />
-                    */}
-                    <MenuItem eventKey="4" onClick={this.showCancelModal.bind(this)}><h5 style={{color: "red"}}>Cancelar final</h5></MenuItem>
+                    <MenuItem eventKey="2" onClick={this.showModal.bind(this, "cancel")}><h5 style={{color: "red"}}>Cancelar final</h5></MenuItem>
                     </DropdownButton></h4>
                     <h4 style={{color: "#696969"}}> {"Cuatrimestre: " + this.state.data.semester_code }</h4>
                 </div>
@@ -264,7 +398,8 @@ class Exam extends Component {
                     props => (
                         
                     <div>
-                        <button type="button" className="btn btn-primary pull-right" style={{marginBlockStart: "-0.2em", marginInlineStart: "0.5em"}} onClick={this.showImportModal.bind(this)}><Glyphicon glyph="upload" /> Subir archivo de notas</button>
+                        {this.canPutGrades() &&
+                        <button type="button" className="btn btn-primary pull-right" style={{marginBlockStart: "-0.2em", marginInlineStart: "0.5em"}} onClick={this.showModal.bind(this, "import")}><Glyphicon glyph="upload" /> Subir archivo de notas</button>}
                         <ExportCSVButton { ...props.csvProps } type="button" className="btn btn-primary pull-right" style={{marginTop: "-0.2em"}}> <Glyphicon glyph="download" /> Descargar listado de alumnos</ExportCSVButton>                    
                         
                         <h3> Listado de alumnos inscriptos
@@ -282,7 +417,7 @@ class Exam extends Component {
             
             {this.state.showCancelModal &&  <Modal
             show={this.state.showCancelModal}
-            onHide={this.handleHide.bind(this)}
+            onHide={this.handleHide.bind(this, "cancel")}
             container={this}
             aria-labelledby="contained-modal-title"
             >
@@ -296,7 +431,7 @@ class Exam extends Component {
                 <small className="text-muted">Se enviará una notificación a los alumnos inscriptos.</small>
             </Modal.Body>
             <Modal.Footer>
-                <Button onClick={this.handleHide.bind(this)}>Cancelar</Button>
+                <Button onClick={this.handleHide.bind(this, "cancel")}>Cancelar</Button>
                 <Button bsStyle="primary" onClick={this.cancelExam.bind(this)}>Aceptar</Button>
             </Modal.Footer>
             </Modal>}
@@ -333,8 +468,102 @@ class Exam extends Component {
                 </Alert>}
             </Modal.Body>
             <Modal.Footer>
-                <Button onClick={this.handleHide.bind(this)}>Volver</Button>
+                <Button onClick={this.handleHide.bind(this, "import")}>Volver</Button>
                 <Button bsStyle="primary" onClick={this.handleFiles.bind(this)}><Glyphicon glyph="upload" /> Importar notas</Button>
+            </Modal.Footer>
+            </Modal>}
+
+            {this.state.showModifyExam &&  <Modal
+            show={this.state.showModifyExam}
+            onHide={this.handleHide.bind(this, "modify")}
+            container={this}
+            aria-labelledby="contained-modal-title"
+            >
+            <Modal.Header>
+                <Modal.Title id="contained-modal-title">
+                Agregar final
+                </Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+            <form className="form-horizontal">
+            <fieldset>
+                <div className="form-group">
+                <label htmlFor="select" className="col-lg-2 control-label">Sede</label>
+                <div className="col-lg-10">
+                    <select value={this.state.examData.place} className="form-control" id="sede" onChange={ e => {
+                        var newData = this.state.examData;
+                        newData.place = e.target.value;
+                        this.setState({ examData : newData });
+                        }}>
+                    <option>Paseo Colón</option>
+                    <option>Las Heras</option>
+                    </select>
+                </div>
+                </div>
+
+                <div className="form-group">
+                <label htmlFor="inputAula" className="col-lg-2 control-label">Aula</label>
+                <div className="col-lg-3">
+                    <input type="text" value={this.state.examData.classroom} className="form-control" id="inputAula" onChange={ e => {
+                        const re = /^[a-zA-Z0-9]+$/;
+
+                        if ((e.target.value == "" || re.test(e.target.value)) && (e.target.value.length < 100)) {
+                            var newData = this.state.examData;
+                            newData.classroom = e.target.value;
+                            this.setState({examData: newData});
+                        }
+                    } }/>
+                </div>
+                </div>        
+                
+                <div className="form-group">
+                <label htmlFor="select" className="col-lg-2 control-label">Fecha</label>
+                <div className="col-lg-3">
+                    <DatePickerInput
+                    onChange={value => {
+                        var newData = this.state.examData;
+                        newData.date = value;
+                        this.setState({ examData : newData });
+                        }}
+                    value={this.state.examData.date}
+                    className='my-custom-datepicker-component'
+                    />
+                </div>
+                </div>
+
+                <div className="form-group">
+                <label htmlFor="inputInicio" className="col-lg-2 control-label">Horario de inicio</label>
+                <div className="col-lg-3">
+                    <input type="time" value={this.state.examData.beginning} className="form-control" id="inputInicio" onChange={ e => {
+                        var newData = this.state.examData;
+                        newData.beginning = e.target.value;
+                        this.setState({ examData : newData });
+                        }}/>
+                </div>
+                </div>
+
+                <div className="form-group">
+                <label htmlFor="inputFin" className="col-lg-2 control-label">Horario de fin</label>
+                <div className="col-lg-3">
+                    <input type="time" value={this.state.examData.ending} className="form-control" id="inputFin" onChange={ e => {
+                        var newData = this.state.examData;
+                        newData.ending = e.target.value;
+                        this.setState({ examData : newData });
+                        }}/>
+                </div>
+                </div>
+
+            </fieldset>
+            </form>
+            {this.state.inputError && 
+                        <div className="alert alert-dismissible alert-danger" >
+                            <button type="button" className="close" data-dismiss="alert" onClick={ e => this.setState({ inputError : false }) }>&times;</button>
+                            <a href="#" className="alert-link"/>{this.state.errorMsg}
+                        </div>}
+            </Modal.Body>
+            <Modal.Footer>
+                <Button onClick={this.handleHide.bind(this, "modify")}>Cancelar</Button>
+                <Button bsStyle="primary" onClick={this.modifyExam.bind(this)}>Aceptar</Button>
             </Modal.Footer>
             </Modal>}
                 

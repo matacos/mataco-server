@@ -10,6 +10,7 @@ import ReactFileReader from 'react-file-reader';
 import 'react-bootstrap-table-next/dist/react-bootstrap-table2.min.css';
 import 'react-bootstrap-table2-toolkit/dist/react-bootstrap-table2-toolkit.min.css';
 import 'react-bootstrap-table2-paginator/dist/react-bootstrap-table2-paginator.min.css';
+import Assistant from '../Assistant';
 
 class SubjectStudents extends Component {
     constructor(props) {
@@ -133,6 +134,13 @@ class SubjectStudents extends Component {
         }
       }
 
+    canPutGrades() {
+        let date = new Date();
+        let leftLimit = new Date(Assistant.getField("exam_offer_release_date"));
+        let rightLimit = new Date(Assistant.getField("exams_ending_date"));
+        return ((date >= leftLimit) && (date <= rightLimit))
+    }
+
     render() {
         var conditionalStudents = this.state.students.filter(student => student.estado == "Condicional");
         var regularStudents = this.state.students.filter(student => student.estado == "Regular");
@@ -171,6 +179,7 @@ class SubjectStudents extends Component {
         {
             dataField: 'nota',
             text: 'Nota de cursada',
+            editable: this.canPutGrades(),
             validator: (newValue, row, column) => {
                 if (newValue == "-")
                     return true;
@@ -265,7 +274,8 @@ class SubjectStudents extends Component {
                     props => (
                         
                     <div>
-                        <button type="button" className="btn btn-primary pull-right" style={{marginBlockStart: "-0.2em", marginInlineStart: "0.5em"}} onClick={this.showImportModal.bind(this)}><Glyphicon glyph="upload" /> Subir archivo de notas</button>
+                        {this.canPutGrades() &&
+                        <button type="button" className="btn btn-primary pull-right" style={{marginBlockStart: "-0.2em", marginInlineStart: "0.5em"}} onClick={this.showImportModal.bind(this)}><Glyphicon glyph="upload" /> Subir archivo de notas</button>}
                         <ExportCSVButton { ...props.csvProps } type="button" className="btn btn-primary pull-right" style={{marginTop: "-0.2em"}}> <Glyphicon glyph="download" /> Descargar listado de alumnos</ExportCSVButton>                    
                         <h3> Listado de alumnos regulares 
                             <OverlayTrigger placement="right" overlay={tooltip}>
