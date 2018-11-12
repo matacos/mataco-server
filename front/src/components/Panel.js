@@ -241,6 +241,13 @@ class Panel extends Component {
         );
     }
 
+    canInsertExam() {
+        let date = new Date();
+        let leftLimit = new Date(Assistant.getField("classes_beginning_date"));
+        let rightLimit = new Date(Assistant.getField("exam_offer_release_date"));
+        return ((date >= leftLimit) && (date <= rightLimit));
+    }
+
     showMenuByRole(role) {
         switch(role) {
             case "professor":
@@ -263,7 +270,7 @@ class Panel extends Component {
                             <div style={{marginTop: "1em"}}>
                                 <hr />
                                 {examsList}
-                                {examsList.length < 5 && <div key="Add-exam">
+                                {(examsList.length < 5) && this.canInsertExam() && <div key="Add-exam">
                                 <button className="text-primary text-left Panel-list-item" onClick={this.showAddExamModal.bind(this)}>
                                     Agregar final
                                 </button></div>}

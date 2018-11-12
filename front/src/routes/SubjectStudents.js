@@ -137,10 +137,8 @@ class SubjectStudents extends Component {
     canPutGrades() {
         let date = new Date();
         let leftLimit = new Date(Assistant.getField("exam_offer_release_date"));
-        let rightLimit = new Date(Assistant.getField("classes_ending_date"));
-        if ((date >= leftLimit) && (date <= rightLimit))
-            return true;
-        return false; 
+        let rightLimit = new Date(Assistant.getField("exams_ending_date"));
+        return ((date >= leftLimit) && (date <= rightLimit))
     }
 
     render() {

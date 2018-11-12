@@ -403,6 +403,12 @@ class SubjectCourses extends Component {
         this.handleHide("remove_schedule");
     }
 
+    canInsertCourse() {
+        let date = new Date();
+        let limit = new Date(Assistant.getField("academic_offer_release_date"));
+        return (date <= limit);
+    }
+
     render() {
         window.scrollTo(0, 0);
         return (
@@ -416,8 +422,8 @@ class SubjectCourses extends Component {
             <div style={{paddingBottom:"4em"}}>
             <PageHeader style={{marginBottom: "1.2em"}}> Cursos de {this.getSubjectName()} </PageHeader>
             
-            
-            <button type="button" className="btn btn-primary pull-right" style={{marginRight: "1.5em"}} onClick={this.showModal.bind(this, "add_course")}><Glyphicon glyph="plus" /> Agregar curso</button>
+            {this.canInsertCourse() &&
+            <button type="button" className="btn btn-primary pull-right" style={{marginRight: "1.5em"}} onClick={this.showModal.bind(this, "add_course")}><Glyphicon glyph="plus" /> Agregar curso</button>}
             </div>
             
             {this.state.courses.map(function(course, idx) {

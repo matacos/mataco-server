@@ -395,7 +395,7 @@ class Proxy  {
           Assistant.setField("classes_beginning_date", data.classes_beginning_date);
           Assistant.setField("exam_offer_release_date", data.exam_offer_release_date);
           Assistant.setField("classes_ending_date", data.classes_ending_date);
-          Assistant.setField("classes_ending_date", data.classes_ending_date);
+          Assistant.setField("exams_ending_date", data.exams_ending_date);
         });
       }
 
