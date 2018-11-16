@@ -17,6 +17,7 @@ app.use(express.static(__dirname+"/static"))
 const apiRouter=express.Router()
 mountRoutes(apiRouter,db)
 app.use("/api",apiRouter)
+app.get("/*",(req,res)=>res.redirect("/"))
 //require("./seeder")
 
 
