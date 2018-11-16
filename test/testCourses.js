@@ -360,7 +360,7 @@ describe("Test /cursos",()=>{
         console.log(response2.body)
     
         expect(response2.body).to.be.jsonSchema(correctCoursesSchema)
-        expect(response2.body.courses).to.have.lengthOf(2)
+        expect(response2.body.courses).to.have.lengthOf(4)
         expect(response2.statusCode).to.equal(200)
 
         })
@@ -393,7 +393,7 @@ describe("Test /cursos",()=>{
         console.log(response2.body)
     
         expect(response2.body).to.be.jsonSchema(correctCoursesSchema)
-        expect(response2.body.courses).to.have.lengthOf(2)
+        expect(response2.body.courses).to.have.lengthOf(3)
         expect(response2.statusCode).to.equal(200)
                 
             const response3 = await requestWithAuth("99999","9","DELETE","/cursos/2/docentes/39111222")
@@ -409,7 +409,7 @@ describe("Test /cursos",()=>{
            console.log(response4.body)
        
            expect(response4.body).to.be.jsonSchema(correctCoursesSchema)
-           expect(response4.body.courses).to.have.lengthOf(1)
+           expect(response4.body.courses).to.have.lengthOf(2)
            expect(response4.statusCode).to.equal(200)
             
         })

@@ -10,6 +10,7 @@ create table classrooms(
 insert into classrooms(code,campus) values
     ('200','Paseo Colón'),
     ('200','Las Heras'),
+    ('400','Las Heras'),
     ('400','Paseo Colón'),
     ('L4','Paseo Cólón');
 
@@ -166,12 +167,12 @@ insert into classroom_uses
     (1,'400','Paseo Colón','19:00','22:00','jue','Teórico-Práctica Obligatoria'),
     (2,'200','Paseo Colón','16:00','19:00','lun','Teórica Obligatoria'),
     (2,'200','Las Heras','16:30','19:30','vie','Práctica Obligatoria'),
-    (3,'203','Paseo Colón','16:00','19:00','lun','Teórica Obligatoria'),
-    (3,'203','Las Heras','16:30','19:30','vie','Práctica Obligatoria'),
-    (4,'202','Paseo Colón','16:00','19:00','lun','Teórica Obligatoria'),
-    (4,'202','Las Heras','16:30','19:30','vie','Práctica Obligatoria'),
-    (5,'201','Paseo Colón','16:00','19:00','lun','Teórica Obligatoria'),
-    (5,'201','Las Heras','16:30','19:30','vie','Práctica Obligatoria');
+    (3,'200','Paseo Colón','16:00','19:00','lun','Teórica Obligatoria'),
+    (3,'200','Las Heras','16:30','19:30','vie','Práctica Obligatoria'),
+    (4,'200','Paseo Colón','16:00','19:00','lun','Teórica Obligatoria'),
+    (4,'200','Las Heras','16:30','19:30','vie','Práctica Obligatoria'),
+    (5,'400','Paseo Colón','16:00','19:00','lun','Teórica Obligatoria'),
+    (5,'400','Las Heras','16:30','19:30','vie','Práctica Obligatoria');
 
 /***************************************************
 INSCRIPCIONES A CURSOS
