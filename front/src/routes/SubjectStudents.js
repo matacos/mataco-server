@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import '../App.css';
 import Proxy from '../Proxy';
-import { Alert, Glyphicon, Tabs, Tab, PageHeader, OverlayTrigger, Tooltip, Modal, Button } from 'react-bootstrap';
+import { Alert, Glyphicon, Tabs, Tab, OverlayTrigger, Tooltip, Modal, Button } from 'react-bootstrap';
 import BootstrapTable  from 'react-bootstrap-table-next';
 import ToolkitProvider, { CSVExport } from 'react-bootstrap-table2-toolkit';
 import cellEditFactory from 'react-bootstrap-table2-editor';
@@ -245,13 +245,14 @@ class SubjectStudents extends Component {
 
         return (
         <div>  
-            <div className="jumbotron" style={{backgroundColor: "#C0C0C0"}}>
-                <h1>Sistema de <br/> Gestión Académica</h1>
-            </div>
+            <h1 style={{color: "#696969"}}>Sistema de Gestión Académica</h1>
+            <hr/>
             
-            <PageHeader style={{marginBottom: "4em"}}> {this.getSubjectName()} </PageHeader>
-            
-            {!this.state.wait && ((regularStudents.length == 0 && <h3 className="text-primary text-center">No hay alumnos inscriptos en este curso </h3>) || <div>
+            <h2 style={{marginBottom: "1em"}}> {this.getSubjectName()} </h2>
+
+            {!this.state.wait && ((regularStudents.length == 0 && <div className="well" style={{paddingBottom: "2.5em"}}>
+                <h3 className="text-primary text-center"> No hay alumnos inscriptos en este curso</h3>
+            </div>) || <div>
             <Tabs activeKey={(conditionalStudents.length > 0 && this.state.key) || 1}
                 onSelect={this.handleSelect.bind(this)}
                 id="controlled-tab">

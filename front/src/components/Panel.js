@@ -292,9 +292,9 @@ class Panel extends Component {
                             <div style={{marginTop: "1em"}}>
                                 <hr />
                                 {examsList}
-                                {(examsList.length < 5) && this.canInsertExam() && <div key="Add-exam">
+                                {(examsList.length < 5) && <div key="Add-exam">
                                 <button className="text-primary text-left Panel-list-item" onClick={this.showAddExamModal.bind(this)}>
-                                    Agregar final
+                                    {this.canInsertExam() ? "Agregar final" : "No es posible agregar finales"}
                                 </button></div>}
                             </div>}
                         </div>
@@ -365,7 +365,9 @@ class Panel extends Component {
     }
 
     showAddExamModal() {
-        this.setState({showAddExam: true})
+        if (this.canInsertExam()) {
+            this.setState({showAddExam: true});
+        } 
     }
 
     render() {

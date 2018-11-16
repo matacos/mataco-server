@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import '../App.css';
 import Proxy from '../Proxy';
-import { Glyphicon, Alert, PageHeader } from 'react-bootstrap';
+import { Glyphicon, Alert } from 'react-bootstrap';
 import ReactFileReader from 'react-file-reader';
 
 class StudentsUpload extends Component {
@@ -61,11 +61,10 @@ class StudentsUpload extends Component {
     render() {
         return (
         <div>  
-            <div className="jumbotron" style={{backgroundColor: "#C0C0C0"}}>
-                <h1>Sistema de <br/> Gestión Académica</h1>
-            </div>
+            <h1 style={{color: "#696969"}}>Sistema de Gestión Académica</h1>
+            <hr/>
 
-            <PageHeader style={{marginBottom: "4em"}}> Importar estudiantes </PageHeader>
+            <h2 style={{marginBottom: "1em"}}> Importar estudiantes </h2>
             <div className="well">
                 <div className="row" style={{paddingTop: "0.7em"}}>
                     <div className="col-lg-2">

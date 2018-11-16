@@ -414,18 +414,18 @@ class SubjectCourses extends Component {
         return (
         <div>
             
-            <div className="jumbotron" style={{backgroundColor: "#C0C0C0"}}>
-                <h1>Sistema de <br/> Gestión Académica</h1>
-            </div>
+            <h1 style={{color: "#696969"}}>Sistema de Gestión Académica</h1>
+            <hr/>
             
             {this.state.courses && <div>
-            <div style={{paddingBottom:"4em"}}>
-            <PageHeader style={{marginBottom: "1.2em"}}> Cursos de {this.getSubjectName()} </PageHeader>
+            <div style={{paddingBottom: this.canInsertCourse() ? "4em" : "0em"}}>
+            <h2 style={{marginBottom: "1.2em"}}> Cursos de {this.getSubjectName()} </h2>
             
             {this.canInsertCourse() &&
             <button type="button" className="btn btn-primary pull-right" style={{marginRight: "1.5em"}} onClick={this.showModal.bind(this, "add_course")}><Glyphicon glyph="plus" /> Agregar curso</button>}
             </div>
             
+            {this.state.courses.length == 0 && <div className="well" style={{paddingBottom: "2.5em"}}><h3 className="text-primary text-center"> No hay cursos disponibles de esa materia</h3></div>}
             {this.state.courses.map(function(course, idx) {
                 return (<div key={idx} className="well">
                 <div className="row">
