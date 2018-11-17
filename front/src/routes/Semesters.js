@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import '../App.css';
 import Proxy from '../Proxy';
 import { Modal, Button } from 'react-bootstrap';
-import { Glyphicon, PageHeader } from 'react-bootstrap';
+import { Glyphicon } from 'react-bootstrap';
 import {DatePickerInput} from "rc-datepicker";
 
 class Semesters extends Component {
@@ -239,29 +239,29 @@ class Semesters extends Component {
         return (
             <div>
 
-                <div className="jumbotron" style={{backgroundColor: "#C0C0C0"}}>
-                    <h1>Sistema de <br/> Gestión Académica</h1>
-                </div>
+                <h1 style={{color: "#696969"}}>Sistema de Gestión Académica</h1>
+                <hr/>
 
                 {this.state.semesters && <div>
-                    <div style={{paddingBottom:"4em"}}>
-                        <PageHeader style={{marginBottom: "1.2em"}}> Períodos Lectivos </PageHeader>
-
-
+                    <div style={{paddingBottom:"1.5em"}}>
+                        <h2> Períodos Lectivos 
                         <button type="button" className="btn btn-primary pull-right" style={{marginRight: "1.5em"}} onClick={this.showModal.bind(this, "add_semester")}><Glyphicon glyph="plus" /> Agregar período</button>
+                        </h2>
                     </div>
 
                     {this.state.semesters
                         .sort((a,b) => (a.academic_offer_release_date < b.academic_offer_release_date) ? 1 : ((b.academic_offer_release_date < a.academic_offer_release_date) ? -1 : 0))
                         .map(function(semester, idx) {
                         return (<div key={idx} className="well">
-                            <div className="row">
-                                <div className="col-md-12" >
-                                    <h3 style={{paddingBottom: "0.5em"}}> Período: {semester.code} <button type="button" className="btn btn-danger pull-right" style={{paddingInlineStart: "1.4em"}} onClick={this.showModal.bind(this, "remove_semester", semester)}><Glyphicon glyph="minus" /> Eliminar período</button></h3>
-                                    <button type="button" className="btn btn-primary pull-right" onClick={this.showModal.bind(this, "modify_semester", semester)}><Glyphicon glyph="plus" /> Modificar período</button>
-                                </div>
-                            </div>
-                            <h6 className="text-primary" style={{paddingBottom: "1em"}}> Publicación de la oferta académica: <span style={{color: "#696969"}}>{this.changeDateFormat(semester.academic_offer_release_date.substring(0, 10))} </span></h6>
+                            <h3 style={{paddingBottom: "0.5em"}}> Período: {semester.code}
+                            {!this.periodHasEnded(semester.exams_ending_date) && !this.periodIsTakingPlaceNow(semester.academic_offer_release_date, semester.exams_ending_date) && <button type="button" className="btn btn-danger pull-right" style={{paddingInlineStart: "1.4em"}} onClick={this.showModal.bind(this, "remove_semester", semester)}>
+                                <Glyphicon glyph="minus" /> Eliminar período
+                            </button>}</h3>
+                            {!this.periodHasEnded(semester.exams_ending_date) && 
+                            <button type="button" className="btn btn-primary pull-right" style={{marginTop: this.periodIsTakingPlaceNow(semester.academic_offer_release_date, semester.exams_ending_date) ? "-4em" : "0.25em"}}
+                            onClick={this.showModal.bind(this, "modify_semester", semester)}><Glyphicon glyph="plus" /> Modificar período</button>}
+                            
+                            <h6 className="text-primary" style={{paddingBottom: "1em", paddingTop: "2em"}}> Publicación de la oferta académica: <span style={{color: "#696969"}}>{this.changeDateFormat(semester.academic_offer_release_date.substring(0, 10))} </span></h6>
                             <h6 className="text-primary" style={{paddingBottom: "1em"}}> Inicio de la inscripción a cursos: <span style={{color: "#696969"}}>{this.changeDateFormat(semester.course_enrollment_beginning_date.substring(0, 10))} </span></h6>
                             <h6 className="text-primary" style={{paddingBottom: "1em"}}> Fin de la inscripción a cursos: <span style={{color: "#696969"}}>{this.changeDateFormat(semester.course_enrollment_ending_date.substring(0, 10))} </span></h6>
                             <h6 className="text-primary" style={{paddingBottom: "1em"}}> Inicio de la cursada: <span style={{color: "#696969"}}>{this.changeDateFormat(semester.classes_beginning_date.substring(0, 10))} </span></h6>

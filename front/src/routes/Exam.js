@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import '../App.css';
 import Proxy from '../Proxy';
 import { Modal, Button } from 'react-bootstrap';
-import { Glyphicon, Alert, DropdownButton, MenuItem, PageHeader, Tooltip, OverlayTrigger } from 'react-bootstrap';
+import { Glyphicon, Alert, DropdownButton, MenuItem, Tooltip, OverlayTrigger } from 'react-bootstrap';
 import Assistant from "../Assistant";
 import ReactFileReader from 'react-file-reader';
 import BootstrapTable  from 'react-bootstrap-table-next';
@@ -360,12 +360,10 @@ class Exam extends Component {
 
         return (
         <div>  
-            <div className="jumbotron" style={{backgroundColor: "#C0C0C0"}}>
-                <h1>Sistema de <br/> Gestión Académica</h1>
-            </div>
-            
-            {this.state.data != null && <div><PageHeader style={{marginBottom: "2em"}}> {"Final " + this.state.data.subject.name } <br /> 
-            <span className="text-primary">{this.changeDateFormat(this.state.data.exam_date.substring(0, 10))} </span></PageHeader>
+            <h1 style={{color: "#696969"}}>Sistema de Gestión Académica</h1>
+            <hr/>
+            {this.state.data != null && <div><h2> {"Final " + this.state.data.subject.name } <br /> 
+            <span className="text-primary">{this.changeDateFormat(this.state.data.exam_date.substring(0, 10))} </span></h2>
             <div className="well" style={{marginBottom: "2em"}}>
                 <div className="row">
                 <div className="col-md-3" style={{borderRight: "0.5px solid #cccccc"}}>
