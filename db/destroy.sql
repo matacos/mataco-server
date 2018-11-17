@@ -20,3 +20,4 @@ drop table if exists course_enrollments cascade;
 drop table if exists department_administrators cascade;
 drop table if exists exams cascade;
 drop table if exists exam_enrolments cascade;
+drop table if exists polls cascade;

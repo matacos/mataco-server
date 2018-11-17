@@ -278,3 +278,35 @@ insert into exam_enrolments (exam_id,student_username,creation,grade,grade_date,
     (5,'99999',NOW(),-1,NOW(),'regular'),
     (5,'96107',NOW(),-1,NOW(),'regular'),
     (5,'96800',NOW(),-1,NOW(),'regular');
+
+
+/**********************************************
+ENCUESTAS
+**********************************************/
+create table polls(
+    course serial,
+    student varchar(10),
+    primary key (course,student),
+    
+    
+    q1 integer,
+    q2 integer,
+    q3 integer,
+    q4 integer,
+    q5 integer,
+    q6 integer,
+    q7 integer,
+    passed boolean,
+    feedback text
+);
+
+insert into polls(course,student,passed,q1,q2,q3,q4,q5,q6,q7,feedback) values
+    (1,'99999','t',1,2,3,4,5,6,7,''),
+    (2,'99999','f',0,10,9,9,9,9,9,'buen curso'),
+    (1,'97452','t',0,0,0,0,0,0,10,'mal curso'),
+    (3,'97452','t',1,1,1,1,1,2,2,'malisisisismo'),
+    (4,'97452','f',4,4,4,4,4,4,4,'me saqué un 4 :('),
+    (5,'97452','t',3,4,5,6,7,7,7,'lorem impsum'),
+    (5,'99999','t',1,10,0,0,9,8,9,''),
+    (5,'96107','t',1,2,3,4,5,6,7,''),
+    (5,'96800','f',1,2,3,4,5,6,7,'');
