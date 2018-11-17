@@ -43,6 +43,7 @@ function mountRoutes(app,db,schemaValidation){
             passed,
             feedback
         }=req.body;
+        console.log("1================")
 
         const query=`
         insert into polls(
@@ -53,6 +54,7 @@ function mountRoutes(app,db,schemaValidation){
             feedback
         ) values ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)
         `
+        console.log("2================")
         const params=[
             course,
             student,
@@ -66,9 +68,12 @@ function mountRoutes(app,db,schemaValidation){
             passed,
             feedback
         ]
+        console.log("3================")
         await db.query(query,params);
-        res.code(201)
-        next()
+        console.log("4================")
+        res.sendStatus(201)
+
+    
         
     })
 
