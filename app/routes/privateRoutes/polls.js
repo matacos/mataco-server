@@ -1,4 +1,10 @@
+const fs=require("fs")
+const subjectsView=fs.readFileSync(__dirname+"/subjectsWithData.sql").toString()
+const coursesView=fs.readFileSync(__dirname+"/coursesWithData.sql").toString()
+
 function mountRoutes(app,db,schemaValidation){
+    
+    
 
     
     const pollBody={required:[
@@ -78,6 +84,8 @@ function mountRoutes(app,db,schemaValidation){
         "estudiante":{type:"string"}
     }
     app.get("/pending_polls",schemaValidation({query:pendingPollsQuery}),async function(req,res,next){
+        await db.query(subjectsView)
+        await db.query(coursesView)
         /*
         const query=`
         select c.*
@@ -101,8 +109,9 @@ function mountRoutes(app,db,schemaValidation){
             (course,student) not in (
                 select course,student from polls
             ) 
-            and grade_date < $1 
+            and grade_date < $2 
             and grade >= 4
+            and student = $1
         )
         select c.*
         from 
@@ -112,6 +121,8 @@ function mountRoutes(app,db,schemaValidation){
             cc.course=c.course
         ;
         `
+        let queryResult = await db.query(query,[req.query.estudiante,req.now])
+        res.json({"courses":queryResult.rows});
     })
 
 }

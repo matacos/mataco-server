@@ -48,10 +48,21 @@ describe("Test polls",()=>{
     function put(url,body){
         return requestWithAuth("97452","jojo","PUT",url,body)
     }
+    it("Pass course 5",async ()=>{
+        await put("/cursadas/5-97452",{
+            accepted:"true",
+            grade:"8"
+        })
+    })
+    it("In the current state, 97452 only owes a poll from course 5", async function(){
+        let r=await get("/pending_polls?estudiante=97452")
+        expect(r.body.courses).to.lengthOf(1)
+        expect(r.body.courses[0].course).to.eq(5)
+    })
 
     it("POST a poll ok",async ()=>{
         let r = await post("/poll",{
-            "course":3,
+            "course":5,
             "student":"97452",
             "q1":4,
             "q2":5,
@@ -64,5 +75,10 @@ describe("Test polls",()=>{
             "feedback":"hola soy un texto",
         })
         expect(r.statusCode).to.be.eq(201)
+    })
+
+    it("In the current state, 97452 owes 0 polls", async function(){
+        let r=await get("/pending_polls?estudiante=97452")
+        expect(r.body.courses).to.lengthOf(0)
     })
 })
