@@ -71,10 +71,47 @@ function mountRoutes(app,db,schemaValidation){
         console.log("3================")
         await db.query(query,params);
         console.log("4================")
-        res.sendStatus(201)
+        res.sendStatus(201)    
+    })
 
-    
-        
+    const pendingPollsQuery ={
+        "estudiante":{type:"string"}
+    }
+    app.get("/pending_polls",schemaValidation({query:pendingPollsQuery}),async function(req,res,next){
+        /*
+        const query=`
+        select c.*
+        from 
+            course_enrollments as ce,
+            courses_with_data as c,
+        where 
+            ce.grade_date < $1
+        and ce.course = c.course
+        and not (ce.course,ce.student) in (select course,student from polls)
+        `
+        */
+
+
+        const query=`
+        with
+        chosen_courses as 
+            (select course 
+        from course_enrollments 
+        where 
+            (course,student) not in (
+                select course,student from polls
+            ) 
+            and grade_date < $1 
+            and grade >= 4
+        )
+        select c.*
+        from 
+            courses_with_data as c, 
+            chosen_courses as cc
+        where
+            cc.course=c.course
+        ;
+        `
     })
 
 }
