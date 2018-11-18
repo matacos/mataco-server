@@ -49,7 +49,7 @@ describe("Test reports",()=>{
     }
 
     it("test enrollment report for department 75 and 1c2018, should have 4 enrolments total",async ()=>{
-        const r = await get("/enrolments_report?cod_departamento=75&ciclo_lectivo=1c2018");
+        const r = await get("/enrolments_report?departamento=Computación&ciclo_lectivo=1c2018");
         
         const schema7506={properties:{
             "code":{const:"06"},

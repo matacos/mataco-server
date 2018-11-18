@@ -15,7 +15,7 @@ function mountRoutes(app,db,schemaValidation){
         await db.query(coursesView);
         const parameters =[
             req.query.ciclo_lectivo,
-            req.query.cod_departamento
+            req.query.departamento
         ]
         let r = await db.query(subjectStatisticsQuery,parameters);
         res.json({

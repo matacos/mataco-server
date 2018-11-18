@@ -9,12 +9,14 @@ subject_count as (
     select department_code, subject_code, sum(cc.count) as total_students
     from 
         course_count as cc,
-        courses as c
+        courses as c,
+        departments as d
     where
         c.id=cc.course
         /* ACÁ HAY QUE FILTRAR POR PERIODO Y POR DEPTO*/
     and c.semester = $1
-    and c.department_code = $2
+    and c.department_code = d.code
+    and d.name = $2
     group by department_code, subject_code
 ),
 course_professors_count as (
@@ -34,11 +36,13 @@ full_course as (
         on(c.course=e.course)
         left outer join
         course_professors_count as ccc
-        on (c.course=ccc.course)
+        on (c.course=ccc.course),
+        departments as d
     /* ACÁ HAY QUE FILTRAR POR PERIODO Y POR DEPTO*/
     where 
         c.semester = $1
-    and c.department_code = $2
+    and c.department_code = d.code
+    and d.name = $2
 ),
 subjects_with_courses as (
     select department_code, subject_code, json_agg(json_build_object(
