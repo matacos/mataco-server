@@ -12,6 +12,7 @@ const academicHistory=require("./academicHistory.js")
 const uploadCourseEnrolments=require("./uploadCourseEnrolments.js")
 const uploadExamEnrolments=require("./uploadExamEnrolments.js")
 const polls=require("./polls.js")
+const reports=require("./reports.js")
 
 function mountRoutes(app,db,schemaValidation){
     
@@ -181,6 +182,9 @@ function mountRoutes(app,db,schemaValidation){
     uploadCourseEnrolments.mountRoutes(promiseRouter,db,schemaValidation)
     uploadExamEnrolments.mountRoutes(promiseRouter,db,schemaValidation)
     polls.mountRoutes(promiseRouter,db,schemaValidation)
+    reports.mountRoutes(promiseRouter,db,schemaValidation)
+
+    
 
     app.use(promiseRouter)
 }

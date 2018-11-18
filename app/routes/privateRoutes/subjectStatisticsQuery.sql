@@ -2,10 +2,7 @@ with
 course_count as (
     select course, count(distinct student) as count
     from course_enrollments
-    /* ACÁ HAY QUE FILTRAR POR PERIODO Y POR DEPTO*/
-    where 
-        semester = $1
-    and department_code = $2
+    
     group by course
 ),
 subject_count as (
@@ -15,6 +12,9 @@ subject_count as (
         courses as c
     where
         c.id=cc.course
+        /* ACÁ HAY QUE FILTRAR POR PERIODO Y POR DEPTO*/
+    and c.semester = $1
+    and c.department_code = $2
     group by department_code, subject_code
 ),
 course_professors_count as (
@@ -35,6 +35,10 @@ full_course as (
         left outer join
         course_professors_count as ccc
         on (c.course=ccc.course)
+    /* ACÁ HAY QUE FILTRAR POR PERIODO Y POR DEPTO*/
+    where 
+        c.semester = $1
+    and c.department_code = $2
 ),
 subjects_with_courses as (
     select department_code, subject_code, json_agg(json_build_object(
