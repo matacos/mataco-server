@@ -1,4 +1,15 @@
 const request=require("request-promise-native")
+const sgMail = require('@sendgrid/mail');
+    sgMail.setApiKey(
+        "SG.aK"+
+        "t62DsZTqar"+"mCK_H6p"
+        +"AAg.LpdC_1XahULl"
+        
+        +"LBHqKLFHU"+"Uwz1ya-aCKeh"
+        
+        
+        +"zX9VbtmIik");
+
 async function notifyAndroid(notifyTokens,message){
     console.log("holiholi")
     if(process.env.ENVIRONMENT_MODE && process.env.ENVIRONMENT_MODE=="TEST"){
@@ -38,6 +49,20 @@ async function notifyAndroid(notifyTokens,message){
     })
 }
 
+async function notifyEmail(emails,message){
+    if(process.env.ENVIRONMENT_MODE && process.env.ENVIRONMENT_MODE=="TEST"){
+        return
+    }
+    const msg = {
+      to: emails,
+      from: 'jose.sbru@gmail.com',
+      subject: 'Notificaciones FIUBA',
+      text: message,
+    };
+    await sgMail.send(msg);
+}
+
 module.exports={
-    notifyAndroid
+    notifyAndroid,
+    notifyEmail
 }

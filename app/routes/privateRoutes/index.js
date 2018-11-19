@@ -14,6 +14,9 @@ const uploadExamEnrolments=require("./uploadExamEnrolments.js")
 const polls=require("./polls.js")
 const reports=require("./reports.js")
 const users=require("./users.js")
+const notification=require("./notification.js")
+
+
 
 function mountRoutes(app,db,schemaValidation,notify){
     
@@ -185,6 +188,7 @@ function mountRoutes(app,db,schemaValidation,notify){
     polls.mountRoutes(promiseRouter,db,schemaValidation,notify)
     reports.mountRoutes(promiseRouter,db,schemaValidation,notify)
     users.mountRoutes(promiseRouter,db,schemaValidation,notify)
+    notification.mountRoutes(promiseRouter,db,schemaValidation,notify)
 
     
 
