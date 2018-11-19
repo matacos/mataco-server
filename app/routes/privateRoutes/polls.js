@@ -4,9 +4,6 @@ const coursesView=fs.readFileSync(__dirname+"/coursesWithData.sql").toString()
 
 function mountRoutes(app,db,schemaValidation){
     
-    
-
-    
     const pollBody={required:[
         "course",
         "student",

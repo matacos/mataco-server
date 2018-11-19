@@ -2,6 +2,7 @@ const security=require("./security")
 const validation=require("./validation")
 const publicRoutes=require("./publicRoutes")
 const privateRoutes=require("./privateRoutes")
+const notify=require("./notify.js")
 
 function mountRoutes(app,db){
     let customDate=null;
@@ -96,16 +97,16 @@ function mountRoutes(app,db){
     })
 
     //monto /login y /logout
-    security.mountRoutes(app,db,validation.schemaValidationMiddlewares)
+    security.mountRoutes(app,db,validation.schemaValidationMiddlewares,notify)
 
 
     //monto rutas públicas
-    publicRoutes.mountRoutes(app,db,validation.schemaValidationMiddlewares)
+    publicRoutes.mountRoutes(app,db,validation.schemaValidationMiddlewares,notify)
 
     //monto el middleware que chequea seguridad
     app.use(security.authenticate)
     //monto rutas protegidas
-    privateRoutes.mountRoutes(app,db,validation.schemaValidationMiddlewares)
+    privateRoutes.mountRoutes(app,db,validation.schemaValidationMiddlewares,notify)
     //monto el middleware que agrega las cuestiones de los jsonSchemas
     validation.mountErrorRoutes(app,db)
 }

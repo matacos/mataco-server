@@ -15,7 +15,7 @@ const polls=require("./polls.js")
 const reports=require("./reports.js")
 const users=require("./users.js")
 
-function mountRoutes(app,db,schemaValidation){
+function mountRoutes(app,db,schemaValidation,notify){
     
 
     let promiseRouter=PromiseRouter()
@@ -174,17 +174,17 @@ function mountRoutes(app,db,schemaValidation){
 
 
     
-    courseEnrolments.mountRoutes(promiseRouter,db,schemaValidation)
-    courses.mountRoutes(promiseRouter,db,schemaValidation)
-    exams.mountRoutes(promiseRouter,db,schemaValidation)
-    examEnrolments.mountRoutes(promiseRouter,db,schemaValidation)
-    semesters.mountRoutes(promiseRouter,db,schemaValidation)
-    academicHistory.mountRoutes(promiseRouter,db,schemaValidation)
-    uploadCourseEnrolments.mountRoutes(promiseRouter,db,schemaValidation)
-    uploadExamEnrolments.mountRoutes(promiseRouter,db,schemaValidation)
-    polls.mountRoutes(promiseRouter,db,schemaValidation)
-    reports.mountRoutes(promiseRouter,db,schemaValidation)
-    users.mountRoutes(promiseRouter,db,schemaValidation)
+    courseEnrolments.mountRoutes(promiseRouter,db,schemaValidation,notify)
+    courses.mountRoutes(promiseRouter,db,schemaValidation,notify)
+    exams.mountRoutes(promiseRouter,db,schemaValidation,notify)
+    examEnrolments.mountRoutes(promiseRouter,db,schemaValidation,notify)
+    semesters.mountRoutes(promiseRouter,db,schemaValidation,notify)
+    academicHistory.mountRoutes(promiseRouter,db,schemaValidation,notify)
+    uploadCourseEnrolments.mountRoutes(promiseRouter,db,schemaValidation,notify)
+    uploadExamEnrolments.mountRoutes(promiseRouter,db,schemaValidation,notify)
+    polls.mountRoutes(promiseRouter,db,schemaValidation,notify)
+    reports.mountRoutes(promiseRouter,db,schemaValidation,notify)
+    users.mountRoutes(promiseRouter,db,schemaValidation,notify)
 
     
 
