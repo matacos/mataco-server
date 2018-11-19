@@ -3,7 +3,7 @@ import '../App.css';
 import Proxy from '../Proxy';
 import alertSign from '../images/alert-icon.png';
 import { Modal, Button } from 'react-bootstrap';
-import { Glyphicon, PageHeader } from 'react-bootstrap';
+import { Glyphicon } from 'react-bootstrap';
 import Assistant from '../Assistant';
 
 class SubjectCourses extends Component {
@@ -425,7 +425,9 @@ class SubjectCourses extends Component {
             <button type="button" className="btn btn-primary pull-right" style={{marginRight: "1.5em"}} onClick={this.showModal.bind(this, "add_course")}><Glyphicon glyph="plus" /> Agregar curso</button>}
             </div>
             
-            {this.state.courses.length == 0 && <div className="well" style={{paddingBottom: "2.5em"}}><h3 className="text-primary text-center"> No hay cursos disponibles de esa materia</h3></div>}
+            {this.state.courses.length == 0 && <div className="well" style={{paddingBottom: "2.5em"}}>
+                <h3 className="text-primary text-center"> No hay cursos disponibles de esa materia</h3>
+            </div>}
             {this.state.courses.map(function(course, idx) {
                 return (<div key={idx} className="well">
                 <div className="row">

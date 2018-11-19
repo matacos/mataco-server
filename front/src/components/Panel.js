@@ -104,7 +104,7 @@ class Panel extends Component {
 
     selectCourse(course) {
         this.setState({currentCourse: course});
-        this.goToHome(course);
+        this.redirectTo("/home");
     }
 
     goToCourse(course) {
@@ -117,14 +117,6 @@ class Panel extends Component {
         this.props.history.push('/materias/' + subjectId + '/' + subjectName);
     }
 
-    goToHome() {
-        this.props.history.push('/home');
-    }
-
-    goToUpload(path) {
-        this.props.history.push('/' + path);
-    }
-
     logout() {
         Proxy.logout();
         window.location.reload();
@@ -134,8 +126,8 @@ class Panel extends Component {
         this.props.history.push('/finales/' + this.state.currentCourse.department_code + this.state.currentCourse.subject_code + '/' + examId);
     }
 
-    goToSemesters(){
-        this.props.history.push('/periodos');
+    redirectTo(path) {
+        this.props.history.push(path);
     }
 
     handleHide() {
@@ -332,10 +324,21 @@ class Panel extends Component {
             case "administrators":
                 return (
                     <div>
-                        {/*<div><button className="Panel-item" onClick={this.goToHome.bind(this)}><h4 className="text-primary"> Alta de materias</h4> </button></div>*/}
-                        <div><button className="Panel-item" onClick={this.goToUpload.bind(this, "estudiantes")}><h4 className="text-primary"> Alta de estudiantes</h4> </button></div>
-                        {/*<div><button className="Panel-item" onClick={this.goToHome.bind(this)}><h4 className="text-primary"> Alta de docentes</h4> </button></div>*/}
-                        <div><button className="Panel-item" style={{marginTop: "1em"}} onClick={this.goToSemesters.bind(this)}><h4 className="text-primary"> Períodos Lectivos</h4> </button></div>
+                        <div><button className="Panel-item" onClick={this.redirectTo.bind(this, "/estudiantes")}><h4 className="text-primary"> Alta de estudiantes</h4> </button></div>
+                        <div><button className="Panel-item" onClick={this.redirectTo.bind(this, "/periodos")}><h4 className="text-primary"> Períodos Lectivos</h4> </button></div>
+                        <div className="row" style={{paddingLeft: "1em"}}>
+                            <button className="Panel-item" onClick={this.handleSelectedField.bind(this, "reports")}><h4 className="text-primary"> 
+                                {((this.props.selected["reports"]) && <Glyphicon style={{fontSize:"0.75em"}} glyph="minus" />) || <Glyphicon style={{fontSize:"0.75em"}} glyph="plus" />}
+                                {" Reportes"}
+                            </h4></button>
+                            {(this.props.selected["reports"]) && 
+                            <div style={{marginTop: "1em"}}>
+                                <hr />
+                                <button className="text-primary text-left Panel-list-item" onClick={this.redirectTo.bind(this, "/reportes/reporte-encuestas")}>Reporte de encuestas</button><hr />
+                                <button className="text-primary text-left Panel-list-item" onClick={this.redirectTo.bind(this, "/reportes/reporte-estudiantes-docentes")}>Reporte de estudiantes y docentes</button><hr />
+                            </div>}
+                        </div>
+                        <button className="Panel-item" onClick={this.showAddExamModal.bind(this)}><h4 className="text-primary"> Enviar notificación</h4> </button>          
                     </div>
                 );
             default:
@@ -346,7 +349,7 @@ class Panel extends Component {
     showMenu(mode) {
         return (
             <div style={{padding: "1em"}}>
-                <div><button className="Panel-item" onClick={this.goToHome.bind(this)}><h4 className="text-primary"> Home</h4> </button></div>
+                <div><button className="Panel-item" onClick={this.redirectTo.bind(this, "/home")}><h4 className="text-primary"> Home</h4> </button></div>
                 <hr />
                 {this.showMenuByRole(mode)}
                 <hr />
@@ -367,7 +370,7 @@ class Panel extends Component {
     showAddExamModal() {
         if (this.canInsertExam()) {
             this.setState({showAddExam: true});
-        } 
+        }
     }
 
     render() {
