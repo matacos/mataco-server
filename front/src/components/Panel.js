@@ -20,6 +20,7 @@ class Panel extends Component {
             exams: [],
             currentCourse: null,
             showAddExam: false,
+            showSendNotification: false,
             examData: {
                 classroom: '',
                 place: '',
@@ -27,7 +28,9 @@ class Panel extends Component {
                 beginning: '',
                 ending: ''
             },
+            message: '',
             inputError: false,
+            ok: false,
             errorMsg: '',
             listItems: []
         };
@@ -130,15 +133,19 @@ class Panel extends Component {
         this.props.history.push(path);
     }
 
-    handleHide() {
-        let clearData = {
-            classroom: '',
-            place: '',
-            date: this.getDate(),
-            beginning: '',
-            ending: ''
-        };
-         this.setState({showAddExam: false, examData: clearData, errorMsg: '', inputError: false});
+    handleHide(modal) {
+        if (modal == "addExam") {
+            let clearData = {
+                classroom: '',
+                place: '',
+                date: this.getDate(),
+                beginning: '',
+                ending: ''
+            };
+            this.setState({showAddExam: false, examData: clearData, errorMsg: '', inputError: false});
+        }
+        else 
+            this.setState({showSendNotification: false, message: '', errorMsg: '', inputError: false, ok: false});
     }
 
     validInput() {
@@ -215,12 +222,30 @@ class Panel extends Component {
                 
                 Proxy.addExam(newExam)
                 .then(this.setExams());
-                this.handleHide();
+                this.handleHide("addExam");
             }
             else {
                 this.setState({inputError: true, errorMsg: validationResult[1]})
             }
         }
+    }
+
+    sendNotification() {
+        let message = {
+            message: this.state.message
+        };
+        Proxy.sendNotification(message)
+        .then(status => {
+            if (status == 201) {
+                this.setState({ok: true, errorMsg: "Se ha enviado la notificación exitosamente"});
+                setTimeout(() => { 
+                    this.handleHide("sendNotification");
+                 }, 1500);
+            }
+            else {
+                this.setState({inputError: true, errorMsg: "No se pudo enviar la notificación, intente nuevamente"})
+            }
+        });
     }
 
     search(prefix) {
@@ -285,7 +310,7 @@ class Panel extends Component {
                                 <hr />
                                 {examsList}
                                 {(examsList.length < 5) && <div key="Add-exam">
-                                <button className="text-primary text-left Panel-list-item" onClick={this.showAddExamModal.bind(this)}>
+                                <button className="text-primary text-left Panel-list-item" onClick={this.showModal.bind(this, "addExam")}>
                                     {this.canInsertExam() ? "Agregar final" : "No es posible agregar finales"}
                                 </button></div>}
                             </div>}
@@ -338,7 +363,7 @@ class Panel extends Component {
                                 <button className="text-primary text-left Panel-list-item" onClick={this.redirectTo.bind(this, "/reportes/reporte-estudiantes-docentes")}>Reporte de estudiantes y docentes</button><hr />
                             </div>}
                         </div>
-                        <button className="Panel-item" onClick={this.showAddExamModal.bind(this)}><h4 className="text-primary"> Enviar notificación</h4> </button>          
+                        <button className="Panel-item" onClick={this.showModal.bind(this, "sendNotification")}><h4 className="text-primary"> Enviar notificación</h4> </button>          
                     </div>
                 );
             default:
@@ -367,10 +392,13 @@ class Panel extends Component {
             return "Administrador";
     }
 
-    showAddExamModal() {
-        if (this.canInsertExam()) {
-            this.setState({showAddExam: true});
+    showModal(modal) {
+        if (modal == "addExam") { 
+            if (this.canInsertExam()) 
+                this.setState({showAddExam: true});
         }
+        else
+            this.setState({showSendNotification: true});
     }
 
     render() {
@@ -388,7 +416,7 @@ class Panel extends Component {
 
             {this.state.showAddExam &&  <Modal
             show={this.state.showAddExam}
-            onHide={this.handleHide.bind(this)}
+            onHide={this.handleHide.bind(this, "addExam")}
             container={this}
             aria-labelledby="contained-modal-title"
             >
@@ -475,11 +503,57 @@ class Panel extends Component {
                         </div>}
             </Modal.Body>
             <Modal.Footer>
-                <Button onClick={this.handleHide.bind(this)}>Cancelar</Button>
+                <Button onClick={this.handleHide.bind(this, "addExam")}>Cancelar</Button>
                 <Button bsStyle="primary" onClick={this.addExam.bind(this)}>Aceptar</Button>
             </Modal.Footer>
             </Modal>}
             </div>}
+
+            {this.state.showSendNotification &&  <Modal
+            show={this.state.showSendNotification}
+            onHide={this.handleHide.bind(this, "sendNotification")}
+            container={this}
+            aria-labelledby="contained-modal-title"
+            >
+            <Modal.Header>
+                <Modal.Title id="contained-modal-title">
+                Enviar notificación
+                </Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+            <form className="form-horizontal">
+            <fieldset>
+
+                <div className="form-group">
+                <div style={{marginInlineStart: "2em", marginInlineEnd: "2em"}}>
+                <label htmlFor="exampleTextarea">Mensaje</label>
+                <textarea className="form-control" value={this.state.message} id="exampleTextarea" rows="3" onChange={ e => {
+                        if (e.target.value.length <= 300) {
+                            this.setState({message: e.target.value});
+                        }
+                    }}></textarea>
+                </div>
+                </div>
+
+            </fieldset>
+            </form>
+            {this.state.inputError && 
+                <div className="alert alert-dismissible alert-danger" >
+                    <button type="button" className="close" data-dismiss="alert" onClick={ e => this.setState({ inputError : false }) }>&times;</button>
+                    <a href="#" className="alert-link"/>{this.state.errorMsg}
+                </div>}
+            {this.state.ok && 
+                <div className="alert alert-dismissible alert-success" >
+                    <button type="button" className="close" data-dismiss="alert" onClick={ e => this.setState({ ok : false }) }>&times;</button>
+                    <a href="#" className="alert-link"/>{this.state.errorMsg}
+                </div>}
+            </Modal.Body>
+            <Modal.Footer>
+                <Button onClick={this.handleHide.bind(this, "sendNotification")}>Cancelar</Button>
+                <Button bsStyle="primary" onClick={this.sendNotification.bind(this)}>Enviar</Button>
+            </Modal.Footer>
+            </Modal>}
+
             </div>
         );
     }

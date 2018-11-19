@@ -151,6 +151,17 @@ class Proxy  {
         })
       }
 
+      sendNotification(message){
+        return fetch(this.url + "/notificacion" , {
+          method:"POST",
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'bearer ' + Assistant.getField("token")
+          },
+          body: JSON.stringify(message),
+        }).then(res => res.status);
+      }
+
       addProfessor(courseId, professor){
         return fetch(this.url + "/cursos/" + courseId + "/docentes" , {
           method:"POST",
