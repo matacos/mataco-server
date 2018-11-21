@@ -264,6 +264,40 @@ function mountRoutes(app,db,schemaValidation,notify){
     })
 
     app.delete(["/cursos/:id"], async function(req,res,next){
+        // --------------- enviar notificación ---------------- //
+        const courseData = (await db.query(`
+            select s.name as subject_name, c.name as course_name
+            from 
+                courses c, 
+                subjects s 
+            where 
+                c.department_code=s.department_code 
+            and s.code=c.subject_code 
+            and c.id=$1;
+        `,[req.params.id])).rows[0]
+        let nombreCurso=courseData.course_name;
+        let nombreMateria=courseData.subject_name;
+
+        console.log("$$$$$$$$$$$$$$$$$$$$$$$$$$$11222")
+        const notificationsQuery=`
+            select firebase_token 
+            from 
+                users u, 
+                course_enrollments ce 
+            where 
+                u.username=ce.student 
+            and ce.course=$1;
+        `
+
+        const notificationsQueryResult=await db.query(notificationsQuery,[req.params.id]);
+        const tokens=notificationsQueryResult.rows.map((r)=>r.firebase_token).filter((x)=>x!=null)
+        const message=`
+            El curso ${nombreCurso} de la materia ${nombreMateria} fue cancelado.
+        `
+        await notify.notifyAndroid(tokens,message)
+
+        console.log("$$$$$$$$$$$$$$$$$$$$$$$$$$$113333")
+        // -------------- eliminar el curso ----------------- //
         const viewCreation = await db.query(coursesView)
 
         let course = req.params.id
