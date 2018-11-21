@@ -81,6 +81,7 @@ function mountRoutes(app,db,schemaValidation,notify){
                 approved_courses as ac
             where 
                 c.id=ec.id
+            and c.id=ac.id
             group by c.department_code, c.subject_code
         ),
         approved_subjects_only as (

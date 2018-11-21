@@ -68,7 +68,7 @@ async function requestWithAuth(username,password,verb,uriPart,body){
 describe("Test /inscripciones_cursos",()=>{
     it("test GET filtering by semester",async ()=>{
         let response2c2017 = await requestWithAuth("97452","jojo","GET","/inscripciones_cursos?estudiante=97452&semester=2c2017")
-        expect(response2c2017.body.courseInscriptions).lengthOf(1)
+        expect(response2c2017.body.courseInscriptions).lengthOf(6)
 
         let response1c2018 = await requestWithAuth("97452","jojo","GET","/inscripciones_cursos?estudiante=97452&semester=1c2018")
         expect(response1c2018.body.courseInscriptions).lengthOf(2)
@@ -118,8 +118,8 @@ describe("Test /inscripciones_cursos",()=>{
     it("add 97452 to course 2 (he is enrolled in course 1 already), and then remove him from course 1",async ()=>{
         
         //chequeo que haya 4 inscripciones
-        let response = await requestWithAuth("97452","jojo","GET","/inscripciones_cursos?estudiante=97452&semester=any")
-        expect(response.body.courseInscriptions).to.have.lengthOf(4)
+        response = await requestWithAuth("97452","jojo","GET","/inscripciones_cursos?estudiante=97452&semester=any")
+        expect(response.body.courseInscriptions).to.have.lengthOf(9)
         let cursoInicial = response.body.courseInscriptions[0]
 
         //chequeo que esa inscripción aparezca en /materias
@@ -130,6 +130,12 @@ describe("Test /inscripciones_cursos",()=>{
                 good_subject=s
             }
         }
+
+        console.log("//////////////////////////")
+        console.log("//////////////////////////")
+        console.log(good_subject)
+        console.log("//////////////////////////")
+        console.log("//////////////////////////")
         expect(good_subject).to.not.be.null
         expect(good_subject).to.be.jsonSchema({
             required:["enroled"],
@@ -148,7 +154,7 @@ describe("Test /inscripciones_cursos",()=>{
 
         //chequeo que haya 5
         response = await requestWithAuth("97452","jojo","GET","/inscripciones_cursos?estudiante=97452&semester=any")
-        expect(response.body.courseInscriptions).to.have.lengthOf(5)
+        expect(response.body.courseInscriptions).to.have.lengthOf(10)
 
 
         //chequeo que esa desinscripción aparezca en /materias
@@ -207,7 +213,7 @@ describe("Test /inscripciones_cursos",()=>{
 
         // chequeo que haya 4
         response = await requestWithAuth("97452","jojo","GET","/inscripciones_cursos?estudiante=97452&semester=any")
-        expect(response.body.courseInscriptions).to.have.lengthOf(4)
+        expect(response.body.courseInscriptions).to.have.lengthOf(9)
 
         
 
@@ -239,7 +245,7 @@ describe("Test /inscripciones_cursos",()=>{
 
         // chequeo que haya 4
         response = await requestWithAuth("97452","jojo","GET","/inscripciones_cursos?estudiante=97452&semester=any")
-        expect(response.body.courseInscriptions).to.have.lengthOf(4)
+        expect(response.body.courseInscriptions).to.have.lengthOf(9)
         //chequeo que esa inscripción aparezca en /materias
         response = await requestWithAuth("97452","jojo","GET","/materias?carrera=10")
         good_subject=null

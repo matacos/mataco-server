@@ -105,6 +105,11 @@ insert into courses(department_code,subject_code,semester,name,total_slots) valu
     ('75','07','1c2018','Algoritmos y Programacion III',120),
     ('75','52','2c2018','Taller Calónico 2c18',219),
     ('75','52','1c2018','Taller Calónico 1c18',119),
+    ('75','52','2c2017','Taller Calónico 2c17',218),
+    ('75','52','2c2017','Taller Calónico 2c17',218),
+    ('75','52','2c2017','Taller Calónico 2c17',218),
+    ('75','52','2c2017','Taller Calónico 2c17',218),
+    ('75','52','2c2017','Taller Calónico 2c17',218),
     ('75','52','2c2017','Taller Calónico 2c17',218);
 create table professors_roles(
     professor varchar(10),
@@ -117,9 +122,9 @@ create table professors_roles(
     primary key (professor,course)
 );
 insert into users (name,surname,username,password,email,token,token_expiration) values
-    ('Luis','Argerich','39111222','arar','largerich@gmail.com','2',now()+'5 minutes'),
-    ('Carlos','Fontela','12345678','font','fontela@gmail.com','1',now()+'5 minutes'),
-    ('Santiago','Gandolfo','98765432','ayu','ayudante@gmail.com','3',now()+'5 minutes');
+    ('Luis','Argerich','39111222','arar','cdetrincheria@gmail.com','2',now()+'5 minutes'),
+    ('Carlos','Fontela','12345678','font','sofimorseletto@gmail.com','1',now()+'5 minutes'),
+    ('Santiago','Gandolfo','98765432','ayu','santiago.v.gandolfo@gmail.com','3',now()+'5 minutes');
 
 insert into professors(username) values
     ('39111222'),
@@ -133,7 +138,12 @@ insert into professors_roles(professor,course,role) values
     ('98765432',2,'Ayudante de cátedra'),
     ('39111222',3,'Jefe de Cátedra'),
     ('12345678',4,'Jefe de Cátedra'),
-    ('12345678',5,'Jefe de Cátedra');
+    ('12345678',5,'Jefe de Cátedra'),
+    ('12345678',6,'Jefe de Cátedra'),
+    ('12345678',7,'Jefe de Cátedra'),
+    ('12345678',8,'Jefe de Cátedra'),
+    ('12345678',9,'Jefe de Cátedra'),
+    ('12345678',10,'Jefe de Cátedra');
 
 create table days_of_week(
     day varchar(10),
@@ -172,7 +182,17 @@ insert into classroom_uses
     (4,'200','Paseo Colón','16:00','19:00','lun','Teórica Obligatoria'),
     (4,'200','Las Heras','16:30','19:30','vie','Práctica Obligatoria'),
     (5,'400','Paseo Colón','16:00','19:00','lun','Teórica Obligatoria'),
-    (5,'400','Las Heras','16:30','19:30','vie','Práctica Obligatoria');
+    (5,'400','Las Heras','16:30','19:30','vie','Práctica Obligatoria'),
+    (6,'400','Paseo Colón','16:00','19:00','lun','Teórica Obligatoria'),
+    (6,'400','Las Heras','16:30','19:30','vie','Práctica Obligatoria'),
+    (7,'400','Paseo Colón','16:00','19:00','lun','Teórica Obligatoria'),
+    (7,'400','Las Heras','16:30','19:30','vie','Práctica Obligatoria'),
+    (8,'400','Paseo Colón','16:00','19:00','lun','Teórica Obligatoria'),
+    (8,'400','Las Heras','16:30','19:30','vie','Práctica Obligatoria'),
+    (9,'400','Paseo Colón','16:00','19:00','lun','Teórica Obligatoria'),
+    (9,'400','Las Heras','16:30','19:30','vie','Práctica Obligatoria'),
+    (10,'400','Paseo Colón','16:00','19:00','lun','Teórica Obligatoria'),
+    (10,'400','Las Heras','16:30','19:30','vie','Práctica Obligatoria');
 
 /***************************************************
 INSCRIPCIONES A CURSOS
@@ -200,7 +220,18 @@ insert into course_enrollments(course,student,creation,accepted,grade,grade_date
     (5,'97452',now(),'false',-1,'2018-01-05'),
     (5,'99999',now(),'false',-1,'2018-01-05'),
     (5,'96107',now(),'false',-1,'2018-01-05'),
-    (5,'96800',now(),'false',-1,'2018-01-05');
+    (5,'96800',now(),'false',-1,'2018-01-05'),
+    (6,'97452',now(),'false',8,'2018-01-05'),
+    (7,'97452',now(),'false',8,'2018-01-05'),
+    (8,'97452',now(),'false',8,'2018-01-05'),
+    (9,'97452',now(),'false',8,'2018-01-05'),
+    (10,'97452',now(),'false',8,'2018-01-05'),
+
+    (6,'96800',now(),'false',8,'2018-01-05'),
+    (7,'96800',now(),'false',8,'2018-01-05'),
+    (8,'96800',now(),'false',8,'2018-01-05'),
+    (9,'96800',now(),'false',8,'2018-01-05'),
+    (10,'96800',now(),'false',8,'2018-01-05');
 
 
 

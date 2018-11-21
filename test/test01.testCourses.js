@@ -219,7 +219,7 @@ describe("Test /cursos",()=>{
         expect(response2.statusCode).to.equal(200)
         expect(response2.body.courses).to.have.lengthOf(2)
         
-         const response3 = await requestWithAuth("99999","9","DELETE","/cursos/6")
+         const response3 = await requestWithAuth("99999","9","DELETE","/cursos/11")
 
          console.log("Here 5 \n")
          console.log(response3.body)
@@ -360,7 +360,7 @@ describe("Test /cursos",()=>{
         console.log(response2.body)
     
         expect(response2.body).to.be.jsonSchema(correctCoursesSchema)
-        expect(response2.body.courses).to.have.lengthOf(4)
+        expect(response2.body.courses).to.have.lengthOf(9)
         expect(response2.statusCode).to.equal(200)
 
         })

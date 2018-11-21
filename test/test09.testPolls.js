@@ -54,9 +54,9 @@ describe("Test polls",()=>{
             grade:"8"
         })
     })
-    it("In the current state, 97452 only owes a poll from course 5", async function(){
+    it("In the current state, 97452 only owes a poll from course 5 and 5 more jaja", async function(){
         let r=await get("/pending_polls?estudiante=97452")
-        expect(r.body.courses).to.lengthOf(1)
+        expect(r.body.courses).to.lengthOf(6)
         expect(r.body.courses[0].course).to.eq(5)
     })
 
@@ -77,8 +77,8 @@ describe("Test polls",()=>{
         expect(r.statusCode).to.be.eq(201)
     })
 
-    it("In the current state, 97452 owes 0 polls", async function(){
+    it("In the current state, 97452 owes 5 polls", async function(){
         let r=await get("/pending_polls?estudiante=97452")
-        expect(r.body.courses).to.lengthOf(0)
+        expect(r.body.courses).to.lengthOf(5)
     })
 })
