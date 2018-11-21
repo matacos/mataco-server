@@ -251,6 +251,8 @@ function mountRoutes(app,db,schemaValidation,notify){
         ;
         `
         let resultGet=await db.query(queryGet,[result.rows[0].id])
+
+        
         
         res.json({exam:resultGet.rows[0]})
         next()

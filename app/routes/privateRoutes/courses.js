@@ -3,7 +3,7 @@ const subjectsView=fs.readFileSync(__dirname+"/subjectsWithData.sql").toString()
 const coursesView=fs.readFileSync(__dirname+"/coursesWithData.sql").toString()
 const studentsWithDegreesView=fs.readFileSync(__dirname+"/studentsWithDegrees.sql").toString()
 
-function mountRoutes(app,db,schemaValidation){
+function mountRoutes(app,db,schemaValidation,notify){
     const cursosQuery={anyOf:[{
         properties:{
             "cod_materia":{type:"string"},
@@ -199,6 +199,43 @@ function mountRoutes(app,db,schemaValidation){
     }]}
 
     app.put(["/cursos/:id"], schemaValidation({body:cursosBodyPut}),async function(req,res,next){
+        console.log("$$$$$$$$$$$$$$$$$$$$$$$$$$$11111")
+        // --------------- enviar notificación ---------------- //
+        const courseData = (await db.query(`
+            select s.name as subject_name, c.name as course_name
+            from 
+                courses c, 
+                subjects s 
+            where 
+                c.department_code=s.department_code 
+            and s.code=c.subject_code 
+            and c.id=$1;
+        `,[req.params.id])).rows[0]
+        let nombreCurso=courseData.course_name;
+        let nombreMateria=courseData.subject_name;
+
+        console.log("$$$$$$$$$$$$$$$$$$$$$$$$$$$11222")
+        const notificationsQuery=`
+            select firebase_token 
+            from 
+                users u, 
+                course_enrollments ce 
+            where 
+                u.username=ce.student 
+            and ce.course=$1;
+        `
+
+        const notificationsQueryResult=await db.query(notificationsQuery,[req.params.id]);
+        const tokens=notificationsQueryResult.rows.map((r)=>r.firebase_token).filter((x)=>x!=null)
+        const message=`
+            El curso ${nombreCurso} de la materia ${nombreMateria} fue modificado. Haga click aquí para ver los cambios.
+        `
+        await notify.notifyAndroid(tokens,message)
+
+        console.log("$$$$$$$$$$$$$$$$$$$$$$$$$$$113333")
+
+        // ------------------ eliminar ---------------------- //
+
         const viewCreation = await db.query(coursesView)
         let modifications=[]
         let newValues=[]
@@ -206,14 +243,24 @@ function mountRoutes(app,db,schemaValidation){
             modifications.push(` ${parameter}=$${modifications.length + 2 } `)
             newValues.push(req.body[parameter])
         }
+        console.log("$$$$$$$$$$$$$$$$$$$$$$$$$$$133333")
         const query=`
         update courses
         set ${modifications.join(",")}
         where
             id = $1;
         `
+        
+
+        console.log("$$$$$$$$$$$$$$$$$$$$$$$$$$$1444444")
+        
+        
         const result = await db.query(query,[req.params.id].concat(newValues))
+
+        console.log("$$$$$$$$$$$$$$$$$$$$$$$$$$$15555")
         res.sendStatus(204)
+
+        console.log("$$$$$$$$$$$$$$$$$$$$$$$$$$$1666")
     })
 
     app.delete(["/cursos/:id"], async function(req,res,next){
