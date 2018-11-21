@@ -182,6 +182,40 @@ function mountRoutes(app,db,schemaValidation,notify){
     })
 
     app.put("/finales/:id",schemaValidation({body:examBody}),async function(req,res,next){
+        // --------------- enviar notificación ---------------- //
+        
+        const examData = (await db.query(`
+            select * from exams_with_data where id=$1;
+        `,[req.params.id])).rows[0]
+
+        let nombreMateria=examData.subject.name;
+
+        let dateTime = examData.exam_date
+        let month = dateTime.getMonth() + 1;
+        let day = dateTime.getDate();
+        let year = dateTime.getFullYear();
+        let dateStr = day + "/" + month + "/" + year;
+
+        console.log("$$$$$$$$$$$$$$$$$$$$$$$$$$$11222")
+        const notificationsQuery=`
+            select firebase_token 
+            from 
+                users u, 
+                exam_enrolments ee 
+            where 
+                u.username=ee.student_username
+            and ee.exam_id=$1;
+        `
+
+        const notificationsQueryResult=await db.query(notificationsQuery,[req.params.id]);
+        const tokens=notificationsQueryResult.rows.map((r)=>r.firebase_token).filter((x)=>x!=null)
+        const message=`
+            El examen de la fecha ${dateStr} de la materia "${nombreMateria}" fue modificado. Haga click aquí para ver los cambios.
+        `
+        await notify.notifyAndroid(tokens,message)
+
+        console.log("$$$$$$$$$$$$$$$$$$$$$$$$$$$113333")
+        // ------------------- MODIFICAR EL EXAMEN POSTA POSTA ----------- //
         console.log("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%")
         console.log("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%")
         console.log("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%")
