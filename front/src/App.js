@@ -11,6 +11,8 @@ import StudentsUpload from "./routes/StudentsUpload";
 import Error from "./routes/Error";
 import Assistant from './Assistant';
 import Semesters from "./routes/Semesters";
+import StudentsProfessorsReport from './routes/StudentsProfessorsReport';
+import SurveyReport from './routes/SurveyReport';
 
 class App extends Component {
   constructor(props) {
@@ -28,7 +30,8 @@ class App extends Component {
     return {
         "subjects": false,
         "exams": false,
-        "semesters": false
+        "semesters": false,
+        "reports": false
     };
   }
 
@@ -69,6 +72,8 @@ class App extends Component {
             <Route path="/finales/:idMateria/:idExamen" render={ (props) => Assistant.isRole("professor") ? <Exam {...props} update={this.setUpdate.bind(this)} /> : <Redirect to="/login" /> }/>
             <Route path="/estudiantes" render={ (props) => Assistant.isRole("administrators") ? <StudentsUpload {...props} /> : <Redirect to="/login" /> } />
             <Route path="/periodos" render={ (props) => Assistant.isRole("administrators") ? <Semesters {...props} /> : <Redirect to="/login" /> } />
+            <Route path="/reportes/reporte-encuestas" render={ (props) => Assistant.isRole("administrators") ? <SurveyReport {...props} /> : <Redirect to="/login" /> } />
+            <Route path="/reportes/reporte-estudiantes-docentes" render={ (props) => Assistant.isRole("administrators") ? <StudentsProfessorsReport {...props} /> : <Redirect to="/login" /> } />
             <Redirect from="/" exact to="/login" />
             <Route component={Error} />
           </Switch>
