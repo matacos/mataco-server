@@ -70,8 +70,10 @@ almost_full_subjects as (
         on (
             swd.department_code = swc.department_code
         and swd.code = swc.department_code
-        )
-        where swd.department_code = $2
+        ),
+        departments as d
+        where swd.department_code = d.code
+        and d.name = $2
         /* ACÁ VA UN WHERE DEPARTMENT_CODE PARA FILTRAR POR DEPTO */
 ),
 professors_per_subject as (

@@ -332,7 +332,7 @@ create table polls(
 );
 
 insert into polls(course,student,passed,q1,q2,q3,q4,q5,q6,q7,feedback) values
-    (1,'99999','t',1,2,3,4,5,6,7,''),
+    (1,'99999','t',1,2,3,4,5,6,7,'holaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'),
     (2,'99999','f',0,10,9,9,9,9,9,'buen curso'),
     (1,'97452','t',0,0,0,0,0,0,10,'mal curso'),
     (5,'99999','t',1,10,0,0,9,8,9,''),

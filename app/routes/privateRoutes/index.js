@@ -176,7 +176,7 @@ function mountRoutes(app,db,schemaValidation,notify){
         next()
     });
 
-
+    reports.mountRoutes(promiseRouter,db,schemaValidation,notify)
     
     courseEnrolments.mountRoutes(promiseRouter,db,schemaValidation,notify)
     courses.mountRoutes(promiseRouter,db,schemaValidation,notify)
@@ -187,7 +187,7 @@ function mountRoutes(app,db,schemaValidation,notify){
     uploadCourseEnrolments.mountRoutes(promiseRouter,db,schemaValidation,notify)
     uploadExamEnrolments.mountRoutes(promiseRouter,db,schemaValidation,notify)
     polls.mountRoutes(promiseRouter,db,schemaValidation,notify)
-    reports.mountRoutes(promiseRouter,db,schemaValidation,notify)
+    
     users.mountRoutes(promiseRouter,db,schemaValidation,notify)
     notification.mountRoutes(promiseRouter,db,schemaValidation,notify)
 
