@@ -338,3 +338,15 @@ insert into polls(course,student,passed,q1,q2,q3,q4,q5,q6,q7,feedback) values
     (5,'99999','t',1,10,0,0,9,8,9,''),
     (5,'96107','t',1,2,3,4,5,6,7,''),
     (5,'96800','f',1,2,3,4,5,6,7,'');
+
+
+
+/**********************************************
+NOTIFICACIONES
+**********************************************/
+
+create table notifications(
+    creation timestamp,
+    title text,
+    message text
+);
