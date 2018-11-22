@@ -6,10 +6,18 @@ function mountRoutes(app,db,schemaValidation,notify){
             "message":{type:"string"}
         }
     }
-    app.post("/notificacion",
+    app.post("/notificaciones",
         schemaValidation({body:notificationBodySchema}),
         async(req,res,next)=>{
             const message=req.body.message;
+            const title = req.body.title || "";
+
+            const query=`
+            insert into notifications(creation,message,title) values (NOW(),$1,$2)
+            ;
+            `
+            await db.query(query,[message,title])
+
 
             const firebaseTokensQuery = await db.query(`
                 select firebase_token from users;
@@ -29,6 +37,14 @@ function mountRoutes(app,db,schemaValidation,notify){
             res.sendStatus(201)
         }
     )
+
+    app.get("/notificaciones",async(req,res,next)=>{
+        const query = `select * from notifications;`
+        const queryResult = await db.query(query);
+        res.json({notifications:queryResult.rows});
+        res.status(200)
+        //next()
+    })
 }
 
 module.exports={

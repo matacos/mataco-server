@@ -40,21 +40,42 @@ async function requestWithAuth(username,password,verb,uriPart,body){
 }
 
 describe("Test notification endpoint",()=>{
-    function get(url){
-        return requestWithAuth("97452","jojo","GET",url)
+    const getSchema={
+        type:"object",
+        required:["notifications"],
+        property:{
+            "notifications":{
+                type:"array",
+                items:{
+                    required:[
+                        "creation",
+                        "message",
+                        "title"
+                    ]
+                }
+            }
+        }
     }
-    function post(url,body){
-        return requestWithAuth("97452","jojo","POST",url,body)
-    }
-    function put(url,body){
-        return requestWithAuth("97452","jojo","PUT",url,body)
-    }
+    it("primer GET",async ()=>{
+
+        const r = await requestWithAuth("gryn","777","GET","/notificaciones")
+        expect(r.statusCode).to.be.eq(200)
+        expect(r.body).to.be.jsonSchema(getSchema)
+        expect(r.body.notifications).to.be.lengthOf(3)
+    })
 
     it("POST ",async ()=>{
         const body={
             "message":"Este es un mensaje de prueba."
         }
-        const r = await requestWithAuth("gryn","777","POST","/notificacion",body)
+        const r = await requestWithAuth("gryn","777","POST","/notificaciones",body)
         expect(r.statusCode).to.be.eq(201)
+    })
+
+    it("segundo GET",async ()=>{
+        const r = await requestWithAuth("gryn","777","GET","/notificaciones")
+        expect(r.statusCode).to.be.eq(200)
+        expect(r.body).to.be.jsonSchema(getSchema)
+        expect(r.body.notifications).to.be.lengthOf(4)
     })
 })

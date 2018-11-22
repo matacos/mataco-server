@@ -350,3 +350,8 @@ create table notifications(
     title text,
     message text
 );
+
+insert into notifications(creation,message,title) values
+    (NOW(),'titulo 1','mensaje 1'),
+    (NOW(),'titulo 2','mensaje 2'),
+    (NOW(),'titulo 3','mensaje 3');
