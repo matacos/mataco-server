@@ -432,7 +432,6 @@ class Proxy  {
             .then(
                 (result) => {
                     Assistant.setField("token", result.token);
-                    console.log(result.semesters)
                     return result.semesters;
                 },
                 (error) => {
