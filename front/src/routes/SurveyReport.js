@@ -2,6 +2,9 @@ import React, { Component } from 'react';
 import '../App.css';
 import Proxy from '../Proxy';
 import { FormControl, ControlLabel, FormGroup, Button } from 'react-bootstrap';
+import CanvasJSReact from '../components/canvasjs.react';
+const CanvasJS = CanvasJSReact.CanvasJS;
+const CanvasJSChart = CanvasJSReact.CanvasJSChart;
 
 class SurveyReport extends Component {
     constructor(props) {
@@ -11,7 +14,8 @@ class SurveyReport extends Component {
             semesters: [],
             departments: ["Agrimensura", "Computación", "Construcciones y Estructuras", "Electrónica", "Electrotecnia", "Estabilidad", "Física", "Gestión", "Hidráulica", "Idiomas", "Ingeniería Mecánica", "Ingeniería Naval", "Ingeniería Química", "Matemática", "Química", "Seguridad del trabajo y ambiente", "Tecnología Industrial", "Transporte"],
             selectedDepartment: 'blank',
-            selectedSemester: 'blank'
+            selectedSemester: 'blank',
+            dataPoints: null
         };
     }
 
@@ -24,6 +28,35 @@ class SurveyReport extends Component {
         });
     }
 
+    findCourse(courseId, courses) {
+        let course = courses.filter(course => course.course == courseId)[0];
+        return course.subject_name + " - " + course.professors[0].name + " " + course.professors[0].surname;
+    }
+
+    determineColor(score) {
+        if (score >= 7)
+            return "green";
+        else if (score >= 5)
+            return "yellow"
+        else return "red";
+    }
+
+    getDataPoints(result) {
+        var dataPoints = [];
+        let generalOpinion = result.poll_results.q1;
+        generalOpinion
+        .sort((a,b) => (a.score < b.score) ? 1 : ((b.score < a.score) ? -1 : 0))
+        .map(values => {
+            let dataPoint = {
+                y: values.score,
+                label: this.findCourse(values.course, result.courses),
+                color: this.determineColor(values.score)
+            };
+            dataPoints.push(dataPoint)
+        });
+        return dataPoints;
+    }
+
     validSelect() {
         if (this.state.selectedDepartment == "blank" && this.state.selectedSemester == "blank")
             alert("Por favor, seleccione el departamento y período lectivo sobre los que quiere visualizar los reportes");
@@ -33,17 +66,43 @@ class SurveyReport extends Component {
             alert("Debe seleccionar un período lectivo");
         else {
             // Get reports
+            Proxy.getSurveyReport(this.state.selectedDepartment, this.state.selectedSemester)
+            .then(result => {
+                let dataPoints = this.getDataPoints(result);
+                this.setState({dataPoints: dataPoints});
+            });
         }
+    }
+
+    generateOptions() {
+        return {
+			animationEnabled: true,
+			theme: "light2",
+			title:{
+				text: "Most Popular Social Networking Sites"
+			},
+			axisX: {
+				title: "Social Network",
+				reversed: true,
+			},
+			axisY: {
+				title: "Monthly Active Users"
+			},
+			data: [{
+				type: "bar",
+				dataPoints: this.state.dataPoints
+			}]
+		};
     }
 
     render() {
         let semesterCodes = this.state.semesters.map(semester => <option value={semester} key={semester}>{semester}</option>);
-        let departmentNames = this.state.departments.map(department => <option value={department} key={department}>{department}</option>)
+        let departmentNames = this.state.departments.map(department => <option value={department} key={department}>{department}</option>);
         return (
         <div>  
             <h1 style={{color: "#696969"}}>Sistema de Gestión Académica</h1>
             <hr/>
-
+            
             <h2 style={{marginBottom: "1em"}}> Reporte de encuestas </h2>
             <div className="well">
             <form style={{paddingBlockStart: "1em", marginBlockEnd: "-1.5em"}}>
@@ -85,6 +144,26 @@ class SurveyReport extends Component {
                 </FormGroup>
             </form>
             </div>
+            {(this.state.dataPoints != null) && <CanvasJSChart options = {{
+                animationEnabled: true,
+                theme: "light2",
+                title:{
+                    text: "Most Popular Social Networking Sites"
+                },
+                axisX: {
+                    title: "Social Network",
+                    reversed: true,
+                },
+                axisY: {
+                    title: "Monthly Active Users"
+                },
+                data: [{
+                    type: "bar",
+                    dataPoints: this.state.dataPoints
+                }]
+            }}
+				/* onRef={ref => this.chart = ref} */
+			/>}
         </div>
         );
     }

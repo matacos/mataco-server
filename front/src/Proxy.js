@@ -440,6 +440,25 @@ class Proxy  {
             )
     }
 
+    getSurveyReport(department, semester) {
+      return fetch(this.url + "/polls_report?departamento=" + department + "&ciclo_lectivo=" + semester , {
+          method: 'GET',
+          headers: {
+              'Authorization': 'bearer ' + Assistant.getField("token")
+          },
+
+      }).then(res => res.json())
+        .then(
+          (result) => {
+            Assistant.setField("token", result.token);
+            console.log(result)
+            return result;
+          },
+          (error) => {
+            console.log(error)
+          })
+  }
+
     modifySemester(courseId, body) {
         return fetch(this.url + "/ciclos_lectivos/" + courseId, {
             method: 'PUT',
