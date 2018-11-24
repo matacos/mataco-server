@@ -74,7 +74,12 @@ function mountRoutes(app,db,schemaValidation){
         console.log("3================")
         await db.query(query,params);
         console.log("4================")
-        res.sendStatus(201)    
+        res.status(201)
+        res.json({
+            response:"OK"
+        })
+        
+        next()
     })
 
     const pendingPollsQuery ={
