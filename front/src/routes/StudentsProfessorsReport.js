@@ -65,6 +65,7 @@ class StudentsProfessorsReport extends Component {
             // Get reports
             Proxy.getStudentsProffesorsReport(this.state.selectedDepartment, this.state.selectedSemester)
             .then(result => {
+                console.log(result)
                 let dataPoints = this.getDepartmentDataPoints(result);
                 this.setState({departmentDataPoints: dataPoints});
             });

@@ -13,6 +13,7 @@ import Assistant from './Assistant';
 import Semesters from "./routes/Semesters";
 import StudentsProfessorsReport from './routes/StudentsProfessorsReport';
 import SurveyReport from './routes/SurveyReport';
+import Notifications from './routes/Notifications';
 
 class App extends Component {
   constructor(props) {
@@ -74,6 +75,7 @@ class App extends Component {
             <Route path="/periodos" render={ (props) => Assistant.isRole("administrators") ? <Semesters {...props} /> : <Redirect to="/login" /> } />
             <Route path="/reportes/reporte-encuestas" render={ (props) => Assistant.isRole("administrators") ? <SurveyReport {...props} /> : <Redirect to="/login" /> } />
             <Route path="/reportes/reporte-estudiantes-docentes" render={ (props) => Assistant.isRole("administrators") ? <StudentsProfessorsReport {...props} /> : <Redirect to="/login" /> } />
+            <Route path="/notificaciones" render={ (props) => Assistant.isRole("administrators") ? <Notifications {...props} /> : <Redirect to="/login" /> } />
             <Redirect from="/" exact to="/login" />
             <Route component={Error} />
           </Switch>
