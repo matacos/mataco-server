@@ -20,7 +20,6 @@ class Panel extends Component {
             exams: [],
             currentCourse: null,
             showAddExam: false,
-            showSendNotification: false,
             examData: {
                 classroom: '',
                 place: '',
@@ -28,9 +27,7 @@ class Panel extends Component {
                 beginning: '',
                 ending: ''
             },
-            message: '',
             inputError: false,
-            ok: false,
             errorMsg: '',
             listItems: []
         };
@@ -144,8 +141,6 @@ class Panel extends Component {
             };
             this.setState({showAddExam: false, examData: clearData, errorMsg: '', inputError: false});
         }
-        else 
-            this.setState({showSendNotification: false, message: '', errorMsg: '', inputError: false, ok: false});
     }
 
     validInput() {
@@ -228,24 +223,6 @@ class Panel extends Component {
                 this.setState({inputError: true, errorMsg: validationResult[1]})
             }
         }
-    }
-
-    sendNotification() {
-        let message = {
-            message: this.state.message
-        };
-        Proxy.sendNotification(message)
-        .then(status => {
-            if (status == 201) {
-                this.setState({ok: true, errorMsg: "Se ha enviado la notificación exitosamente"});
-                setTimeout(() => { 
-                    this.handleHide("sendNotification");
-                 }, 1500);
-            }
-            else {
-                this.setState({inputError: true, errorMsg: "No se pudo enviar la notificación, intente nuevamente"})
-            }
-        });
     }
 
     search(prefix) {
@@ -363,7 +340,7 @@ class Panel extends Component {
                                 <button className="text-primary text-left Panel-list-item" onClick={this.redirectTo.bind(this, "/reportes/reporte-estudiantes-docentes")}>Reporte de estudiantes y docentes</button><hr />
                             </div>}
                         </div>
-                        <button className="Panel-item" onClick={this.showModal.bind(this, "sendNotification")}><h4 className="text-primary"> Enviar notificación</h4> </button>          
+                        <button className="Panel-item" onClick={this.redirectTo.bind(this, "/notificaciones")}><h4 className="text-primary"> Notificaciones</h4> </button>          
                     </div>
                 );
             default:
@@ -397,8 +374,6 @@ class Panel extends Component {
             if (this.canInsertExam()) 
                 this.setState({showAddExam: true});
         }
-        else
-            this.setState({showSendNotification: true});
     }
 
     render() {
@@ -508,51 +483,6 @@ class Panel extends Component {
             </Modal.Footer>
             </Modal>}
             </div>}
-
-            {this.state.showSendNotification &&  <Modal
-            show={this.state.showSendNotification}
-            onHide={this.handleHide.bind(this, "sendNotification")}
-            container={this}
-            aria-labelledby="contained-modal-title"
-            >
-            <Modal.Header>
-                <Modal.Title id="contained-modal-title">
-                Enviar notificación
-                </Modal.Title>
-            </Modal.Header>
-            <Modal.Body>
-            <form className="form-horizontal">
-            <fieldset>
-
-                <div className="form-group">
-                <div style={{marginInlineStart: "2em", marginInlineEnd: "2em"}}>
-                <label htmlFor="exampleTextarea">Mensaje</label>
-                <textarea className="form-control" value={this.state.message} id="exampleTextarea" rows="3" onChange={ e => {
-                        if (e.target.value.length <= 300) {
-                            this.setState({message: e.target.value});
-                        }
-                    }}></textarea>
-                </div>
-                </div>
-
-            </fieldset>
-            </form>
-            {this.state.inputError && 
-                <div className="alert alert-dismissible alert-danger" >
-                    <button type="button" className="close" data-dismiss="alert" onClick={ e => this.setState({ inputError : false }) }>&times;</button>
-                    <a href="#" className="alert-link"/>{this.state.errorMsg}
-                </div>}
-            {this.state.ok && 
-                <div className="alert alert-dismissible alert-success" >
-                    <button type="button" className="close" data-dismiss="alert" onClick={ e => this.setState({ ok : false }) }>&times;</button>
-                    <a href="#" className="alert-link"/>{this.state.errorMsg}
-                </div>}
-            </Modal.Body>
-            <Modal.Footer>
-                <Button onClick={this.handleHide.bind(this, "sendNotification")}>Cancelar</Button>
-                <Button bsStyle="primary" onClick={this.sendNotification.bind(this)}>Enviar</Button>
-            </Modal.Footer>
-            </Modal>}
 
             </div>
         );
