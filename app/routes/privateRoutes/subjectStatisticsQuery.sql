@@ -69,7 +69,7 @@ almost_full_subjects as (
         subjects_with_courses swc
         on (
             swd.department_code = swc.department_code
-        and swd.code = swc.department_code
+        and swd.code = swc.subject_code
         ),
         departments as d
         where swd.department_code = d.code
