@@ -11,6 +11,7 @@ function mountRoutes(app,db,schemaValidation){
             name:u.name,
             surname:u.surname,
             roles:u.roles,
+            regular:true
         }})
         next()
     })

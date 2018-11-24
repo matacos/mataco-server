@@ -89,6 +89,7 @@ courses_per_subject as (
     select c.subject_code, c.department_code, count(distinct c.id) as total_courses
     from 
         courses as c
+    where c.semester = $1
     group by c.subject_code, c.department_code
 )
 select 
