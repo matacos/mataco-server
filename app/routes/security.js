@@ -153,6 +153,9 @@ function mountRoutes(app,db,checkSchemas){
         `
         await db.query(query,[username,firebaseToken])
         res.sendStatus(201)
+        res.json({
+            response:"OK"
+        })
         next()
     })
 

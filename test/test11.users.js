@@ -63,7 +63,8 @@ describe("Test /me",()=>{
             email: 'jose.jose@gmail.com',
             name: 'José Ignacio',
             surname: 'Sbruzzi',
-            roles: [ 'students' ] 
+            roles: [ 'students' ],
+            regular:true
         }
         let schema={
             required:["me"],
@@ -110,7 +111,8 @@ describe("Test /me",()=>{
             email: 'jose.jose@gmail.com',
             name: 'José Ignacio',
             surname: 'Sbruzzi',
-            roles: [ 'students' ] 
+            roles: [ 'students' ] ,
+            regular:true
         }
         let schema2={
             required:["me"],
@@ -127,6 +129,7 @@ describe("Test /me",()=>{
             email: 'jose.jose@gmail.com',
             name: 'José Ignacio',
             surname: 'Sbruzzi',
+            regular:true
         }
 
         const rPut2 = await requestWithAuth("97452","jojo","PUT","/me",user3)

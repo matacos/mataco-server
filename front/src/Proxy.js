@@ -152,14 +152,14 @@ class Proxy  {
       }
 
       sendNotification(message){
-        return fetch(this.url + "/notificacion" , {
+        return fetch(this.url + "/notificaciones" , {
           method:"POST",
           headers: {
             'Content-Type': 'application/json',
             'Authorization': 'bearer ' + Assistant.getField("token")
           },
           body: JSON.stringify(message),
-        }).then(res => res.status);
+        }).then(res => {console.log(res); return res.status});
       }
 
       addProfessor(courseId, professor){
@@ -440,6 +440,25 @@ class Proxy  {
             )
     }
 
+    getNotifications() {
+      return fetch(this.url + "/notificaciones" , {
+          method: 'GET',
+          headers: {
+              'Authorization': 'bearer ' + Assistant.getField("token")
+          },
+
+      }).then(res => res.json())
+          .then(
+              (result) => {
+                  Assistant.setField("token", result.token);
+                  return result.notifications;
+              },
+              (error) => {
+                  console.log(error)
+              }
+          )
+  }
+
     getSurveyReport(department, semester) {
       return fetch(this.url + "/polls_report?departamento=" + department + "&ciclo_lectivo=" + semester , {
           method: 'GET',
@@ -457,7 +476,24 @@ class Proxy  {
           (error) => {
             console.log(error)
           })
-  }
+    }
+    getStudentsProffesorsReport(department, semester) {
+      return fetch(this.url + "/enrolments_report?departamento=" + department + "&ciclo_lectivo=" + semester , {
+          method: 'GET',
+          headers: {
+              'Authorization': 'bearer ' + Assistant.getField("token")
+          },
+
+      }).then(res => res.json())
+        .then(
+          (result) => {
+            Assistant.setField("token", result.token);
+            return result.subjects_with_statistics;
+          },
+          (error) => {
+            console.log(error)
+          })
+    }
 
     modifySemester(courseId, body) {
         return fetch(this.url + "/ciclos_lectivos/" + courseId, {
