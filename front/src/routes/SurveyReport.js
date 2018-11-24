@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import '../App.css';
 import Proxy from '../Proxy';
-import { FormControl, ControlLabel, FormGroup, Button } from 'react-bootstrap';
+import {FormControl, ControlLabel, FormGroup, Button, Glyphicon} from 'react-bootstrap';
 import CanvasJSReact from '../components/canvasjs.react';
 const CanvasJS = CanvasJSReact.CanvasJS;
 const CanvasJSChart = CanvasJSReact.CanvasJSChart;
@@ -15,7 +15,8 @@ class SurveyReport extends Component {
             departments: ["Agrimensura", "Computación", "Construcciones y Estructuras", "Electrónica", "Electrotecnia", "Estabilidad", "Física", "Gestión", "Hidráulica", "Idiomas", "Ingeniería Mecánica", "Ingeniería Naval", "Ingeniería Química", "Matemática", "Química", "Seguridad del trabajo y ambiente", "Tecnología Industrial", "Transporte"],
             selectedDepartment: 'blank',
             selectedSemester: 'blank',
-            dataPoints: null
+            dataPoints: null,
+            feedback: []
         };
     }
 
@@ -57,6 +58,32 @@ class SurveyReport extends Component {
         return dataPoints;
     }
 
+    getFeedback(result) {
+        var feedback = [];
+        let generalOpinion = result.poll_results.q1;
+        let feedbackArray = result.poll_results.feedback;
+        feedbackArray
+            .sort(this.opinionScoreComparator(generalOpinion))
+            .map(values => {
+                let feedbackInfo = {
+                    course_name: this.findCourse(values.course, result.courses),
+                    course: values.course,
+                    comments: values.feedback
+                };
+                feedback.push(feedbackInfo);
+            });
+        return feedback;
+    }
+
+    opinionScoreComparator(generalOpinion){
+        return function(a, b) {
+            let scoreA = generalOpinion.find(function(e){ return e.course === a.course }).score;
+            let scoreB = generalOpinion.find(function(e){ return e.course === b.course }).score;
+            console.log("Score a: " + scoreA + "Score B: " + scoreB);
+            return (scoreA < scoreB) ? 1 : ((scoreB < scoreA) ? -1 : 0);
+        };
+    }
+
     validSelect() {
         if (this.state.selectedDepartment == "blank" && this.state.selectedSemester == "blank")
             alert("Por favor, seleccione el departamento y período lectivo sobre los que quiere visualizar los reportes");
@@ -68,8 +95,11 @@ class SurveyReport extends Component {
             // Get reports
             Proxy.getSurveyReport(this.state.selectedDepartment, this.state.selectedSemester)
             .then(result => {
+                console.log(result);
                 let dataPoints = this.getDataPoints(result);
+                let feedback = this.getFeedback(result);
                 this.setState({dataPoints: dataPoints});
+                this.setState({feedback: feedback});
             });
         }
     }
@@ -79,14 +109,14 @@ class SurveyReport extends Component {
 			animationEnabled: true,
 			theme: "light2",
 			title:{
-				text: "Most Popular Social Networking Sites"
+				text: "Opinión General del curso"
 			},
 			axisX: {
-				title: "Social Network",
+				title: "Curso",
 				reversed: true,
 			},
 			axisY: {
-				title: "Monthly Active Users"
+				title: "Promedio"
 			},
 			data: [{
 				type: "bar",
@@ -148,14 +178,14 @@ class SurveyReport extends Component {
                 animationEnabled: true,
                 theme: "light2",
                 title:{
-                    text: "Most Popular Social Networking Sites"
+                    text: ""
                 },
                 axisX: {
-                    title: "Social Network",
+                    title: "",
                     reversed: true,
                 },
                 axisY: {
-                    title: "Monthly Active Users"
+                    title: ""
                 },
                 data: [{
                     type: "bar",
@@ -164,6 +194,22 @@ class SurveyReport extends Component {
             }}
 				/* onRef={ref => this.chart = ref} */
 			/>}
+            {this.state.feedback
+                .map(function(courseFeedback, idx) {
+                    return (<div key={idx} className="well">
+                        <h3 style={{paddingBottom: "0.5em"}}> {courseFeedback.course_name}</h3>
+
+                        {courseFeedback.comments
+                        .map(function(comment, idx){
+                            return(
+                                <h5 key={idx} className="text-primary" style={{textAlign:"right", paddingBottom: "1em", paddingTop: "1em"}}> "{comment}" </h5>
+                            )
+                        }, this)
+                        }
+
+                    </div>)
+                }, this)
+            }
         </div>
         );
     }
