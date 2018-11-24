@@ -457,7 +457,24 @@ class Proxy  {
           (error) => {
             console.log(error)
           })
-  }
+    }
+    getStudentsProffesorsReport(department, semester) {
+      return fetch(this.url + "/enrolments_report?departamento=" + department + "&ciclo_lectivo=" + semester , {
+          method: 'GET',
+          headers: {
+              'Authorization': 'bearer ' + Assistant.getField("token")
+          },
+
+      }).then(res => res.json())
+        .then(
+          (result) => {
+            Assistant.setField("token", result.token);
+            return result.subjects_with_statistics;
+          },
+          (error) => {
+            console.log(error)
+          })
+    }
 
     modifySemester(courseId, body) {
         return fetch(this.url + "/ciclos_lectivos/" + courseId, {

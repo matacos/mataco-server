@@ -2,6 +2,9 @@ import React, { Component } from 'react';
 import '../App.css';
 import Proxy from '../Proxy';
 import { FormControl, ControlLabel, FormGroup, Button } from 'react-bootstrap';
+import CanvasJSReact from '../components/canvasjs.react';
+const CanvasJS = CanvasJSReact.CanvasJS;
+const CanvasJSChart = CanvasJSReact.CanvasJSChart;
 
 class StudentsProfessorsReport extends Component {
     constructor(props) {
@@ -11,7 +14,9 @@ class StudentsProfessorsReport extends Component {
             semesters: [],
             departments: ["Agrimensura", "Computación", "Construcciones y Estructuras", "Electrónica", "Electrotecnia", "Estabilidad", "Física", "Gestión", "Hidráulica", "Idiomas", "Ingeniería Mecánica", "Ingeniería Naval", "Ingeniería Química", "Matemática", "Química", "Seguridad del trabajo y ambiente", "Tecnología Industrial", "Transporte"],
             selectedDepartment: 'blank',
-            selectedSemester: 'blank'
+            selectedSemester: 'blank',
+            departmentDataPoints: null,
+            subjectDataPoints: null
         };
     }
 
@@ -24,6 +29,30 @@ class StudentsProfessorsReport extends Component {
         });
     }
 
+    getDepartmentDataPoints(result) {
+        let totalStudents = 0;
+        for(var i = 0; i < result.length; i++) {
+            let subject = result[i];
+            totalStudents += parseInt(subject.total_students);
+        }
+        var dataPoints = [];
+        result.filter(subject => subject.total_students != 0)
+        .map(subject => {
+            let dataPoint = {
+                y: (subject.total_students * 100) / totalStudents,
+                label: subject.name,
+                total_students: subject.total_students,
+                total_professors: subject.total_professors,
+                total_courses: subject.total_courses,
+                courses: subject.courses,
+                indexLabelFontColor: "white",
+                toolTipContent: "<strong>{label}</strong> <br/> {total_students} inscriptos <br/> {total_professors} docentes <br/> {total_courses} cursos"
+            };
+            dataPoints.push(dataPoint)
+        });
+        return dataPoints;
+    }
+
     validSelect() {
         if (this.state.selectedDepartment == "blank" && this.state.selectedSemester == "blank")
             alert("Por favor, seleccione el departamento y período lectivo sobre los que quiere visualizar los reportes");
@@ -32,8 +61,23 @@ class StudentsProfessorsReport extends Component {
         else if (this.state.selectedSemester == "blank")
             alert("Debe seleccionar un período lectivo");
         else {
+            this.setState({departmentDataPoints: null, subjectDataPoints: null});
             // Get reports
+            Proxy.getStudentsProffesorsReport(this.state.selectedDepartment, this.state.selectedSemester)
+            .then(result => {
+                let dataPoints = this.getDepartmentDataPoints(result);
+                this.setState({departmentDataPoints: dataPoints});
+            });
         }
+    }
+    
+    showSubjectPie(e) {
+        console.log(e.dataPoint);
+        let dataPoints = [
+            {y: 4, label: "temporal"},
+            {y: 96, label: "test"}
+        ];
+        this.setState({subjectDataPoints: dataPoints});
     }
 
     render() {
@@ -85,9 +129,52 @@ class StudentsProfessorsReport extends Component {
                 </FormGroup>
             </form>
             </div>
+            <div className="row">
+            {(this.state.departmentDataPoints != null) && 
+            <div className={(this.state.subjectDataPoints != null) ? "col-md-6" : "col-md-12"}>
+            <CanvasJSChart options = {{
+                theme: "light2",
+                animationEnabled: true,
+                exportFileName: "New Year Resolutions",
+                exportEnabled: true,
+                title:{
+                    text: "Top Categories of New Year's Resolution"
+                },
+                data: [{
+                    click: this.showSubjectPie.bind(this),
+                    type: "pie",
+                    showInLegend: true,
+                    legendText: "{label}",
+                    toolTipContent: "{label}: <strong>{y}</strong>",
+                    indexLabel: "{y}%",
+                    indexLabelPlacement: "inside",
+                    dataPoints: this.state.departmentDataPoints
+                }]
+            }}
+            /></div>}
+            
+            {(this.state.subjectDataPoints != null) && <div className="col-md-6"><CanvasJSChart options = {{
+                theme: "light2",
+                animationEnabled: true,
+                exportFileName: "New Year Resolutions",
+                exportEnabled: true,
+                title:{
+                    text: "Top Categories of New Year's Resolution"
+                },
+                data: [{
+                    type: "pie",
+                    showInLegend: true,
+                    legendText: "{label}",
+                    toolTipContent: "{label}: <strong>{y}</strong>",
+                    indexLabel: "{y}%",
+                    indexLabelPlacement: "inside",
+                    dataPoints: this.state.subjectDataPoints
+                }]
+            }}
+            /></div>}
+            </div>
         </div>
-        );
-    }
+        )}
 }
 
 export default StudentsProfessorsReport;
