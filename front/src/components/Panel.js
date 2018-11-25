@@ -318,6 +318,18 @@ class Panel extends Component {
                             }} />
                             {this.state.listItems}
                         </div>}
+                        <div className="row" style={{paddingLeft: "1em"}}>
+                            <button className="Panel-item" onClick={this.handleSelectedField.bind(this, "reports")}><h4 className="text-primary"> 
+                                {((this.props.selected["reports"]) && <Glyphicon style={{fontSize:"0.75em"}} glyph="minus" />) || <Glyphicon style={{fontSize:"0.75em"}} glyph="plus" />}
+                                {" Reportes"}
+                            </h4></button>
+                            {(this.props.selected["reports"]) && 
+                            <div style={{marginTop: "1em"}}>
+                                <hr />
+                                <button className="text-primary text-left Panel-list-item" onClick={this.redirectTo.bind(this, "/reportes/departamento/reporte-encuestas")}>Reporte de encuestas</button><hr />
+                                <button className="text-primary text-left Panel-list-item" onClick={this.redirectTo.bind(this, "/reportes/departamento/reporte-estudiantes-docentes")}>Reporte de estudiantes y docentes</button><hr />
+                            </div>}
+                        </div>
                     </div>
 
 
