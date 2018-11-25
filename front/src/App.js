@@ -75,6 +75,8 @@ class App extends Component {
             <Route path="/periodos" render={ (props) => Assistant.isRole("administrators") ? <Semesters {...props} /> : <Redirect to="/login" /> } />
             <Route path="/reportes/reporte-encuestas" render={ (props) => Assistant.isRole("administrators") ? <SurveyReport {...props} /> : <Redirect to="/login" /> } />
             <Route path="/reportes/reporte-estudiantes-docentes" render={ (props) => Assistant.isRole("administrators") ? <StudentsProfessorsReport {...props} /> : <Redirect to="/login" /> } />
+            <Route path="/reportes/departamento/reporte-encuestas" render={ (props) => Assistant.isRole("department_administrator") ? <SurveyReport {...props} /> : <Redirect to="/login" /> } />
+            <Route path="/reportes/departamento/reporte-estudiantes-docentes" render={ (props) => Assistant.isRole("department_administrator") ? <StudentsProfessorsReport {...props} /> : <Redirect to="/login" /> } />
             <Route path="/notificaciones" render={ (props) => Assistant.isRole("administrators") ? <Notifications {...props} /> : <Redirect to="/login" /> } />
             <Redirect from="/" exact to="/login" />
             <Route component={Error} />

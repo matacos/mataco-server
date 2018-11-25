@@ -1,9 +1,7 @@
 import React, { Component } from 'react';
 import '../App.css';
 import Proxy from '../Proxy';
-import { Modal, Button } from 'react-bootstrap';
-import { Glyphicon } from 'react-bootstrap';
-import {DatePickerInput} from "rc-datepicker";
+import { Modal, Button, Glyphicon, Pager, Item } from 'react-bootstrap';
 
 class Notifications extends Component {
     constructor(props) {
@@ -15,7 +13,10 @@ class Notifications extends Component {
             message: '',
             inputError: false,
             ok: false,
-            errorMsg: ''
+            errorMsg: '',
+            actualPage: 0,
+            pages: 0,
+            actualNotifications: []
         };
     }
  
@@ -24,9 +25,23 @@ class Notifications extends Component {
         return Proxy.getNotifications();
     }
 
+    setActualNotifications(actualPage) {
+        var actualNotif = [];
+        for(var i = actualPage * 5; i < 5 + (actualPage * 5); i++) {
+            if (i < this.state.notifications.length) 
+                actualNotif.push(this.state.notifications[i]);
+             
+        }
+        this.setState({actualNotifications: actualNotif});
+    }
+
     setNotifications(){
         this.getNotifications()
-            .then(notifications => this.setState({notifications: notifications}));
+            .then(notifications => {
+                let sortedNotifications = notifications.sort((a,b) => (a.creation < b.creation) ? 1 : ((b.creation < a.creation) ? -1 : 0));
+                this.setState({notifications: sortedNotifications, pages: Math.ceil(notifications.length / 5)});
+                this.setActualNotifications(this.state.actualPage);
+             });
     }
 
     componentDidMount() {
@@ -60,6 +75,22 @@ class Notifications extends Component {
         });
     }
 
+    nextPage() {
+        let newPage = this.state.actualPage + 1;
+        if (newPage < this.state.pages) {
+            this.setState({actualPage: newPage});
+            this.setActualNotifications(newPage);
+        }
+    }
+
+    prevPage() {
+        let newPage = this.state.actualPage - 1;
+        if (newPage >= 0) {
+            this.setState({actualPage: newPage});
+            this.setActualNotifications(newPage);
+        }
+    }
+
     dateFormat(timestamp) {
         let date = timestamp.substring(0, 10);
         let hour = timestamp.substr(11, 5);
@@ -82,14 +113,21 @@ class Notifications extends Component {
                         </h2>
                     </div>
 
-                    {this.state.notifications
-                        .sort((a,b) => (a.creation < b.creation) ? 1 : ((b.creation < a.creation) ? -1 : 0))
+                    {this.state.actualNotifications
                         .map(function(notification, idx) {
                         return (<div key={idx} className="well">
                             <h4  style={{color: "#696969"}}> {notification.message}</h4>
                             <h6 className="text-primary text-right" style={{paddingTop: "0.5em", marginBottom: "-0.75em"}}> Enviado: <span style={{color: "#696969"}}>{this.dateFormat(notification.creation)}</span></h6>
                         </div>)
                     }, this)}
+                    <Pager>
+                    {(this.state.actualPage != 0) && <Pager.Item previous href="#" onClick={this.prevPage.bind(this)}>
+                        &larr; Anterior
+                    </Pager.Item>}
+                    {(this.state.actualPage != this.state.pages - 1) && <Pager.Item next href="#" onClick={this.nextPage.bind(this)}>
+                        Siguiente &rarr;
+                    </Pager.Item>}
+                    </Pager>
                 </div>}
 
                 {this.state.showSendNotification &&  <Modal

@@ -3,6 +3,7 @@ import '../App.css';
 import Proxy from '../Proxy';
 import { FormControl, ControlLabel, FormGroup, Button } from 'react-bootstrap';
 import CanvasJSReact from '../components/canvasjs.react';
+import Assistant from '../Assistant';
 const CanvasJS = CanvasJSReact.CanvasJS;
 const CanvasJSChart = CanvasJSReact.CanvasJSChart;
 
@@ -39,7 +40,7 @@ class StudentsProfessorsReport extends Component {
         result.filter(subject => subject.total_students != 0)
         .map(subject => {
             let dataPoint = {
-                y: (subject.total_students * 100) / totalStudents,
+                y: Math.round((subject.total_students * 100) / totalStudents),
                 label: subject.name,
                 total_students: subject.total_students,
                 total_professors: subject.total_professors,
@@ -54,16 +55,17 @@ class StudentsProfessorsReport extends Component {
     }
 
     validSelect() {
-        if (this.state.selectedDepartment == "blank" && this.state.selectedSemester == "blank")
+        let selectedDepartment = Assistant.inDepartmentAdminMode() ? Assistant.getField("department") : this.state.selectedDepartment;
+        if (selectedDepartment == "blank" && this.state.selectedSemester == "blank")
             alert("Por favor, seleccione el departamento y período lectivo sobre los que quiere visualizar los reportes");
-        else if (this.state.selectedDepartment == "blank")
+        else if (selectedDepartment == "blank")
             alert("Debe seleccionar un departamento");
         else if (this.state.selectedSemester == "blank")
             alert("Debe seleccionar un período lectivo");
         else {
             this.setState({departmentDataPoints: null, subjectDataPoints: null});
             // Get reports
-            Proxy.getStudentsProffesorsReport(this.state.selectedDepartment, this.state.selectedSemester)
+            Proxy.getStudentsProffesorsReport(selectedDepartment, this.state.selectedSemester)
             .then(result => {
                 console.log(result)
                 let dataPoints = this.getDepartmentDataPoints(result);
@@ -71,19 +73,41 @@ class StudentsProfessorsReport extends Component {
             });
         }
     }
+
+    getProfessorsNames(professors) {
+        var names = "";
+        for(var i = 1; i < professors.length; i++) {
+            var professor = professors[i];
+            names += professor.name + " " + professor.surname + "<br/>";
+            
+        }
+        return names;
+    }
     
     showSubjectPie(e) {
+        let data = e.dataPoint;
         console.log(e.dataPoint);
-        let dataPoints = [
-            {y: 4, label: "temporal"},
-            {y: 96, label: "test"}
-        ];
+        let dataPoints = [];
+        var totalStudents = 0;
+        data.courses.map(course => totalStudents += course.total_students);
+        data.courses.filter(course => course.total_students != 0)
+            .map(course => {
+                let dataPoint = {
+                    y: Math.round((course.total_students * 100) / totalStudents),
+                    label: course.professors[0].name + " " + course.professors[0].surname,
+                    total_students: course.total_students,
+                    professors: this.getProfessorsNames(course.professors),
+                    indexLabelFontColor: "white",
+                    toolTipContent: "<strong>{label}</strong> <br/> {professors} {total_students} inscriptos"
+                };
+                dataPoints.push(dataPoint)
+            })
         this.setState({subjectDataPoints: dataPoints});
     }
 
     render() {
         let semesterCodes = this.state.semesters.map(semester => <option value={semester} key={semester}>{semester}</option>);
-        let departmentNames = this.state.departments.map(department => <option value={department} key={department}>{department}</option>)
+        let departmentNames = this.state.departments.map(department => <option value={department} key={department}>{department}</option>);
         return (
         <div>  
             <h1 style={{color: "#696969"}}>Sistema de Gestión Académica</h1>
@@ -94,6 +118,7 @@ class StudentsProfessorsReport extends Component {
             <form style={{paddingBlockStart: "1em", marginBlockEnd: "-1.5em"}}>
                 <FormGroup controlId="formControlsSelect">
                 <div className="row">
+                    {Assistant.inAdminMode() && <div>
                     <div className="col-md-1" style={{paddingTop: "0.8em"}}>
                         <ControlLabel>Departamento:</ControlLabel>
                     </div>
@@ -108,6 +133,7 @@ class StudentsProfessorsReport extends Component {
                             <span style={{color: "#cc0000", marginLeft: "-0.6em"}}>*</span>
                         </div>
                     </div>
+                    </div>}
                     <div className="col-md-1" style={{paddingTop: "0.8em", paddingLeft: "1em"}}>
                         <ControlLabel>Período:</ControlLabel>
                     </div>
@@ -136,10 +162,10 @@ class StudentsProfessorsReport extends Component {
             <CanvasJSChart options = {{
                 theme: "light2",
                 animationEnabled: true,
-                exportFileName: "New Year Resolutions",
-                exportEnabled: true,
+                exportFileName: "Estudiantes inscriptos por materia",
+                exportEnabled: false,
                 title:{
-                    text: "Top Categories of New Year's Resolution"
+                    text: ""
                 },
                 data: [{
                     click: this.showSubjectPie.bind(this),
@@ -157,10 +183,10 @@ class StudentsProfessorsReport extends Component {
             {(this.state.subjectDataPoints != null) && <div className="col-md-6"><CanvasJSChart options = {{
                 theme: "light2",
                 animationEnabled: true,
-                exportFileName: "New Year Resolutions",
+                exportFileName: "Estudiantes inscriptos por curso",
                 exportEnabled: true,
                 title:{
-                    text: "Top Categories of New Year's Resolution"
+                    text: ""
                 },
                 data: [{
                     type: "pie",

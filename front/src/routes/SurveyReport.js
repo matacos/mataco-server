@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import '../App.css';
 import Proxy from '../Proxy';
 import {FormControl, ControlLabel, FormGroup, Button, Glyphicon} from 'react-bootstrap';
+import Assistant from '../Assistant';
 import CanvasJSReact from '../components/canvasjs.react';
 const CanvasJS = CanvasJSReact.CanvasJS;
 const CanvasJSChart = CanvasJSReact.CanvasJSChart;
@@ -85,15 +86,16 @@ class SurveyReport extends Component {
     }
 
     validSelect() {
-        if (this.state.selectedDepartment == "blank" && this.state.selectedSemester == "blank")
+        let selectedDepartment = Assistant.inDepartmentAdminMode() ? Assistant.getField("department") : this.state.selectedDepartment;
+        if (selectedDepartment == "blank" && this.state.selectedSemester == "blank")
             alert("Por favor, seleccione el departamento y período lectivo sobre los que quiere visualizar los reportes");
-        else if (this.state.selectedDepartment == "blank")
+        else if (selectedDepartment == "blank")
             alert("Debe seleccionar un departamento");
         else if (this.state.selectedSemester == "blank")
             alert("Debe seleccionar un período lectivo");
         else {
             // Get reports
-            Proxy.getSurveyReport(this.state.selectedDepartment, this.state.selectedSemester)
+            Proxy.getSurveyReport(selectedDepartment, this.state.selectedSemester)
             .then(result => {
                 console.log(result);
                 let dataPoints = this.getDataPoints(result);
@@ -138,6 +140,7 @@ class SurveyReport extends Component {
             <form style={{paddingBlockStart: "1em", marginBlockEnd: "-1.5em"}}>
                 <FormGroup controlId="formControlsSelect">
                 <div className="row">
+                    {Assistant.inAdminMode() && <div>
                     <div className="col-md-1" style={{paddingTop: "0.8em"}}>
                         <ControlLabel>Departamento:</ControlLabel>
                     </div>
@@ -152,6 +155,7 @@ class SurveyReport extends Component {
                             <span style={{color: "#cc0000", marginLeft: "-0.6em"}}>*</span>
                         </div>
                     </div>
+                    </div>}
                     <div className="col-md-1" style={{paddingTop: "0.8em", paddingLeft: "1em"}}>
                         <ControlLabel>Período:</ControlLabel>
                     </div>
