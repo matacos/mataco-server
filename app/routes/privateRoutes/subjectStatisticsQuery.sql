@@ -83,6 +83,7 @@ professors_per_subject as (
         course_professors_count as cpc
     where
         c.id=cpc.course
+    and c.semester=$1
     group by c.subject_code, c.department_code
 ),
 courses_per_subject as (
