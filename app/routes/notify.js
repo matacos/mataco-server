@@ -10,7 +10,17 @@ const sgMail = require('@sendgrid/mail');
         
         +"zX9VbtmIik");
 
-async function notifyAndroid(notifyTokens,message,channelId){
+async function notifyAndroid(notifyTokens,message,channelId,title){
+    let click_action=""
+    if(channelId=="exams"){
+        click_action="exam_sincriptions"
+    }
+    if(channelId=="courses"){
+        click_action="course_inscriptions"
+    }
+    if(channelId=="general"){
+        click_action="android.intent.action.MAIN"
+    }
     console.log("holiholi")
     if(process.env.ENVIRONMENT_MODE && process.env.ENVIRONMENT_MODE=="TEST"){
         return
@@ -20,7 +30,7 @@ async function notifyAndroid(notifyTokens,message,channelId){
     console.log(notifyTokens)
     let requestPayload = {
         "data": {
-            "title": "Se canceló un examen",
+            "title": title,
             "body": message,
             "click_action": "exam_inscriptions",
             "channel_id": channelId

@@ -238,7 +238,7 @@ function mountRoutes(app,db,schemaValidation,notify){
         const message=`
             El curso ${nombreCurso} de la materia ${nombreMateria} fue modificado. Haga click aquí para ver los cambios.
         `
-        await notify.notifyAndroid(tokens,message,"courses")
+        await notify.notifyAndroid(tokens,message,"courses","Curso Modificado")
 
         console.log("$$$$$$$$$$$$$$$$$$$$$$$$$$$113333")
 
@@ -302,7 +302,7 @@ function mountRoutes(app,db,schemaValidation,notify){
         const message=`
             El curso ${nombreCurso} de la materia ${nombreMateria} fue cancelado.
         `
-        await notify.notifyAndroid(tokens,message,"courses")
+        await notify.notifyAndroid(tokens,message,"courses","Curso Cancelado")
 
         console.log("$$$$$$$$$$$$$$$$$$$$$$$$$$$113333")
         // -------------- eliminar el curso ----------------- //
@@ -390,7 +390,7 @@ function mountRoutes(app,db,schemaValidation,notify){
         const message=`
             El curso ${nombreCurso} de la materia ${nombreMateria} fue modificado. Haga click aquí para ver los cambios.
         `
-        await notify.notifyAndroid(tokens,message,"courses")
+        await notify.notifyAndroid(tokens,message,"courses","Examen Modificado")
 
         console.log("$$$$$$$$$$$$$$$$$$$$$$$$$$$113333")
         // -------------------------------- HACER LO DEL HOARIO -----------------------/
@@ -454,7 +454,7 @@ function mountRoutes(app,db,schemaValidation,notify){
         const message=`
             El curso ${nombreCurso} de la materia ${nombreMateria} fue modificado. Haga click aquí para ver los cambios.
         `
-        await notify.notifyAndroid(tokens,message,"courses")
+        await notify.notifyAndroid(tokens,message,"courses","Examen Modificado")
 
         console.log("$$$$$$$$$$$$$$$$$$$$$$$$$$$113333")
         // ------------------ HACER LA MODIFICACION --------------------------- //

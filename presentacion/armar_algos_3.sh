@@ -1,0 +1,1 @@
+sudo su - postgres -c "psql $(heroku config:get DATABASE_URL -a mataco2)" < armar_curso_algoritmos3.sql
