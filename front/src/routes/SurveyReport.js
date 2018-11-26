@@ -205,15 +205,17 @@ class SurveyReport extends Component {
             }}
 				/* onRef={ref => this.chart = ref} */
 			/>}
+            <div style={{marginTop: "4em"}}></div>
             {this.state.feedback
                 .map(function(courseFeedback, idx) {
                     return (<div key={idx} className="well">
                         <h3 style={{paddingBottom: "0.5em"}}> {courseFeedback.course_name}</h3>
+                        <hr style={{borderColor: "#33A1C9", marginTop: "-0.5em"}}/>
 
                         {courseFeedback.comments
                         .map(function(comment, idx){
                             return(
-                                <h5 key={idx} className="text-primary" style={{textAlign:"right", paddingBottom: "1em", paddingTop: "1em"}}> "{comment}" </h5>
+                                <h5 key={idx} className="text-primary" style={{textAlign: "right", paddingBottom: "1em", paddingTop: "1em"}}> "{comment}" </h5>
                             )
                         }, this)
                         }
