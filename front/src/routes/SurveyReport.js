@@ -195,7 +195,7 @@ class SurveyReport extends Component {
                     title: "",
                     interval: 1
                 },
-                height: (24 * this.state.dataPoints.length),
+                height: (30 * this.state.dataPoints.length),
                 data: [{
                     type: "bar",
                     indexLabelMaxWidth: 20,

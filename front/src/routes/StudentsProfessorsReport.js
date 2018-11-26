@@ -46,7 +46,7 @@ class StudentsProfessorsReport extends Component {
                 total_professors: subject.total_professors,
                 total_courses: subject.total_courses,
                 courses: subject.courses,
-                indexLabelFontColor: "white",
+                indexLabelFontColor: "black",
                 toolTipContent: "<strong>{label}</strong> <br/> {total_students} inscriptos <br/> {total_professors} docentes <br/> {total_courses} cursos"
             };
             dataPoints.push(dataPoint)
@@ -97,7 +97,7 @@ class StudentsProfessorsReport extends Component {
                     label: course.professors[0].name + " " + course.professors[0].surname,
                     total_students: course.total_students,
                     professors: this.getProfessorsNames(course.professors),
-                    indexLabelFontColor: "white",
+                    indexLabelFontColor: "black",
                     toolTipContent: "<strong>{label}</strong> <br/> {professors} {total_students} inscriptos"
                 };
                 dataPoints.push(dataPoint)
@@ -174,7 +174,7 @@ class StudentsProfessorsReport extends Component {
                     legendText: "{label}",
                     toolTipContent: "{label}: <strong>{y}</strong>",
                     indexLabel: "{y}%",
-                    indexLabelPlacement: "inside",
+                    indexLabelPlacement: "outside",
                     dataPoints: this.state.departmentDataPoints
                 }]
             }}
