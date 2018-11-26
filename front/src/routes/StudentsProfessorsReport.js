@@ -40,7 +40,7 @@ class StudentsProfessorsReport extends Component {
         result.filter(subject => subject.total_students != 0)
         .map(subject => {
             let dataPoint = {
-                y: Math.round((subject.total_students * 100) / totalStudents),
+                y: Math.round(((subject.total_students * 100) / totalStudents) * 10) / 10,
                 label: subject.name,
                 total_students: subject.total_students,
                 total_professors: subject.total_professors,
