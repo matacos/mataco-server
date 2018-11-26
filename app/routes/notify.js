@@ -32,7 +32,7 @@ async function notifyAndroid(notifyTokens,message,channelId,title){
         "data": {
             "title": title,
             "body": message,
-            "click_action": "exam_inscriptions",
+            "click_action": click_action,
             "channel_id": channelId
         },
         "registration_ids": notifyTokens
