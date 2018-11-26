@@ -24,7 +24,7 @@ function mountRoutes(app,db,schemaValidation,notify){
         console.log("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%")
         console.log("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%")
         console.log("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%")
-        
+
         let semester=req.semester[0].code
         if("semester" in req.query) {
             if (req.query.semester=="any"){
@@ -238,7 +238,7 @@ function mountRoutes(app,db,schemaValidation,notify){
         const message=`
             El curso ${nombreCurso} de la materia ${nombreMateria} fue modificado. Haga click aquí para ver los cambios.
         `
-        await notify.notifyAndroid(tokens,message)
+        await notify.notifyAndroid(tokens,message,"courses")
 
         console.log("$$$$$$$$$$$$$$$$$$$$$$$$$$$113333")
 
@@ -302,7 +302,7 @@ function mountRoutes(app,db,schemaValidation,notify){
         const message=`
             El curso ${nombreCurso} de la materia ${nombreMateria} fue cancelado.
         `
-        await notify.notifyAndroid(tokens,message)
+        await notify.notifyAndroid(tokens,message,"courses")
 
         console.log("$$$$$$$$$$$$$$$$$$$$$$$$$$$113333")
         // -------------- eliminar el curso ----------------- //
@@ -359,6 +359,41 @@ function mountRoutes(app,db,schemaValidation,notify){
 
 
     app.delete("/cursos/:id_curso/horarios/:id_horario",async function(req,res,next){
+        console.log("$$$$$$$$$$$$$$$$$$$$$$$$$$$11111")
+        // --------------- enviar notificación ---------------- //
+        const courseData = (await db.query(`
+            select s.name as subject_name, c.name as course_name
+            from 
+                courses c, 
+                subjects s 
+            where 
+                c.department_code=s.department_code 
+            and s.code=c.subject_code 
+            and c.id=$1;
+        `,[req.params.id_curso])).rows[0]
+        let nombreCurso=courseData.course_name;
+        let nombreMateria=courseData.subject_name;
+
+        console.log("$$$$$$$$$$$$$$$$$$$$$$$$$$$11222")
+        const notificationsQuery=`
+            select firebase_token 
+            from 
+                users u, 
+                course_enrollments ce 
+            where 
+                u.username=ce.student 
+            and ce.course=$1;
+        `
+
+        const notificationsQueryResult=await db.query(notificationsQuery,[req.params.id_curso]);
+        const tokens=notificationsQueryResult.rows.map((r)=>r.firebase_token).filter((x)=>x!=null)
+        const message=`
+            El curso ${nombreCurso} de la materia ${nombreMateria} fue modificado. Haga click aquí para ver los cambios.
+        `
+        await notify.notifyAndroid(tokens,message,"courses")
+
+        console.log("$$$$$$$$$$$$$$$$$$$$$$$$$$$113333")
+        // -------------------------------- HACER LO DEL HOARIO -----------------------/
         let query = `
         delete from classroom_uses
         where id=$1;
@@ -388,6 +423,41 @@ function mountRoutes(app,db,schemaValidation,notify){
     }
 
     app.post("/cursos/:id/horarios",schemaValidation({body:hourBodySchema}),async function (req,res,next){
+        console.log("$$$$$$$$$$$$$$$$$$$$$$$$$$$11111")
+        // --------------- enviar notificación ---------------- //
+        const courseData = (await db.query(`
+            select s.name as subject_name, c.name as course_name
+            from 
+                courses c, 
+                subjects s 
+            where 
+                c.department_code=s.department_code 
+            and s.code=c.subject_code 
+            and c.id=$1;
+        `,[req.params.id])).rows[0]
+        let nombreCurso=courseData.course_name;
+        let nombreMateria=courseData.subject_name;
+
+        console.log("$$$$$$$$$$$$$$$$$$$$$$$$$$$11222")
+        const notificationsQuery=`
+            select firebase_token 
+            from 
+                users u, 
+                course_enrollments ce 
+            where 
+                u.username=ce.student 
+            and ce.course=$1;
+        `
+
+        const notificationsQueryResult=await db.query(notificationsQuery,[req.params.id]);
+        const tokens=notificationsQueryResult.rows.map((r)=>r.firebase_token).filter((x)=>x!=null)
+        const message=`
+            El curso ${nombreCurso} de la materia ${nombreMateria} fue modificado. Haga click aquí para ver los cambios.
+        `
+        await notify.notifyAndroid(tokens,message,"courses")
+
+        console.log("$$$$$$$$$$$$$$$$$$$$$$$$$$$113333")
+        // ------------------ HACER LA MODIFICACION --------------------------- //
         const query=`
         insert into classroom_uses(
             course,

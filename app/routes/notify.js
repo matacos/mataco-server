@@ -10,7 +10,7 @@ const sgMail = require('@sendgrid/mail');
         
         +"zX9VbtmIik");
 
-async function notifyAndroid(notifyTokens,message){
+async function notifyAndroid(notifyTokens,message,channelId){
     console.log("holiholi")
     if(process.env.ENVIRONMENT_MODE && process.env.ENVIRONMENT_MODE=="TEST"){
         return
@@ -23,7 +23,7 @@ async function notifyAndroid(notifyTokens,message){
             "title": "Se canceló un examen",
             "body": message,
             "click_action": "exam_inscriptions",
-            "channel_id": "exams"
+            "channel_id": channelId
         },
         "registration_ids": notifyTokens
     }
