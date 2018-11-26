@@ -189,12 +189,13 @@ class SurveyReport extends Component {
                     title: "",
                     reversed: true,
                     interval: 1,
-                    labelFontSize: 10
+                    labelFontSize: 10,
                 },
                 axisY: {
                     title: "",
                     interval: 1
                 },
+                height: (24 * this.state.dataPoints.length),
                 data: [{
                     type: "bar",
                     indexLabelMaxWidth: 20,
