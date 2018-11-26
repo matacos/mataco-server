@@ -39,7 +39,7 @@ class SurveyReport extends Component {
         if (score >= 7)
             return "green";
         else if (score >= 5)
-            return "yellow"
+            return "gold"
         else return "red";
     }
 
@@ -51,6 +51,7 @@ class SurveyReport extends Component {
         .map(values => {
             let dataPoint = {
                 y: values.score,
+                indexLabel: values.score.toString(),
                 label: this.findCourse(values.course, result.courses),
                 color: this.determineColor(values.score)
             };
@@ -187,12 +188,18 @@ class SurveyReport extends Component {
                 axisX: {
                     title: "",
                     reversed: true,
+                    interval: 1,
+                    labelFontSize: 10
                 },
                 axisY: {
-                    title: ""
+                    title: "",
+                    interval: 1
                 },
                 data: [{
                     type: "bar",
+                    indexLabelMaxWidth: 20,
+                    indexLabelWrap: false,
+                    indexLabelFontSize: 10,
                     dataPoints: this.state.dataPoints
                 }]
             }}
