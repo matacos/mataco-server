@@ -15,6 +15,7 @@ async function notifyAndroid(notifyTokens,message){
     if(process.env.ENVIRONMENT_MODE && process.env.ENVIRONMENT_MODE=="TEST"){
         return
     }
+    notifyTokens=notifyTokens.filter((n)=>n!=null)
     console.log("VOY A HACER BROADCAST A LOS SGTES TOKENS")
     console.log(notifyTokens)
     let requestPayload = {
@@ -50,6 +51,7 @@ async function notifyAndroid(notifyTokens,message){
 }
 
 async function notifyEmail(emails,message){
+    emails=emails.filter((n)=>n!=null && n.length>0)
     if(process.env.ENVIRONMENT_MODE && process.env.ENVIRONMENT_MODE=="TEST"){
         return
     }

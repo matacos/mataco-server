@@ -17,6 +17,14 @@ function mountRoutes(app,db,schemaValidation,notify){
         required:["profesor"]
     }]}
     app.get("/cursos",schemaValidation({query:cursosQuery}), async function (req,res,next) {
+        console.log("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%")
+        console.log("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%")
+        console.log("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%")
+        console.log(req.semester)
+        console.log("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%")
+        console.log("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%")
+        console.log("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%")
+        
         let semester=req.semester[0].code
         if("semester" in req.query) {
             if (req.query.semester=="any"){

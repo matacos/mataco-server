@@ -161,7 +161,7 @@ async function getSemesterFromDate(db,date){
     select * 
     from semesters
     where 
-        course_enrollment_beginning_date < $1
+    academic_offer_release_date < $1
     and $1 < exams_ending_date
     ;
     `,
