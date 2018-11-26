@@ -63,6 +63,23 @@ describe("Test /materias",()=>{
         expect(response.statusCode).to.equal(200)
     })
 
+    it("happy path with two degrees",async ()=>{
+        const loginResponse=await login("jose","jojo")
+        const token=loginResponse.token
+        const response=await request({
+            uri:url("/materias?carrera=10, 1"),
+            method:"GET",
+            headers:{
+                "Authorization":"bearer "+token
+            },
+            simple:false,
+            resolveWithFullResponse:true,
+            json:true
+        })
+        expect(response.body).to.be.jsonSchema(correctRequestJsonschema)
+        expect(response.statusCode).to.equal(200)
+    })
+
     it("happy path with departments",async ()=>{
         const loginResponse=await login("jose","jojo")
         const token=loginResponse.token

@@ -24,7 +24,7 @@ function mountRoutes(app,db,schemaValidation,notify){
             `)
             const firebaseTokens=firebaseTokensQuery.rows
                 .map((r)=>r.firebase_token)
-            await notify.notifyAndroid(firebaseTokens,message)
+            await notify.notifyAndroid(firebaseTokens,message,"general","Notificaciones FIUBA")
 
             const nonstudentEmailTokensQuery= await db.query(`
                 select email from users where username not in (select username from students)

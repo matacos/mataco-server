@@ -32,6 +32,10 @@ function mountRoutes(app,db,schemaValidation,notify){
         required:["departamento"]
     }]}
     promiseRouter.get('/materias',schemaValidation({query:materiasQuery}),async function (req, res,next) {
+        
+        
+
+
         console.log("########")
         console.log(req.user)
         console.log("########")
@@ -162,15 +166,50 @@ function mountRoutes(app,db,schemaValidation,notify){
         if(isStudent){
             student = req.user["username"]
         }
-        result=await db.query(query,[
-            req.query.carrera || '%',
-            req.query.departamento || '%',
-            student
-        ])
+
+        let allRows=[]
+
+        if(req.query.carrera){
+            let carrerasPosibles=[]
+            if(req.query.carrera){
+                carrerasPosibles=req.query.carrera.replace(" ","").split(",")
+                if(carrerasPosibles.length>1){
+                    console.log("ME PARECE QUE ME PEDISTE LAS MATERIAS DE DOS CARRERAS SANTI")
+                }
+
+            }
+            console.log("9999999999999999999")
+            console.log("9999999999999999999")
+            console.log("9999999999999999999")
+            console.log(req.query.carrera)
+            console.log("SI, HAY CARRERA")
+            console.log(carrerasPosibles)
+            for(let carrera of carrerasPosibles){
+                let result=await db.query(query,[
+                    carrera,
+                    req.query.departamento || '%',
+                    student
+                ])
+                allRows=allRows.concat(result.rows);
+                console.log("SI, VINO LA CARRERA ",carrera)
+            }
+            console.log("9999999999999999999")
+            console.log("9999999999999999999")
+            console.log("9999999999999999999")
+        }else{
+            let result=await db.query(query,[
+                req.query.carrera || '%',
+                req.query.departamento || '%',
+                student
+            ])
+            allRows=allRows.concat(result.rows);
+        }
+        
+        
         
         
 
-        res.json({"subjects":result.rows})
+        res.json({"subjects":allRows})
         //
         //res.json(resultado.rows)
         next()

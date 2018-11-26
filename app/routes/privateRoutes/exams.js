@@ -212,7 +212,7 @@ function mountRoutes(app,db,schemaValidation,notify){
         const message=`
             El examen de la fecha ${dateStr} de la materia "${nombreMateria}" fue modificado. Haga click aquí para ver los cambios.
         `
-        await notify.notifyAndroid(tokens,message)
+        await notify.notifyAndroid(tokens,message,"exams","Examen Cancelado")
 
         console.log("$$$$$$$$$$$$$$$$$$$$$$$$$$$113333")
         // ------------------- MODIFICAR EL EXAMEN POSTA POSTA ----------- //
@@ -351,7 +351,7 @@ function mountRoutes(app,db,schemaValidation,notify){
 
 
         // ---------------- enviarle un mensaje a los tokens esos ------------
-        notify.notifyAndroid(notifyTokens,message);
+        await notify.notifyAndroid(notifyTokens,message,"exams","Examen Modificado");
 
 
 
