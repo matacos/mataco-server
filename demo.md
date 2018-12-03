@@ -11,5 +11,5 @@
 
 ## Problemas y soluciones
 
- - "Error de conexión" y H18 en heroku logs: entrar a elephantsql con bash browse-remote-postgres.sh
+ - "Error de conexión" y H18 en heroku logs: redeployear y luego entrar a elephantsql con bash browse-remote-postgres.sh
  - No aparecen los cuatris al momento de hacer el reporte: Ir al otro reporte y aparecen los cuatris. Después, volver.
