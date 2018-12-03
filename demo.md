@@ -8,3 +8,8 @@
 4. Se aprueba al usuario desde el front-end (12345678 - font)
 5. En android aparece la encuesta, se la completa, y **se llena el comentario**
 6. Se muestra el reporte de encuestas entrando por el administrador de departamento (12345678 - font). Mostrar que figura el comentario que hicimos recién.
+
+## Problemas y soluciones
+
+ - "Error de conexión" y H18 en heroku logs: entrar a elephantsql con bash browse-remote-postgres.sh
+ - No aparecen los cuatris al momento de hacer el reporte: Ir al otro reporte y aparecen los cuatris. Después, volver.
